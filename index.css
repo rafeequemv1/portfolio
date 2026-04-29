@@ -73,7 +73,6 @@
 .cover-marquee-card {
   width: 170px;
   height: 230px;
-  border-radius: 0.75rem;
   overflow: hidden;
   border: 1px solid rgba(55, 53, 47, 0.1);
   background: #f3f1ee;

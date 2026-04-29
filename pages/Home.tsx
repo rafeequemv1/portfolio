@@ -3,6 +3,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
 import { JournalCover } from '../types';
 
+const shuffleArray = <T,>(items: T[]): T[] => {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 const Home: React.FC = () => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
 
@@ -12,11 +21,12 @@ const Home: React.FC = () => {
         .from('journal_covers')
         .select('*')
         .not('cover_image_url', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(16);
+        .order('created_at', { ascending: true })
+        .limit(25);
 
       if (!error) {
-        setCovers((data || []).filter((item: JournalCover) => Boolean(item.cover_image_url)));
+        const valid = (data || []).filter((item: JournalCover) => Boolean(item.cover_image_url));
+        setCovers(shuffleArray(valid));
       }
     };
 
@@ -30,6 +40,18 @@ const Home: React.FC = () => {
     const rowB = covers.slice(midpoint);
     return [rowA, rowB.length ? rowB : rowA];
   }, [covers]);
+
+  const buildFullRow = (row: JournalCover[], minItems: number) => {
+    if (!row.length) return [];
+    const filled: JournalCover[] = [];
+    while (filled.length < minItems) {
+      filled.push(...row);
+    }
+    return filled.slice(0, minItems);
+  };
+
+  const firstRowFull = useMemo(() => buildFullRow(firstRow, 12), [firstRow]);
+  const secondRowFull = useMemo(() => buildFullRow(secondRow, 12), [secondRow]);
 
   return (
     <div className="flex-grow flex flex-col items-center relative p-6 pt-16 md:pt-20 animate-fade-in-up">
@@ -58,7 +80,7 @@ const Home: React.FC = () => {
         <div className="w-full max-w-7xl space-y-6 md:space-y-8">
           <div className="cover-marquee">
             <div className="cover-marquee-track">
-              {[...firstRow, ...firstRow].map((cover, idx) => (
+              {[...firstRowFull, ...firstRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-${idx}`} className="cover-marquee-card">
                   <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
                 </div>
@@ -68,7 +90,7 @@ const Home: React.FC = () => {
 
           <div className="cover-marquee">
             <div className="cover-marquee-track cover-marquee-track-reverse">
-              {[...secondRow, ...secondRow].map((cover, idx) => (
+              {[...secondRowFull, ...secondRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-reverse-${idx}`} className="cover-marquee-card">
                   <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
                 </div>

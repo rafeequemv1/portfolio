@@ -116,3 +116,28 @@ export interface Brand {
   display_order?: number;
   created_at?: string;
 }
+
+export interface PortfolioVideo {
+  id: string;
+  title: string;
+  youtube_url: string;
+  description?: string;
+  display_order?: number;
+  created_at?: string;
+}
+
+export interface GraphicalAbstract {
+  id: string;
+  title: string;
+  journal_name?: string;
+  institute_name?: string;
+  publication_date?: string;
+  abstract_image_url: string;
+  paper_url?: string;
+  lab_name?: string;
+  lab_url?: string;
+  pi_name?: string;
+  description?: string;
+  display_order?: number;
+  created_at?: string;
+}

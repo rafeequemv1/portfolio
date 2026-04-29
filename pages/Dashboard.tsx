@@ -5,6 +5,8 @@ import { supabase } from '../supabase/client';
 import JournalCoverManager from '../components/JournalCoverManager';
 import WorkshopManager from '../components/WorkshopManager';
 import BrandManager from '../components/BrandManager';
+import PortfolioVideoManager from '../components/PortfolioVideoManager';
+import GraphicalAbstractManager from '../components/GraphicalAbstractManager';
 import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft } from 'lucide-react';
 
 interface DashboardProps {
@@ -16,6 +18,7 @@ type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'brands' | 'ser
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
+  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'graphical-abstracts'>('covers');
   const sectionItems = useMemo(
     () => [
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
@@ -37,7 +40,18 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const renderSection = () => {
     switch (activeSection) {
       case 'portfolio':
-        return <JournalCoverManager />;
+        return (
+          <div className="space-y-10">
+            <div className="inline-flex items-center p-1 rounded-xl bg-[#37352f]/5 border border-[#37352f]/10">
+              <button onClick={() => setPortfolioTab('covers')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'covers' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Covers</button>
+              <button onClick={() => setPortfolioTab('videos')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'videos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Videos</button>
+              <button onClick={() => setPortfolioTab('graphical-abstracts')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'graphical-abstracts' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Graphical Abstracts</button>
+            </div>
+            {portfolioTab === 'covers' && <JournalCoverManager />}
+            {portfolioTab === 'videos' && <PortfolioVideoManager />}
+            {portfolioTab === 'graphical-abstracts' && <GraphicalAbstractManager />}
+          </div>
+        );
       case 'workshops':
         return <WorkshopManager />;
       case 'brands':
