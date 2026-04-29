@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { supabase } from '../supabase/client';
 import { JournalCover } from '../types';
 import { Plus, Trash2, Edit2, ExternalLink, Upload, X, Loader2 } from 'lucide-react';
@@ -54,7 +55,7 @@ const JournalCoverManager: React.FC = () => {
 
     setUploading(true);
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
     const filePath = `covers/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -63,7 +64,7 @@ const JournalCoverManager: React.FC = () => {
 
     if (uploadError) {
       console.error('Error uploading image:', uploadError);
-      alert('Error uploading image');
+      alert(`Error uploading image: ${uploadError.message}`);
     } else {
       const { data: { publicUrl } } = supabase.storage
         .from('journal-covers')
@@ -177,22 +178,6 @@ const JournalCoverManager: React.FC = () => {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                  <button 
-                    type="button"
-                    onClick={() => handleEdit(cover)}
-                    className="p-2 bg-white rounded-full text-[#37352f] hover:bg-gray-100 transition-colors"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleDelete(cover.id)}
-                    className="p-2 bg-white rounded-full text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
               </div>
               <div className="p-4">
                 <h3 className="font-serif text-lg text-[#37352f] mb-1 line-clamp-1">{cover.title}</h3>
@@ -234,8 +219,8 @@ const JournalCoverManager: React.FC = () => {
       )}
 
       {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      {isModalOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in-up">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
               <h3 className="text-xl font-serif text-[#37352f]">
@@ -245,7 +230,7 @@ const JournalCoverManager: React.FC = () => {
                 <X size={24} />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -359,7 +344,8 @@ const JournalCoverManager: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
