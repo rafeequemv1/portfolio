@@ -89,6 +89,7 @@ export interface JournalCover {
   id: string;
   title: string;
   journal_name?: string;
+  institute_name?: string;
   publication_date?: string;
   cover_image_url: string;
   paper_url?: string;

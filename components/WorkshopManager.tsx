@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { supabase } from '../supabase/client';
 import { Workshop } from '../types';
-import { Plus, Edit2, Trash2, X, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Loader2, Upload } from 'lucide-react';
 
 type WorkshopStatus = 'Upcoming' | 'Past' | 'Sold Out';
 
@@ -9,6 +10,7 @@ const WorkshopManager: React.FC = () => {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWorkshop, setEditingWorkshop] = useState<Workshop | null>(null);
   const [formData, setFormData] = useState({
@@ -17,7 +19,7 @@ const WorkshopManager: React.FC = () => {
     location: '',
     description: '',
     status: 'Upcoming' as WorkshopStatus,
-    imageUrl: '',
+    coverImageUrl: '',
   });
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const WorkshopManager: React.FC = () => {
       location: '',
       description: '',
       status: 'Upcoming',
-      imageUrl: '',
+      coverImageUrl: '',
     });
   };
 
@@ -64,7 +66,7 @@ const WorkshopManager: React.FC = () => {
       location: workshop.location || '',
       description: workshop.description || '',
       status: (workshop.status as WorkshopStatus) || 'Upcoming',
-      imageUrl: workshop.gallery_images?.[0] || workshop.cover_image || '',
+      coverImageUrl: workshop.gallery_images?.[0] || workshop.cover_image || '',
     });
     setIsModalOpen(true);
   };
@@ -86,6 +88,31 @@ const WorkshopManager: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const ext = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const filePath = `covers/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('workshop-gallery')
+      .upload(filePath, file, { upsert: false });
+
+    if (uploadError) {
+      console.error('Error uploading workshop image:', uploadError);
+      alert(`Error uploading workshop image: ${uploadError.message}`);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('workshop-gallery').getPublicUrl(filePath);
+    setFormData((prev) => ({ ...prev, coverImageUrl: data.publicUrl }));
+    setUploading(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -96,7 +123,7 @@ const WorkshopManager: React.FC = () => {
       location: formData.location || null,
       description: formData.description || null,
       status: formData.status,
-      image_urls: formData.imageUrl ? [formData.imageUrl] : null,
+      image_urls: formData.coverImageUrl ? [formData.coverImageUrl] : null,
     };
 
     if (editingWorkshop) {
@@ -106,6 +133,7 @@ const WorkshopManager: React.FC = () => {
         .eq('id', editingWorkshop.id);
       if (error) {
         console.error('Error updating workshop:', error);
+        alert(`Error updating workshop: ${error.message}`);
         setSubmitting(false);
         return;
       }
@@ -113,6 +141,7 @@ const WorkshopManager: React.FC = () => {
       const { error } = await supabase.from('workshops').insert([payload]);
       if (error) {
         console.error('Error creating workshop:', error);
+        alert(`Error creating workshop: ${error.message}`);
         setSubmitting(false);
         return;
       }
@@ -182,8 +211,8 @@ const WorkshopManager: React.FC = () => {
         </div>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4">
+      {isModalOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[200] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white z-10 p-6 border-b border-gray-100 flex items-center justify-between">
               <h3 className="text-xl font-serif text-[#37352f]">
@@ -264,15 +293,25 @@ const WorkshopManager: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Cover Image URL (optional)</label>
-                <input
-                  type="url"
-                  name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none"
-                  placeholder="https://..."
-                />
+                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Workshop Image</label>
+                <div className="flex items-start gap-4">
+                  <label className="flex-1 h-28 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer flex items-center justify-center">
+                    {uploading ? (
+                      <Loader2 className="animate-spin text-gray-400" />
+                    ) : (
+                      <div className="text-xs text-gray-500 inline-flex items-center gap-2">
+                        <Upload size={16} />
+                        Upload from local
+                      </div>
+                    )}
+                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                  </label>
+                  {formData.coverImageUrl && (
+                    <div className="w-28 h-28 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+                      <img src={formData.coverImageUrl} alt="Workshop preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="pt-2 flex gap-3">
@@ -285,7 +324,7 @@ const WorkshopManager: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || uploading}
                   className="flex-1 px-5 py-3 bg-[#37352f] text-white rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-[#37352f]/90 disabled:opacity-60 inline-flex items-center justify-center gap-2"
                 >
                   {submitting && <Loader2 size={16} className="animate-spin" />}
@@ -294,7 +333,8 @@ const WorkshopManager: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

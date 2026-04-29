@@ -1,10 +1,39 @@
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { supabase } from '../supabase/client';
+import { JournalCover } from '../types';
 
 const Home: React.FC = () => {
+  const [covers, setCovers] = useState<JournalCover[]>([]);
+
+  useEffect(() => {
+    const fetchCovers = async () => {
+      const { data, error } = await supabase
+        .from('journal_covers')
+        .select('*')
+        .not('cover_image_url', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(16);
+
+      if (!error) {
+        setCovers((data || []).filter((item: JournalCover) => Boolean(item.cover_image_url)));
+      }
+    };
+
+    fetchCovers();
+  }, []);
+
+  const [firstRow, secondRow] = useMemo(() => {
+    if (!covers.length) return [[], []] as [JournalCover[], JournalCover[]];
+    const midpoint = Math.ceil(covers.length / 2);
+    const rowA = covers.slice(0, midpoint);
+    const rowB = covers.slice(midpoint);
+    return [rowA, rowB.length ? rowB : rowA];
+  }, [covers]);
+
   return (
-    <div className="flex-grow flex flex-col items-center justify-center relative p-6 animate-fade-in-up">
-      <div className="text-center max-w-2xl">
+    <div className="flex-grow flex flex-col items-center relative p-6 pt-16 md:pt-20 animate-fade-in-up">
+      <div className="text-center max-w-2xl mb-14 md:mb-16">
         <h1 className="text-5xl md:text-7xl font-serif text-[#37352f] tracking-tight mb-6">
           Rafeeque Mavoor
         </h1>
@@ -23,12 +52,39 @@ const Home: React.FC = () => {
            </p>
         </div>
 
-        {/* Under Construction Notice */}
-        <div className="mt-24">
-            <p className="text-xs font-sans text-[#37352f]/40 tracking-wider">
-                This digital portfolio is a work in progress. New projects and case studies are added frequently.
-            </p>
+      </div>
+
+      {covers.length > 0 && (
+        <div className="w-full max-w-7xl space-y-6 md:space-y-8">
+          <div className="cover-marquee">
+            <div className="cover-marquee-track">
+              {[...firstRow, ...firstRow].map((cover, idx) => (
+                <div key={`${cover.id}-${idx}`} className="cover-marquee-card">
+                  <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="cover-marquee">
+            <div className="cover-marquee-track cover-marquee-track-reverse">
+              {[...secondRow, ...secondRow].map((cover, idx) => (
+                <div key={`${cover.id}-reverse-${idx}`} className="cover-marquee-card">
+                  <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      )}
+
+      <div className="mt-10 mb-8">
+        <a
+          href="/portfolio"
+          className="inline-flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#37352f]/70 hover:text-[#37352f] transition-colors"
+        >
+          View All Covers
+        </a>
       </div>
     </div>
   );

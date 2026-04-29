@@ -202,7 +202,7 @@ const App: React.FC = () => {
           <a href="/about" onClick={(e) => navigate(e, 'about', '/about')} className={`transition-all duration-200 relative py-1 ${currentView === 'about' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>About{currentView === 'about' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           <a href="/contact" onClick={(e) => navigate(e, 'contact', '/contact')} className={`transition-all duration-200 relative py-1 ${currentView === 'contact' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Contact{currentView === 'contact' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           {session && (
-            <a href="/dashboard" onClick={(e) => navigate(e, 'dashboard', '/dashboard')} className={`transition-all duration-200 relative py-1 ${currentView === 'dashboard' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Dashboard{currentView === 'dashboard' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
+            <a href="/dashboard" onClick={(e) => navigate(e, 'dashboard', '/dashboard')} className={`transition-all duration-200 relative py-2 px-3 rounded-md border ${currentView === 'dashboard' ? 'bg-[#37352f] text-white border-[#37352f]' : 'text-[#37352f] border-[#37352f]/20 hover:bg-[#37352f]/5'}`}>Dashboard</a>
           )}
         </nav>
 

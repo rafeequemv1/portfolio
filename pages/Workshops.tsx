@@ -24,7 +24,13 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
                 setError(error.message);
                 console.error('Error fetching workshops:', error);
             } else {
-                setWorkshops(data || []);
+                const mapped = (data || []).map((workshop: any) => ({
+                    ...workshop,
+                    cover_image: workshop.image_urls?.[0] || workshop.cover_image,
+                    institute: workshop.location || workshop.institute,
+                    gallery_images: workshop.image_urls || workshop.gallery_images,
+                }));
+                setWorkshops(mapped);
             }
             setLoading(false);
         };

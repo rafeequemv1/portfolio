@@ -115,6 +115,12 @@ const Portfolio: React.FC = () => {
               <p className="text-[#37352f]/70 font-sans leading-relaxed my-6">{selectedCover.description}</p>
               
               <div className="space-y-4 text-sm border-t border-[#37352f]/10 pt-6">
+                {selectedCover.institute_name && (
+                  <div className="flex items-center gap-4">
+                    <span className="text-[#37352f]/50 w-20 flex-shrink-0">Institute</span>
+                    <span className="font-semibold">{selectedCover.institute_name}</span>
+                  </div>
+                )}
                 {selectedCover.pi_name && (
                   <div className="flex items-center gap-4">
                     <span className="text-[#37352f]/50 w-20 flex-shrink-0">PI</span>

@@ -42,7 +42,12 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
                     setError(error.message);
                     console.error('Error fetching workshop:', error);
                 } else {
-                    setWorkshop(data);
+                    setWorkshop({
+                        ...data,
+                        cover_image: data.image_urls?.[0] || data.cover_image,
+                        institute: data.location || data.institute,
+                        gallery_images: data.image_urls || data.gallery_images,
+                    });
                 }
             }
             setLoading(false);

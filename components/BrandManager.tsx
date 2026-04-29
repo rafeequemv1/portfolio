@@ -14,7 +14,6 @@ const BrandManager: React.FC = () => {
     name: '',
     logo_url: '',
     website_url: '',
-    display_order: 0,
   });
 
   useEffect(() => {
@@ -26,7 +25,6 @@ const BrandManager: React.FC = () => {
     const { data, error } = await supabase
       .from('brands')
       .select('*')
-      .order('display_order', { ascending: true })
       .order('created_at', { ascending: false });
     if (error) {
       console.error('Error fetching brands:', error);
@@ -41,7 +39,6 @@ const BrandManager: React.FC = () => {
       name: '',
       logo_url: '',
       website_url: '',
-      display_order: 0,
     });
   };
 
@@ -57,7 +54,6 @@ const BrandManager: React.FC = () => {
       name: brand.name || '',
       logo_url: brand.logo_url || '',
       website_url: brand.website_url || '',
-      display_order: brand.display_order ?? 0,
     });
     setIsModalOpen(true);
   };
@@ -74,10 +70,7 @@ const BrandManager: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'display_order' ? Number(value || 0) : value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,10 +102,9 @@ const BrandManager: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     const payload = {
-      name: formData.name,
+      name: formData.name?.trim() || 'Brand Logo',
       logo_url: formData.logo_url,
       website_url: formData.website_url || null,
-      display_order: formData.display_order,
     };
 
     if (editingBrand) {
@@ -163,7 +155,6 @@ const BrandManager: React.FC = () => {
                 <img src={brand.logo_url} alt={brand.name} className="max-h-14 object-contain" />
               </div>
               <h3 className="font-medium text-[#37352f]">{brand.name}</h3>
-              <div className="text-xs text-[#37352f]/55 mt-1">Order: {brand.display_order ?? 0}</div>
               <div className="mt-3 flex items-center justify-between">
                 {brand.website_url ? (
                   <a href={brand.website_url} target="_blank" rel="noreferrer" className="text-xs text-[#37352f]/60 hover:text-[#37352f] inline-flex items-center gap-1">
@@ -203,8 +194,8 @@ const BrandManager: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Brand Name</label>
-                <input name="name" value={formData.name} onChange={handleInputChange} required className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none" />
+                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Brand Name (optional)</label>
+                <input name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none" placeholder="Optional" />
               </div>
 
               <div className="space-y-2">
@@ -222,15 +213,9 @@ const BrandManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Website URL</label>
-                  <input type="url" name="website_url" value={formData.website_url} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Display Order</label>
-                  <input type="number" name="display_order" value={formData.display_order} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none" />
-                </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Website URL (optional)</label>
+                <input type="url" name="website_url" value={formData.website_url} onChange={handleInputChange} className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none" />
               </div>
 
               <div className="pt-2 flex gap-3">

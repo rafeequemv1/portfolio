@@ -16,6 +16,7 @@ const JournalCoverManager: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     journal_name: '',
+    institute_name: '',
     description: '',
     lab_url: '',
     paper_url: '',
@@ -107,6 +108,7 @@ const JournalCoverManager: React.FC = () => {
     setFormData({
       title: '',
       journal_name: '',
+      institute_name: '',
       description: '',
       lab_url: '',
       paper_url: '',
@@ -122,6 +124,7 @@ const JournalCoverManager: React.FC = () => {
     setFormData({
       title: cover.title,
       journal_name: cover.journal_name || '',
+      institute_name: cover.institute_name || '',
       description: cover.description || '',
       lab_url: cover.lab_url || '',
       paper_url: cover.paper_url || '',
@@ -256,6 +259,17 @@ const JournalCoverManager: React.FC = () => {
                     placeholder="e.g. Nature"
                   />
                 </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Institute Name</label>
+                  <input
+                    type="text"
+                    name="institute_name"
+                    value={formData.institute_name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
+                    placeholder="e.g. University of Illinois Chicago"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -292,6 +306,31 @@ const JournalCoverManager: React.FC = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
                     placeholder="https://doi.org/..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Lab Name</label>
+                  <input
+                    type="text"
+                    name="lab_name"
+                    value={formData.lab_name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
+                    placeholder="e.g. Prof. Sushant Anand Lab"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">PI Name</label>
+                  <input
+                    type="text"
+                    name="pi_name"
+                    value={formData.pi_name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
+                    placeholder="e.g. Prof. Jyoti Seth"
                   />
                 </div>
               </div>

@@ -33,3 +33,49 @@
 .text-balance {
   text-wrap: balance;
 }
+
+@keyframes marqueeLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeRight {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.cover-marquee {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.cover-marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: marqueeLeft 80s linear infinite;
+}
+
+.cover-marquee-track-reverse {
+  animation: marqueeRight 85s linear infinite;
+}
+
+.cover-marquee-card {
+  width: 170px;
+  height: 230px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(55, 53, 47, 0.1);
+  background: #f3f1ee;
+  flex: 0 0 auto;
+}
