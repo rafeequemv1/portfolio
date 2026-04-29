@@ -1,0 +1,11 @@
+# Allow all friendly crawlers
+User-agent: *
+Allow: /
+
+# Disallow indexing of admin or backend areas
+Disallow: /login
+Disallow: /dashboard
+Disallow: /api
+
+# Sitemap location
+Sitemap: https://rafeeque.com/sitemap.xml
