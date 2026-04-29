@@ -89,16 +89,15 @@ export interface JournalCover {
   id: string;
   title: string;
   journal_name?: string;
-  date?: string;
-  image_url: string;
+  publication_date?: string;
+  cover_image_url: string;
   paper_url?: string;
   lab_name?: string;
   lab_url?: string;
   pi_name?: string;
-  description: string;
+  description?: string;
   display_order?: number;
   created_at?: string;
-  updated_at?: string;
 }
 
 export interface UserProfile {
@@ -106,4 +105,13 @@ export interface UserProfile {
   full_name: string;
   avatar_url?: string;
   is_admin: boolean;
+}
+
+export interface Brand {
+  id: string;
+  name: string;
+  logo_url: string;
+  website_url?: string;
+  display_order?: number;
+  created_at?: string;
 }

@@ -18,8 +18,8 @@ const JournalCoverManager: React.FC = () => {
     description: '',
     lab_url: '',
     paper_url: '',
-    image_url: '',
-    date: new Date().toISOString().split('T')[0],
+    cover_image_url: '',
+    publication_date: new Date().toISOString().split('T')[0],
     lab_name: '',
     pi_name: ''
   });
@@ -69,7 +69,7 @@ const JournalCoverManager: React.FC = () => {
         .from('journal-covers')
         .getPublicUrl(filePath);
       
-      setFormData(prev => ({ ...prev, image_url: publicUrl }));
+      setFormData(prev => ({ ...prev, cover_image_url: publicUrl }));
     }
     setUploading(false);
   };
@@ -78,10 +78,7 @@ const JournalCoverManager: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...formData,
-      updated_at: new Date().toISOString()
-    };
+    const payload = { ...formData };
 
     if (editingCover) {
       const { error } = await supabase
@@ -112,8 +109,8 @@ const JournalCoverManager: React.FC = () => {
       description: '',
       lab_url: '',
       paper_url: '',
-      image_url: '',
-      date: new Date().toISOString().split('T')[0],
+      cover_image_url: '',
+      publication_date: new Date().toISOString().split('T')[0],
       lab_name: '',
       pi_name: ''
     });
@@ -124,11 +121,11 @@ const JournalCoverManager: React.FC = () => {
     setFormData({
       title: cover.title,
       journal_name: cover.journal_name || '',
-      description: cover.description,
+      description: cover.description || '',
       lab_url: cover.lab_url || '',
       paper_url: cover.paper_url || '',
-      image_url: cover.image_url,
-      date: cover.date || new Date().toISOString().split('T')[0],
+      cover_image_url: cover.cover_image_url || '',
+      publication_date: cover.publication_date || new Date().toISOString().split('T')[0],
       lab_name: cover.lab_name || '',
       pi_name: cover.pi_name || ''
     });
@@ -161,7 +158,7 @@ const JournalCoverManager: React.FC = () => {
           className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#37352f]/90 transition-colors"
         >
           <Plus size={18} />
-          Add New Cover
+          New Cover
         </button>
       </div>
 
@@ -175,19 +172,21 @@ const JournalCoverManager: React.FC = () => {
             <div key={cover.id} className="group bg-white border border-[#37352f]/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
               <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">
                 <img 
-                  src={cover.image_url} 
+                  src={cover.cover_image_url} 
                   alt={cover.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                   <button 
+                    type="button"
                     onClick={() => handleEdit(cover)}
                     className="p-2 bg-white rounded-full text-[#37352f] hover:bg-gray-100 transition-colors"
                   >
                     <Edit2 size={18} />
                   </button>
                   <button 
+                    type="button"
                     onClick={() => handleDelete(cover.id)}
                     className="p-2 bg-white rounded-full text-red-600 hover:bg-red-50 transition-colors"
                   >
@@ -209,6 +208,24 @@ const JournalCoverManager: React.FC = () => {
                       Lab <ExternalLink size={10} />
                     </a>
                   )}
+                </div>
+                <div className="mt-4 pt-3 border-t border-[#37352f]/10 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(cover)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-md bg-[#37352f]/5 text-[#37352f] hover:bg-[#37352f]/10 transition-colors"
+                  >
+                    <Edit2 size={12} />
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(cover.id)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                  >
+                    <Trash2 size={12} />
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -301,7 +318,7 @@ const JournalCoverManager: React.FC = () => {
                     <label className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all">
                       {uploading ? (
                         <Loader2 className="animate-spin text-gray-400" />
-                      ) : formData.image_url ? (
+                      ) : formData.cover_image_url ? (
                         <div className="flex flex-col items-center">
                           <span className="text-xs text-green-600 font-medium">Image Uploaded</span>
                           <span className="text-[10px] text-gray-400 mt-1">Click to change</span>
@@ -315,9 +332,9 @@ const JournalCoverManager: React.FC = () => {
                       <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
                     </label>
                   </div>
-                  {formData.image_url && (
+                  {formData.cover_image_url && (
                     <div className="w-32 h-32 rounded-xl overflow-hidden border border-gray-100">
-                      <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={formData.cover_image_url} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -333,7 +350,7 @@ const JournalCoverManager: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={loading || uploading || !formData.image_url}
+                  disabled={loading || uploading || !formData.cover_image_url}
                   className="flex-1 px-6 py-3 bg-[#37352f] text-white rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-[#37352f]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                 >
                   {loading && <Loader2 className="animate-spin" size={16} />}

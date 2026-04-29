@@ -62,7 +62,7 @@ const Portfolio: React.FC = () => {
               onClick={() => openModal(cover)}
             >
               <img 
-                src={cover.image_url} 
+                src={cover.cover_image_url} 
                 alt={cover.title}
                 className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
                 referrerPolicy="no-referrer"
@@ -95,7 +95,7 @@ const Portfolio: React.FC = () => {
           >
             <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-200">
                 <img 
-                  src={selectedCover.image_url} 
+                  src={selectedCover.cover_image_url} 
                   alt={selectedCover.title} 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
