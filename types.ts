@@ -55,6 +55,7 @@ export interface AppProject {
 
 export interface BlogPost {
   id: string;
+  slug: string;
   title: string;
   subtitle?: string;
   date: string;
@@ -83,7 +84,7 @@ export interface LabWebsite {
   display_order?: number;
 }
 
-export type View = 'home' | 'apps' | 'services' | 'workshops' | 'workshop-detail' | 'portfolio' | 'about' | 'contact' | 'login' | 'dashboard';
+export type View = 'home' | 'apps' | 'services' | 'workshops' | 'workshop-detail' | 'portfolio' | 'about' | 'blog' | 'blog-detail' | 'contact' | 'login' | 'dashboard';
 
 export interface JournalCover {
   id: string;

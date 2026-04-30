@@ -1,7 +1,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
-import { JournalCover } from '../types';
+import { Brand, JournalCover } from '../types';
 
 const shuffleArray = <T,>(items: T[]): T[] => {
   const arr = [...items];
@@ -14,6 +14,7 @@ const shuffleArray = <T,>(items: T[]): T[] => {
 
 const Home: React.FC = () => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
 
   useEffect(() => {
     const fetchCovers = async () => {
@@ -31,6 +32,22 @@ const Home: React.FC = () => {
     };
 
     fetchCovers();
+  }, []);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      const { data, error } = await supabase
+        .from('brands')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: true });
+
+      if (!error) {
+        setBrands((data as Brand[]) || []);
+      }
+    };
+
+    fetchBrands();
   }, []);
 
   const [firstRow, secondRow] = useMemo(() => {
@@ -108,6 +125,37 @@ const Home: React.FC = () => {
           View All Covers
         </a>
       </div>
+
+      {brands.length > 0 && (
+        <section className="w-full max-w-7xl mt-10 md:mt-14 border-t border-[#37352f]/10 pt-10 md:pt-12">
+          <div className="text-center mb-7">
+            <p className="text-[10px] md:text-xs uppercase tracking-[0.22em] text-[#37352f]/45 font-semibold">
+              Trusted by researchers and institutions
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+            {brands.map((brand) => (
+              <a
+                key={brand.id}
+                href={brand.website_url || '#'}
+                target={brand.website_url ? '_blank' : undefined}
+                rel={brand.website_url ? 'noopener noreferrer' : undefined}
+                className="group h-20 md:h-24 px-4 rounded-xl border border-[#37352f]/10 bg-white/60 flex items-center justify-center"
+              >
+                {brand.logo_url ? (
+                  <img
+                    src={brand.logo_url}
+                    alt={brand.name}
+                    className="max-h-10 md:max-h-12 max-w-full object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                  />
+                ) : (
+                  <span className="text-xs md:text-sm text-[#37352f]/70 text-center font-medium">{brand.name}</span>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

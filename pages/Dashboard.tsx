@@ -7,23 +7,26 @@ import WorkshopManager from '../components/WorkshopManager';
 import BrandManager from '../components/BrandManager';
 import PortfolioVideoManager from '../components/PortfolioVideoManager';
 import GraphicalAbstractManager from '../components/GraphicalAbstractManager';
-import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft } from 'lucide-react';
+import BlogManager from '../components/BlogManager';
+import LabWebsiteManager from '../components/LabWebsiteManager';
+import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen } from 'lucide-react';
 
 interface DashboardProps {
   session: Session;
   navigate: (e: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>, view: any, path: string) => void;
 }
 
-type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'brands' | 'services' | 'settings';
+type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'blog' | 'brands' | 'services' | 'settings';
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
-  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'graphical-abstracts'>('covers');
+  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'graphical-abstracts' | 'websites'>('covers');
   const sectionItems = useMemo(
     () => [
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
       { key: 'portfolio' as DashboardSection, label: 'Portfolio', icon: Image },
       { key: 'workshops' as DashboardSection, label: 'Workshops', icon: Calendar },
+      { key: 'blog' as DashboardSection, label: 'Blog', icon: BookOpen },
       { key: 'brands' as DashboardSection, label: 'Brands', icon: Briefcase },
       { key: 'services' as DashboardSection, label: 'Services', icon: Briefcase },
       { key: 'settings' as DashboardSection, label: 'Settings', icon: Settings },
@@ -46,14 +49,18 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
               <button onClick={() => setPortfolioTab('covers')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'covers' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Covers</button>
               <button onClick={() => setPortfolioTab('videos')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'videos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Videos</button>
               <button onClick={() => setPortfolioTab('graphical-abstracts')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'graphical-abstracts' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Graphical Abstracts</button>
+              <button onClick={() => setPortfolioTab('websites')} className={`px-4 py-2 text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'websites' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Websites</button>
             </div>
             {portfolioTab === 'covers' && <JournalCoverManager />}
             {portfolioTab === 'videos' && <PortfolioVideoManager />}
             {portfolioTab === 'graphical-abstracts' && <GraphicalAbstractManager />}
+            {portfolioTab === 'websites' && <LabWebsiteManager />}
           </div>
         );
       case 'workshops':
         return <WorkshopManager />;
+      case 'blog':
+        return <BlogManager />;
       case 'brands':
         return <BrandManager />;
       case 'services':

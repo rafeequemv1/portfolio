@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
-import Apps from './pages/Apps';
 import Contact from './pages/Contact';
 import About from './pages/About';
 import Services from './pages/Services';
 import Workshops from './pages/Workshops';
 import WorkshopDetail from './pages/WorkshopDetail';
 import Portfolio from './pages/Portfolio';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { supabase } from './supabase/client';
@@ -21,6 +22,7 @@ const pathMap: { [key: string]: View } = {
   '/workshops': 'workshops',
   '/portfolio': 'portfolio',
   '/about': 'about',
+  '/blog': 'blog',
   '/contact': 'contact',
   '/login': 'login',
   '/dashboard': 'dashboard',
@@ -29,6 +31,9 @@ const pathMap: { [key: string]: View } = {
 const getViewFromPath = (path: string): View => {
   if (path.startsWith('/workshops/') && path.length > '/workshops/'.length) {
     return 'workshop-detail';
+  }
+  if (path.startsWith('/blog/') && path.length > '/blog/'.length) {
+    return 'blog-detail';
   }
   return pathMap[path] || 'home'; // Default to home for any unknown paths
 };
@@ -91,7 +96,7 @@ const App: React.FC = () => {
       case 'apps':
         title = 'Apps & Experiments | Rafeeque Mavoor';
         description = 'A digital garden of tools and experiments by Rafeeque Mavoor, including OpenScienceArt, OceanOfPapers, and other scientific software.';
-        path = '/apps';
+        path = '/portfolio';
         break;
       case 'workshops':
         title = 'Workshops & Training | Rafeeque Mavoor';
@@ -110,6 +115,17 @@ const App: React.FC = () => {
         description = "Learn about the professional journey of Rafeeque Mavoor, from a Master's in Chemistry to a leading scientific illustrator and founder of SciDart Academy.";
         path = '/about';
         break;
+      case 'blog':
+        title = 'Blog | Rafeeque Mavoor | Prompt Engineering, Database, Web Apps';
+        description = 'Read insights by Rafeeque Mavoor on prompt engineering, database design, and web app development for science and education.';
+        path = '/blog';
+        break;
+      case 'blog-detail': {
+        title = 'Blog | Rafeeque Mavoor';
+        description = 'Read insights on scientific communication, prompt engineering, databases, and web app development.';
+        path = currentPath;
+        break;
+      }
       case 'contact':
         title = 'Contact Rafeeque Mavoor | Scientific Illustration Projects';
         description = 'Get in touch with Rafeeque Mavoor for collaborations, commissions, or mentorship in scientific illustration and visualization.';
@@ -140,7 +156,7 @@ const App: React.FC = () => {
       document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
     }
 
-  }, [currentView]);
+  }, [currentView, currentPath]);
 
   const navigate = (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => {
     e.preventDefault();
@@ -163,7 +179,7 @@ const App: React.FC = () => {
       case 'services':
         return <Services />;
       case 'apps':
-        return <Apps />;
+        return <Portfolio initialTab="apps" />;
       case 'workshops':
         return <Workshops navigate={navigate} />;
       case 'workshop-detail':
@@ -172,6 +188,10 @@ const App: React.FC = () => {
         return <Portfolio />;
       case 'about':
         return <About />;
+      case 'blog':
+        return <Blog navigate={navigate} />;
+      case 'blog-detail':
+        return <BlogDetail path={currentPath} navigate={navigate} />;
       case 'contact':
         return <Contact />;
       case 'login':
@@ -196,7 +216,6 @@ const App: React.FC = () => {
         <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.15em] font-bold">
           <a href="/" onClick={(e) => navigate(e, 'home', '/')} className={`transition-all duration-200 relative py-1 ${currentView === 'home' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Home{currentView === 'home' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           <a href="/portfolio" onClick={(e) => navigate(e, 'portfolio', '/portfolio')} className={`transition-all duration-200 relative py-1 ${currentView === 'portfolio' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Portfolio{currentView === 'portfolio' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
-          <a href="/apps" onClick={(e) => navigate(e, 'apps', '/apps')} className={`transition-all duration-200 relative py-1 ${currentView === 'apps' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Apps{currentView === 'apps' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           <a href="/services" onClick={(e) => navigate(e, 'services', '/services')} className={`transition-all duration-200 relative py-1 ${currentView === 'services' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Services{currentView === 'services' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           <a href="/workshops" onClick={(e) => navigate(e, 'workshops', '/workshops')} className={`transition-all duration-200 relative py-1 ${['workshops', 'workshop-detail'].includes(currentView) ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>Workshops{['workshops', 'workshop-detail'].includes(currentView) && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
           <a href="/about" onClick={(e) => navigate(e, 'about', '/about')} className={`transition-all duration-200 relative py-1 ${currentView === 'about' ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'}`}>About{currentView === 'about' && <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#37352f]"></span>}</a>
@@ -208,7 +227,6 @@ const App: React.FC = () => {
 
         <div className="md:hidden flex gap-4 text-xs font-bold uppercase tracking-wider">
              <button onClick={(e) => navigate(e, 'portfolio', '/portfolio')} className={currentView === 'portfolio' ? 'text-black' : 'text-gray-400'}>Portfolio</button>
-             <button onClick={(e) => navigate(e, 'apps', '/apps')} className={currentView === 'apps' ? 'text-black' : 'text-gray-400'}>Apps</button>
              <button onClick={(e) => navigate(e, 'services', '/services')} className={currentView === 'services' ? 'text-black' : 'text-gray-400'}>Services</button>
              <button onClick={(e) => navigate(e, 'workshops', '/workshops')} className={['workshops', 'workshop-detail'].includes(currentView) ? 'text-black' : 'text-gray-400'}>Workshops</button>
              <button onClick={(e) => navigate(e, 'about', '/about')} className={currentView === 'about' ? 'text-black' : 'text-gray-400'}>About</button>
@@ -227,9 +245,11 @@ const App: React.FC = () => {
         </div>
         <div className="flex items-center gap-6 mt-4 md:mt-0">
             <div className="flex gap-6 font-medium font-sans uppercase tracking-[0.1em] text-[9px]">
-               <a href="https://twitter.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Twitter</a>
-               <a href="https://linkedin.com/in/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">LinkedIn</a>
-               <a href="https://scidart.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">SciDart Academy</a>
+               <a href="/blog" onClick={(e) => navigate(e, 'blog', '/blog')} className="hover:text-[#37352f] transition-colors">Blog</a>
+               <a href="https://instagram.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Instagram</a>
+               <a href="https://bsky.app/profile/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Bsky</a>
+               <a href="https://www.threads.net/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Threads</a>
+               <a href="https://www.youtube.com/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">YouTube</a>
             </div>
             <div className="h-4 w-[1px] bg-[#37352f]/10 hidden md:block"></div>
             <button onClick={(e) => navigate(e, 'login', '/login')} className="text-[#37352f]/40 hover:text-[#37352f] transition-colors" aria-label="Admin Login">

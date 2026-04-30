@@ -32,8 +32,32 @@
   </url>
   <url>
     <loc>https://rafeeque.com/about</loc>
-    <lastmod>2024-05-21</lastmod>
-    <changefreq>yearly</changefreq>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rafeeque.com/blog</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rafeeque.com/blog/prompt-engineering-for-scientific-storytelling</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rafeeque.com/blog/database-design-for-creative-web-products</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rafeeque.com/blog/webapp-development-for-science-educators</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>

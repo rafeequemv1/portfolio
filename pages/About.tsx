@@ -4,6 +4,15 @@ import React from 'react';
 const experience = [
   {
     role: 'Founder',
+    company: 'Labcanvas',
+    period: 'Nov 2024 - Present',
+    duration: '1 yr 6 mos',
+    location: 'Kerala, India · On-site',
+    website: 'https://labcanvas.io/',
+    description: 'Building Labcanvas, a focused platform for scientific creators to design, present, and publish visual science work.'
+  },
+  {
+    role: 'Founder',
     company: 'Scidart Academy',
     period: 'Jul 2021 - Present',
     location: 'India · On-site',
@@ -40,6 +49,15 @@ const education = [
   },
 ];
 
+const skills = [
+  'Prompt Engineering',
+  'Database Design (PostgreSQL / Supabase)',
+  'Web App Development (React, TypeScript, Vite)',
+  'Scientific Illustration',
+  '3D Molecular Visualization',
+  'Visual Storytelling for Research',
+];
+
 const About: React.FC = () => {
   return (
     <div className="w-full max-w-6xl mx-auto p-8 md:px-12 lg:px-24 py-12 md:py-20 animate-fade-in-up">
@@ -52,7 +70,7 @@ const About: React.FC = () => {
           </div>
           <h1 className="text-3xl font-serif text-center lg:text-left text-[#37352f] tracking-tight">Rafeeque Mavoor</h1>
           <p className="text-md text-center lg:text-left text-[#37352f]/60 mt-1">Lead Scientific Illustrator & Founder of SciDart Academy</p>
-          <p className="text-xs text-center lg:text-left text-[#37352f]/40 mt-3 font-medium uppercase tracking-widest">Oxford, United Kingdom</p>
+          <p className="text-xs text-center lg:text-left text-[#37352f]/40 mt-3 font-medium uppercase tracking-widest">Mavoor, Kerala, India</p>
           
           <div className="flex justify-center lg:justify-start gap-4 mt-6">
             <a href="https://twitter.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="text-[#37352f]/40 hover:text-[#37352f] transition-colors" aria-label="Twitter">
@@ -85,9 +103,33 @@ const About: React.FC = () => {
                     <p className="text-xs text-[#37352f]/50 font-medium uppercase tracking-widest mt-1">
                       {item.period} {item.duration && `· ${item.duration}`}
                     </p>
+                    {item.location && (
+                      <p className="text-xs text-[#37352f]/45 font-medium mt-1">{item.location}</p>
+                    )}
+                    {item.website && (
+                      <a
+                        href={item.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-[#37352f]/70 hover:text-[#37352f] underline underline-offset-2 mt-1 inline-block"
+                      >
+                        {item.website}
+                      </a>
+                    )}
                     <p className="text-sm font-sans text-[#37352f]/70 leading-relaxed mt-2">{item.description}</p>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-serif text-[#37352f] mb-6 border-b border-[#37352f]/10 pb-2">Skills</h2>
+            <div className="flex flex-wrap gap-3">
+              {skills.map((skill) => (
+                <span key={skill} className="text-xs md:text-sm px-4 py-2 rounded-full border border-[#37352f]/15 bg-white/70 text-[#37352f]/80">
+                  {skill}
+                </span>
               ))}
             </div>
           </section>
