@@ -802,7 +802,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           onClick={closeModal}
         >
           <div
-            className="flex max-h-[min(94vh,980px)] w-full max-w-[min(96vw,1500px)] flex-col overflow-hidden rounded-xl bg-[#fcfaf8] shadow-2xl md:max-h-[94vh] md:flex-row"
+            className="flex max-h-[min(92vh,880px)] w-full max-w-[min(92vw,1040px)] flex-col overflow-hidden rounded-xl bg-[#fcfaf8] shadow-2xl md:max-h-[92vh] md:flex-row"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative flex min-h-[min(44vh,320px)] min-w-0 flex-1 flex-col bg-[#ebe8e4] md:min-h-0">
@@ -838,9 +838,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                     >
                       {src ? (
                         <img
-                          src={figureImageDisplayUrl(src, { width: 2800, quality: 88 })}
+                          src={figureImageDisplayUrl(src, { width: 2000, quality: 85 })}
                           alt=""
-                          className="max-h-[min(56vh,620px)] w-auto max-w-full object-contain md:max-h-[min(90vh,940px)]"
+                          className="max-h-[min(56vh,620px)] w-auto max-w-full object-contain md:max-h-[min(88vh,820px)]"
                           decoding="async"
                           fetchPriority="high"
                           referrerPolicy="no-referrer"
