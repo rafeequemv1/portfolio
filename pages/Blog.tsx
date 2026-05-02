@@ -57,7 +57,7 @@ const Blog: React.FC<BlogProps> = ({ navigate }) => {
         <p className="text-xs uppercase tracking-[0.2em] text-[#37352f]/50 font-semibold mb-4">Journal</p>
         <h1 className="text-4xl md:text-5xl font-serif text-[#37352f] tracking-tight mb-5">Thoughts on design, code, and scientific communication.</h1>
         <p className="text-[#37352f]/70 leading-relaxed">
-          A minimal reading space inspired by modern editorial platforms, covering prompt engineering, databases, and web app development.
+          Notes on scientific illustration, workshops, and tools for researchers—from Blender pipelines to open chemistry software like MolDraw.
         </p>
       </header>
 

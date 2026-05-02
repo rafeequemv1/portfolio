@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import type { View } from '../types';
+import { ROUTES } from '../utils/routes';
 
 interface SiteHeaderProps {
   session: Session | null;
@@ -10,12 +11,22 @@ interface SiteHeaderProps {
 }
 
 const navItems: { label: string; view: View; path: string; match: (v: View) => boolean }[] = [
-  { label: 'Home', view: 'home', path: '/', match: (v) => v === 'home' },
-  { label: 'Portfolio', view: 'portfolio', path: '/portfolio', match: (v) => v === 'portfolio' },
-  { label: 'Services', view: 'services', path: '/services', match: (v) => v === 'services' },
-  { label: 'Workshops', view: 'workshops', path: '/workshops', match: (v) => v === 'workshops' || v === 'workshop-detail' },
-  { label: 'About', view: 'about', path: '/about', match: (v) => v === 'about' },
-  { label: 'Contact', view: 'contact', path: '/contact', match: (v) => v === 'contact' },
+  { label: 'Home', view: 'home', path: ROUTES.home, match: (v) => v === 'home' },
+  {
+    label: 'Portfolio',
+    view: 'portfolio',
+    path: ROUTES.portfolioCovers,
+    match: (v) => v === 'portfolio' || v === 'apps',
+  },
+  { label: 'Services', view: 'services', path: ROUTES.services, match: (v) => v === 'services' },
+  {
+    label: 'Workshops',
+    view: 'workshops',
+    path: ROUTES.workshops,
+    match: (v) => v === 'workshops' || v === 'workshop-detail',
+  },
+  { label: 'About', view: 'about', path: ROUTES.about, match: (v) => v === 'about' },
+  { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];
 
 const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate }) => {
@@ -54,8 +65,8 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
     <>
       <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#e0e0e0] bg-[#fcfaf8]/95 px-4 backdrop-blur-md supports-[padding:max(0px)]:pl-[max(12px,env(safe-area-inset-left))] supports-[padding:max(0px)]:pr-[max(12px,env(safe-area-inset-right))] sm:h-20 sm:px-6 md:justify-center md:gap-16 lg:gap-24">
         <a
-          href="/"
-          onClick={(e) => onNav(e, 'home', '/')}
+          href={ROUTES.home}
+          onClick={(e) => onNav(e, 'home', ROUTES.home)}
           className="group flex min-w-0 items-center gap-2.5 touch-manipulation sm:gap-3"
         >
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#37352f]/5 text-lg transition-colors group-hover:bg-[#37352f]/10">
@@ -82,8 +93,8 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
           ))}
           {session ? (
             <a
-              href="/dashboard"
-              onClick={(e) => onNav(e, 'dashboard', '/dashboard')}
+              href={ROUTES.dashboard}
+              onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
               className={`relative rounded-md border px-3 py-2 transition-colors ${
                 currentView === 'dashboard'
                   ? 'border-[#37352f] bg-[#37352f] text-white'
@@ -147,8 +158,8 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
               ))}
               {session ? (
                 <a
-                  href="/dashboard"
-                  onClick={(e) => onNav(e, 'dashboard', '/dashboard')}
+                  href={ROUTES.dashboard}
+                  onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
                   className={`mt-2 rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
                     currentView === 'dashboard' ? 'bg-[#37352f] text-white' : 'text-[#37352f] hover:bg-[#37352f]/5'
                   }`}
@@ -157,8 +168,8 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                 </a>
               ) : null}
               <a
-                href="/blog"
-                onClick={(e) => onNav(e, 'blog', '/blog')}
+                href={ROUTES.blog}
+                onClick={(e) => onNav(e, 'blog', ROUTES.blog)}
                 className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
                   currentView === 'blog' || currentView === 'blog-detail'
                     ? 'bg-[#37352f]/10 text-[#37352f]'

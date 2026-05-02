@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react';
 
 export interface Project {
   id: string;
@@ -24,6 +25,9 @@ export interface Message {
   content: string;
 }
 
+/** Used for /workshops filters (Supabase rows can omit — we infer from title). */
+export type WorkshopStrand = 'illustration' | 'outreach' | 'school' | 'ai';
+
 export interface Workshop {
   id: string;
   title: string;
@@ -38,6 +42,8 @@ export interface Workshop {
   registration_link?: string;
   cover_image?: string;
   gallery_images?: string[]; // Array of URLs
+  /** Optional; when missing, `inferWorkshopStrand(title)` is used for filters. */
+  strand?: WorkshopStrand;
   testimonials?: { quote: string; author: string; role: string; }[];
   created_at?: string;
 }
@@ -85,6 +91,13 @@ export interface LabWebsite {
 }
 
 export type View = 'home' | 'apps' | 'services' | 'workshops' | 'workshop-detail' | 'portfolio' | 'about' | 'blog' | 'blog-detail' | 'contact' | 'login' | 'dashboard';
+
+/** SPA navigation handler (defined in `.ts` so union element types are not parsed as JSX). */
+export type AppNavigate = (
+  e: MouseEvent<HTMLAnchorElement | HTMLButtonElement>,
+  view: View,
+  path: string
+) => void;
 
 export interface JournalCover {
   id: string;

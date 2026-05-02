@@ -2,8 +2,20 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../supabase/client';
 import { Workshop, View } from '../types';
 import { demoWorkshops } from '../data/demo';
+import { findSiteWorkshop } from '../data/siteWorkshops';
 import { formatWorkshopDate } from '../utils/formatWorkshopDate';
-import { workshopImageList } from '../utils/workshopImages';
+import { workshopDetailGalleryUrls, workshopCardCoverUrl } from '../utils/workshopImages';
+import {
+  applyPageSeo,
+  clearDynamicJsonLd,
+  workshopDetailJsonLd,
+  workshopDetailKeywords,
+} from '../utils/seo';
+import { ROUTES, workshopDetailHref, workshopIdFromPath } from '../utils/routes';
+
+function stripHtmlToPlain(text: string): string {
+  return text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
 interface WorkshopDetailProps {
   path: string;
@@ -16,7 +28,7 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const id = path.split('/').pop();
+  const id = workshopIdFromPath(path);
 
   useEffect(() => {
     if (!id) {
@@ -27,36 +39,39 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
 
     const fetchWorkshopDetails = async () => {
       setLoading(true);
+      setError(null);
       if (id.startsWith('demo-')) {
         const demoData = demoWorkshops.find((w) => w.id === id);
         if (demoData) {
-          setWorkshop({
-            ...demoData,
-            gallery_images: workshopImageList(demoData),
-          });
+          setWorkshop({ ...demoData });
         } else {
           setError('Demo workshop not found.');
         }
       } else {
-        const { data, error: fetchError } = await supabase.from('workshops').select('*').eq('id', id).single();
-
-        if (fetchError) {
-          setError(fetchError.message);
-          console.error('Error fetching workshop:', fetchError);
+        const siteData = findSiteWorkshop(id);
+        if (siteData) {
+          setWorkshop({ ...siteData });
         } else {
-          const row = data as Record<string, unknown>;
-          const urls = Array.isArray(row.image_urls)
-            ? (row.image_urls as string[]).filter((u) => typeof u === 'string' && u.trim())
-            : [];
-          setWorkshop({
-            ...(data as Workshop),
-            cover_image: urls[0] || (data as { cover_image?: string }).cover_image,
-            institute:
-              (data as { location?: string }).location ||
-              (data as { institute?: string }).institute ||
-              '',
-            gallery_images: urls.length ? urls : (data as { gallery_images?: string[] }).gallery_images || [],
-          });
+          const { data, error: fetchError } = await supabase.from('workshops').select('*').eq('id', id).single();
+
+          if (fetchError) {
+            setError(fetchError.message);
+            console.error('Error fetching workshop:', fetchError);
+          } else {
+            const row = data as Record<string, unknown>;
+            const urls = Array.isArray(row.image_urls)
+              ? (row.image_urls as string[]).filter((u) => typeof u === 'string' && u.trim())
+              : [];
+            setWorkshop({
+              ...(data as Workshop),
+              cover_image: urls[0] || (data as { cover_image?: string }).cover_image,
+              institute:
+                (data as { location?: string }).location ||
+                (data as { institute?: string }).institute ||
+                '',
+              gallery_images: urls.length ? urls : (data as { gallery_images?: string[] }).gallery_images || [],
+            });
+          }
         }
       }
       setLoading(false);
@@ -66,12 +81,33 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
   }, [id]);
 
   useEffect(() => {
-    if (workshop?.title) {
-      document.title = `${workshop.title} | Rafeeque Mavoor`;
-    }
-  }, [workshop]);
+    if (!workshop || workshop.id !== id) return;
 
-  const gallery = workshop ? workshopImageList(workshop) : [];
+    const canonicalPath = workshopDetailHref(workshop.id);
+    const raw = workshop.description?.trim() ? stripHtmlToPlain(workshop.description) : '';
+    const desc =
+      raw.length > 158
+        ? `${raw.slice(0, 155)}…`
+        : raw ||
+          `${workshop.title} — scientific illustration and science communication workshop with Rafeeque Mavoor.`;
+
+    const title = `${workshop.title} | Workshop | Rafeeque Mavoor`;
+    const cover = workshopCardCoverUrl(workshop);
+
+    applyPageSeo({
+      title,
+      description: desc,
+      canonicalPath,
+      keywords: workshopDetailKeywords(workshop),
+      ogImage: cover || undefined,
+      ogType: 'event',
+      jsonLd: workshopDetailJsonLd(workshop, canonicalPath),
+    });
+
+    return () => clearDynamicJsonLd();
+  }, [workshop, path, id]);
+
+  const gallery = workshop ? workshopDetailGalleryUrls(workshop) : [];
   const scrollToIndex = useCallback((i: number) => {
     const el = scrollRef.current;
     if (!el) return;
@@ -111,8 +147,8 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
     <article className="animate-fade-in-up pb-24 pt-8">
       <div className="mx-auto mb-10 max-w-[680px] px-5 sm:px-6">
         <a
-          href="/workshops"
-          onClick={(e) => navigate(e, 'workshops', '/workshops')}
+          href={ROUTES.workshops}
+          onClick={(e) => navigate(e, 'workshops', ROUTES.workshops)}
           className="inline-flex items-center gap-1.5 text-sm text-[#37352f]/50 transition-colors hover:text-[#37352f]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
@@ -127,48 +163,58 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
       </div>
 
       {gallery.length > 0 && (
-        <div className="mb-12 w-full">
-          <div
-            ref={scrollRef}
-            onScroll={onCarouselScroll}
-            className="flex touch-pan-x snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {gallery.map((src, i) => (
+        <div className="mb-8 w-full sm:mb-10">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-3 sm:gap-2.5 sm:px-6 md:px-10">
+            <div className="w-full overflow-x-clip sm:overflow-visible">
               <div
-                key={`${src}-${i}`}
-                className="min-w-full shrink-0 snap-center snap-always px-4 sm:px-8 md:px-12"
+                ref={scrollRef}
+                onScroll={onCarouselScroll}
+                className="flex touch-pan-x snap-x snap-mandatory overflow-x-auto scroll-smooth [-webkit-overflow-scrolling:touch] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                <div className="mx-auto max-w-4xl">
-                  <img
-                    src={src}
-                    alt={i === 0 ? workshop.title : `${workshop.title} — photo ${i + 1}`}
-                    className="mx-auto max-h-[min(72vh,640px)] w-full rounded-sm object-contain"
-                  />
+                {gallery.map((src, i) => (
+                  <div key={`${src}-${i}`} className="w-full flex-[0_0_100%] snap-center snap-always">
+                    <div className="mx-auto flex max-h-[min(58dvh,520px)] min-h-0 w-full max-w-5xl items-center justify-center rounded-2xl bg-[#ebe8e3] px-2 py-2 sm:max-h-[min(68dvh,600px)] sm:px-3 sm:py-3 md:max-h-[min(72vh,640px)]">
+                      <img
+                        src={src}
+                        alt={i === 0 ? workshop.title : `${workshop.title} — photo ${i + 1}`}
+                        className="mx-auto max-h-[min(52dvh,480px)] w-full max-w-full object-contain object-center sm:max-h-[min(62dvh,560px)] md:max-h-[min(68vh,600px)]"
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {gallery.length > 1 && (
+              <div className="rounded-2xl border border-[#37352f]/10 bg-white/90 p-2 shadow-sm backdrop-blur-sm sm:p-3">
+                <p className="mb-1.5 px-1 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#37352f]/40 sm:mb-2">
+                  Photos ({gallery.length})
+                </p>
+                <div className="flex snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain px-1 pb-0.5 [-webkit-overflow-scrolling:touch] sm:flex-wrap sm:justify-center sm:overflow-x-visible">
+                  {gallery.map((src, i) => (
+                    <button
+                      key={`thumb-${src}-${i}`}
+                      type="button"
+                      onClick={() => scrollToIndex(i)}
+                      className={`relative shrink-0 snap-center overflow-hidden rounded-xl border-2 transition-all touch-manipulation ${
+                        i === activeIndex
+                          ? 'border-[#37352f] shadow-md ring-2 ring-[#37352f]/15 scale-[1.02]'
+                          : 'border-[#37352f]/10 opacity-80 hover:border-[#37352f]/25 hover:opacity-100 active:scale-[0.98]'
+                      }`}
+                      aria-label={`Show image ${i + 1}`}
+                      aria-current={i === activeIndex ? 'true' : undefined}
+                    >
+                      <span className="block h-[3.25rem] w-[4.75rem] sm:h-16 sm:w-[5.5rem] md:h-[4.5rem] md:w-24">
+                        <img src={src} alt="" className="h-full w-full object-cover" />
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
-
-          {gallery.length > 1 && (
-            <div className="mx-auto mt-5 flex max-w-4xl justify-center gap-2 overflow-x-auto px-4 pb-1">
-              {gallery.map((src, i) => (
-                <button
-                  key={`thumb-${src}-${i}`}
-                  type="button"
-                  onClick={() => scrollToIndex(i)}
-                  className={`relative shrink-0 overflow-hidden rounded-md border-2 transition-all ${
-                    i === activeIndex
-                      ? 'border-[#37352f] shadow-sm ring-1 ring-[#37352f]/20'
-                      : 'border-transparent opacity-55 hover:opacity-90'
-                  }`}
-                  aria-label={`Show image ${i + 1}`}
-                  aria-current={i === activeIndex ? 'true' : undefined}
-                >
-                  <img src={src} alt="" className="h-14 w-[4.5rem] object-cover sm:h-16 sm:w-24" />
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       )}
 

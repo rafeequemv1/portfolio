@@ -1,7 +1,8 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
-import { Brand, JournalCover } from '../types';
+import { Brand, JournalCover, View } from '../types';
+import { ROUTES } from '../utils/routes';
 
 const shuffleArray = <T,>(items: T[]): T[] => {
   const arr = [...items];
@@ -12,7 +13,11 @@ const shuffleArray = <T,>(items: T[]): T[] => {
   return arr;
 };
 
-const Home: React.FC = () => {
+interface HomeProps {
+  navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ navigate }) => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
 
@@ -119,7 +124,13 @@ const Home: React.FC = () => {
 
       <div className="mt-10 mb-8">
         <a
-          href="/portfolio"
+          href={ROUTES.portfolioCovers}
+          onClick={(e) => {
+            if (navigate) {
+              e.preventDefault();
+              navigate(e, 'portfolio', ROUTES.portfolioCovers);
+            }
+          }}
           className="inline-flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#37352f]/70 hover:text-[#37352f] transition-colors"
         >
           View All Covers

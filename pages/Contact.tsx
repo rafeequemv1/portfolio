@@ -1,6 +1,7 @@
 import React from 'react';
 import { AtSign, Facebook, Instagram, Linkedin, Mail, MessageCircle, Phone, Twitter } from 'lucide-react';
 import { View } from '../types';
+import { ROUTES } from '../utils/routes';
 
 interface ContactProps {
   navigate: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
@@ -30,8 +31,8 @@ const Contact: React.FC<ContactProps> = ({ navigate }) => {
             <p className="text-center text-sm leading-relaxed text-[#37352f]/70">
               Project requests and workshop bookings now live on the{' '}
               <a
-                href="/services#request-illustration"
-                onClick={(e) => navigate(e, 'services', '/services#request-illustration')}
+                href={`${ROUTES.services}#request-illustration`}
+                onClick={(e) => navigate(e, 'services', `${ROUTES.services}#request-illustration`)}
                 className="font-semibold text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 hover:decoration-[#37352f]"
               >
                 Services
@@ -39,8 +40,8 @@ const Contact: React.FC<ContactProps> = ({ navigate }) => {
               page so everything stays in one place.
             </p>
             <a
-              href="/services#request-illustration"
-              onClick={(e) => navigate(e, 'services', '/services#request-illustration')}
+              href={`${ROUTES.services}#request-illustration`}
+              onClick={(e) => navigate(e, 'services', `${ROUTES.services}#request-illustration`)}
               className="mt-6 flex w-full items-center justify-center rounded-lg bg-[#37352f] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-black"
             >
               Go to Services — requests

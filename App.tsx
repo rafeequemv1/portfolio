@@ -15,30 +15,21 @@ import Dashboard from './pages/Dashboard';
 import { supabase } from './supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { View } from './types';
-
-const pathMap: { [key: string]: View } = {
-  '/': 'home',
-  '/services': 'services',
-  '/apps': 'apps',
-  '/workshops': 'workshops',
-  '/portfolio': 'portfolio',
-  '/about': 'about',
-  '/blog': 'blog',
-  '/contact': 'contact',
-  '/login': 'login',
-  '/dashboard': 'dashboard',
-};
-
-const getViewFromPath = (path: string): View => {
-  const pathOnly = path.split('#')[0] || path;
-  if (pathOnly.startsWith('/workshops/') && pathOnly.length > '/workshops/'.length) {
-    return 'workshop-detail';
-  }
-  if (pathOnly.startsWith('/blog/') && pathOnly.length > '/blog/'.length) {
-    return 'blog-detail';
-  }
-  return pathMap[pathOnly] || 'home';
-};
+import {
+  applyPageSeo,
+  clearDynamicJsonLd,
+  workshopsIndexJsonLd,
+  WORKSHOP_INDEX_KEYWORDS,
+  WORKSHOP_INDEX_DESC,
+} from './utils/seo';
+import {
+  ROUTES,
+  canonicalPathnameIfLegacy,
+  getViewFromPath,
+  pathnameOnly,
+  portfolioTabFromPathname,
+  PORTFOLIO_SEO,
+} from './utils/routes';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(
@@ -46,6 +37,18 @@ const App: React.FC = () => {
   );
   const [currentPath, setCurrentPath] = useState(window.location.pathname + window.location.hash);
   const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    const full = window.location.pathname + window.location.hash;
+    const pathOnly = pathnameOnly(full);
+    const canon = canonicalPathnameIfLegacy(pathOnly);
+    if (canon && canon !== pathOnly) {
+      const hash = full.includes('#') ? full.slice(full.indexOf('#')) : '';
+      window.history.replaceState({}, '', canon + hash);
+      setCurrentPath(canon + hash);
+      setCurrentView(getViewFromPath(canon + hash));
+    }
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -72,8 +75,17 @@ const App: React.FC = () => {
   useEffect(() => {
     const onPopState = () => {
       const full = window.location.pathname + window.location.hash;
-      setCurrentView(getViewFromPath(full));
-      setCurrentPath(full);
+      const pathOnly = pathnameOnly(full);
+      const canon = canonicalPathnameIfLegacy(pathOnly);
+      if (canon && canon !== pathOnly) {
+        const hash = full.includes('#') ? full.slice(full.indexOf('#')) : '';
+        window.history.replaceState({}, '', canon + hash);
+        setCurrentView(getViewFromPath(canon + hash));
+        setCurrentPath(canon + hash);
+      } else {
+        setCurrentView(getViewFromPath(full));
+        setCurrentPath(full);
+      }
       const hash = window.location.hash.slice(1);
       requestAnimationFrame(() => {
         if (hash) {
@@ -90,6 +102,14 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (currentView === 'workshop-detail' || currentView === 'blog-detail') {
+      return;
+    }
+
+    if (currentView !== 'workshops') {
+      clearDynamicJsonLd();
+    }
+
     let title = '';
     let description = '';
     const baseUrl = 'https://rafeeque.com';
@@ -104,55 +124,59 @@ const App: React.FC = () => {
       case 'services':
         title = 'Work With Me | Rafeeque Mavoor | Scientific Illustration Services';
         description = 'Offering professional services in journal cover art, figures & infographics, lab websites, and on-campus workshops for scientists and researchers.';
-        path = '/services';
+        path = ROUTES.services;
         break;
-      case 'apps':
-        title = 'Apps & Experiments | Rafeeque Mavoor';
-        description = 'A digital garden of tools and experiments by Rafeeque Mavoor, including OpenScienceArt, OceanOfPapers, and other scientific software.';
-        path = '/apps';
+      case 'apps': {
+        const appsSeo = PORTFOLIO_SEO['websites-apps'];
+        title = appsSeo.title;
+        description = appsSeo.description;
+        path = ROUTES.apps;
         break;
+      }
       case 'workshops':
-        title = 'Workshops & Training | Rafeeque Mavoor';
-        description = 'Explore past on-campus and online workshops on scientific illustration and visual communication led by Rafeeque Mavoor.';
-        path = '/workshops';
+        applyPageSeo({
+          title: 'Workshops & Training | Scientific Illustration | Rafeeque Mavoor',
+          description: WORKSHOP_INDEX_DESC,
+          canonicalPath: ROUTES.workshops,
+          keywords: WORKSHOP_INDEX_KEYWORDS,
+          ogImage: '/og-image.jpg',
+          ogType: 'website',
+          jsonLd: workshopsIndexJsonLd(),
+        });
+        return;
+      case 'portfolio': {
+        const tab = portfolioTabFromPathname(pathnameOnly(currentPath));
+        const seo = PORTFOLIO_SEO[tab];
+        title = seo.title;
+        description = seo.description;
+        path = pathnameOnly(currentPath);
         break;
-      case 'workshop-detail':
-        break;
-      case 'portfolio':
-        title = 'Portfolio | Rafeeque Mavoor | Journal Cover Art';
-        description = 'A curated selection of journal cover art and scientific illustrations for leading publications like Nature, Science, and Cell.';
-        path = '/portfolio';
-        break;
+      }
       case 'about':
         title = 'About Rafeeque Mavoor | Experience & Education';
         description = "Learn about the professional journey of Rafeeque Mavoor, from a Master's in Chemistry to a leading scientific illustrator and founder of SciDart Academy.";
-        path = '/about';
+        path = ROUTES.about;
         break;
       case 'blog':
-        title = 'Blog | Rafeeque Mavoor | Prompt Engineering, Database, Web Apps';
-        description = 'Read insights by Rafeeque Mavoor on prompt engineering, database design, and web app development for science and education.';
-        path = '/blog';
+        title = 'Blog | Rafeeque Mavoor | Scientific Illustration, Blender, MolDraw';
+        description =
+          'Articles on scientific illustration, Blender workshops, and open chemistry tools such as MolDraw—a free alternative to ChemDraw for structures and 3D visualization.';
+        path = ROUTES.blog;
         break;
-      case 'blog-detail': {
-        title = 'Blog | Rafeeque Mavoor';
-        description = 'Read insights on scientific communication, prompt engineering, databases, and web app development.';
-        path = currentPath.split('#')[0];
-        break;
-      }
       case 'contact':
         title = 'Contact Rafeeque Mavoor | Scientific Illustration Projects';
         description = 'Get in touch with Rafeeque Mavoor for collaborations, commissions, or mentorship in scientific illustration and visualization.';
-        path = '/contact';
+        path = ROUTES.contact;
         break;
       case 'login':
         title = 'Admin Login | Rafeeque Mavoor';
         description = 'Admin login portal.';
-        path = '/login';
+        path = ROUTES.login;
         break;
       case 'dashboard':
         title = 'Admin Dashboard | Rafeeque Mavoor';
         description = 'Admin dashboard for managing content.';
-        path = '/dashboard';
+        path = ROUTES.dashboard;
         break;
     }
     
@@ -199,17 +223,17 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (currentView) {
       case 'home':
-        return <Home />;
+        return <Home navigate={navigate} />;
       case 'services':
         return <Services />;
       case 'apps':
-        return <Portfolio initialTab="apps" navigate={navigate} />;
+        return <Portfolio path={currentPath} navigate={navigate} />;
       case 'workshops':
         return <Workshops navigate={navigate} />;
       case 'workshop-detail':
         return <WorkshopDetail path={currentPath} navigate={navigate} />;
       case 'portfolio':
-        return <Portfolio navigate={navigate} />;
+        return <Portfolio path={currentPath} navigate={navigate} />;
       case 'about':
         return <About />;
       case 'blog':
@@ -223,7 +247,7 @@ const App: React.FC = () => {
       case 'dashboard':
         return session ? <Dashboard session={session} navigate={navigate} /> : <Login session={session} navigate={navigate} />;
       default:
-        return <Home />;
+        return <Home navigate={navigate} />;
     }
   };
 
@@ -239,9 +263,18 @@ const App: React.FC = () => {
         <div className="flex items-center gap-2 text-center font-serif italic md:text-left">
           <span>© {new Date().getFullYear()} Rafeeque Mavoor Studio.</span>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 md:mt-0 md:justify-end md:gap-6">
+        <div className="flex flex-col items-center gap-4 md:items-end">
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-normal text-[#37352f]/70" aria-label="Site sections">
+              <a href={ROUTES.workshops} onClick={(e) => navigate(e, 'workshops', ROUTES.workshops)} className="min-h-[44px] inline-flex items-center rounded-md px-1 underline-offset-4 hover:text-[#37352f] hover:underline">
+                Workshops
+              </a>
+              <a href={ROUTES.blog} onClick={(e) => navigate(e, 'blog', ROUTES.blog)} className="min-h-[44px] inline-flex items-center rounded-md px-1 underline-offset-4 hover:text-[#37352f] hover:underline">
+                Blog
+              </a>
+            </nav>
+            <div className="flex flex-wrap items-center justify-center gap-4 md:justify-end md:gap-6">
             <div className="flex items-center gap-3 text-[#37352f]/45 sm:gap-5 hover:text-[#37352f]/70">
-               <a href="/blog" onClick={(e) => navigate(e, 'blog', '/blog')} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Blog" title="Blog">
+               <a href={ROUTES.blog} onClick={(e) => navigate(e, 'blog', ROUTES.blog)} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Blog" title="Blog">
                  <BookOpen className="h-5 w-5" strokeWidth={1.75} />
                </a>
                <a href="https://twitter.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Twitter / X" title="Twitter">
@@ -266,6 +299,7 @@ const App: React.FC = () => {
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
             </button>
+            </div>
         </div>
       </footer>
     </div>
