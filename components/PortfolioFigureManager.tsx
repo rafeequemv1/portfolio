@@ -14,6 +14,34 @@ const emptyForm = () => ({
   display_order: 0,
 });
 
+const MAX_FIGURE_PIXEL = 3200;
+
+/** Raster images → WebP in-browser before upload (smaller, faster portfolio loads). SVG unchanged. */
+async function fileToWebpBlob(file: File): Promise<Blob> {
+  if (file.type === 'image/svg+xml') return file;
+  const bmp = await createImageBitmap(file);
+  let w = bmp.width;
+  let h = bmp.height;
+  if (w > MAX_FIGURE_PIXEL || h > MAX_FIGURE_PIXEL) {
+    const s = Math.min(MAX_FIGURE_PIXEL / w, MAX_FIGURE_PIXEL / h);
+    w = Math.round(w * s);
+    h = Math.round(h * s);
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    bmp.close();
+    throw new Error('Canvas not available');
+  }
+  ctx.drawImage(bmp, 0, 0, bmp.width, bmp.height, 0, 0, w, h);
+  bmp.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9));
+  if (!blob) throw new Error('WebP encoding failed');
+  return blob;
+}
+
 const PortfolioFigureManager: React.FC = () => {
   const [rows, setRows] = useState<PortfolioFigure[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,15 +101,27 @@ const PortfolioFigureManager: React.FC = () => {
     if (!files?.length) return;
     setUploading(true);
     for (const file of Array.from(files)) {
-      const ext = file.name.split('.').pop() || 'png';
-      const path = `figures/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from('portfolio-figures').upload(path, file);
-      if (error) {
-        alert(error.message);
+      try {
+        let body: Blob = file;
+        let ext = (file.name.split('.').pop() || 'png').toLowerCase();
+        if (file.type.startsWith('image/') && file.type !== 'image/svg+xml') {
+          body = await fileToWebpBlob(file);
+          ext = 'webp';
+        }
+        const path = `figures/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await supabase.storage.from('portfolio-figures').upload(path, body, {
+          contentType: ext === 'webp' ? 'image/webp' : file.type || undefined,
+        });
+        if (error) {
+          alert(error.message);
+          break;
+        }
+        const { data } = supabase.storage.from('portfolio-figures').getPublicUrl(path);
+        setForm((prev) => ({ ...prev, image_urls: [...prev.image_urls, data.publicUrl] }));
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Could not process image');
         break;
       }
-      const { data } = supabase.storage.from('portfolio-figures').getPublicUrl(path);
-      setForm((prev) => ({ ...prev, image_urls: [...prev.image_urls, data.publicUrl] }));
     }
     setUploading(false);
     e.target.value = '';

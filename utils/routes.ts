@@ -19,12 +19,14 @@ export const ROUTES = {
   dashboard: '/dashboard',
 } as const;
 
-export type PortfolioTab = 'covers' | 'figures' | 'graphical-abstracts' | 'websites-apps' | 'videos';
+export type PortfolioTab = 'covers' | 'figures' | 'websites-apps' | 'videos';
+
+/** Sub-filter when the active tab is `figures` (paper figures vs graphical abstracts). */
+export type PortfolioFiguresGalleryFilter = 'all' | 'figures' | 'abstracts';
 
 export const PORTFOLIO_TAB_PATH: Record<PortfolioTab, string> = {
   covers: ROUTES.portfolioCovers,
   figures: ROUTES.portfolioFigures,
-  'graphical-abstracts': ROUTES.portfolioAbstracts,
   'websites-apps': ROUTES.portfolioWebApps,
   videos: ROUTES.portfolioVideos,
 };
@@ -47,6 +49,29 @@ export function pathnameOnly(fullPath: string): string {
   const raw = (fullPath.split('#')[0]?.split('?')[0] || '/').trim() || '/';
   if (raw.length > 1 && raw.endsWith('/')) return raw.slice(0, -1);
   return raw;
+}
+
+/** Pathname plus `?query` (no hash), for canonical URLs and gallery filters. */
+export function pathnameWithSearch(fullPath: string): string {
+  const noHash = fullPath.split('#')[0] || '';
+  const q = noHash.indexOf('?');
+  const pathClean = pathnameOnly(noHash);
+  if (q === -1) return pathClean;
+  return `${pathClean}${noHash.slice(q)}`;
+}
+
+/** Gallery filter from URL (figures tab includes legacy graphical-abstracts path). */
+export function portfolioFiguresGalleryFromPath(fullPath: string): PortfolioFiguresGalleryFilter {
+  const pathname = pathnameOnly(fullPath);
+  if (pathname === ROUTES.portfolioAbstracts) return 'abstracts';
+  if (pathname !== ROUTES.portfolioFigures) return 'all';
+  const noHash = fullPath.split('#')[0] || '';
+  const q = noHash.indexOf('?');
+  if (q === -1) return 'all';
+  const view = new URLSearchParams(noHash.slice(q + 1)).get('view');
+  if (view === 'figures' || view === 'paper') return 'figures';
+  if (view === 'abstracts') return 'abstracts';
+  return 'all';
 }
 
 export function workshopDetailPrefix(): string {
@@ -89,6 +114,7 @@ export function isPortfolioPath(pathname: string): boolean {
 export function portfolioTabFromPathname(pathname: string): PortfolioTab {
   if (isAppsPath(pathname)) return 'websites-apps';
   if (pathname === '/portfolio') return 'covers';
+  if (pathname === ROUTES.portfolioAbstracts) return 'figures';
   const tab = PATH_TO_PORTFOLIO_TAB.get(pathname);
   return tab ?? 'covers';
 }
@@ -107,14 +133,9 @@ export const PORTFOLIO_SEO: Record<
       'Published journal cover art and scientific illustration for leading journals—editorial-quality visuals for molecular biology, chemistry, and biomedicine.',
   },
   figures: {
-    title: 'Research Figures & Infographics | Rafeeque Mavoor Portfolio',
+    title: 'Research Figures, Infographics & Graphical Abstracts | Rafeeque Mavoor',
     description:
-      'Peer-reviewed paper figures, multi-panel layouts, and infographics crafted for clarity in top-tier scientific publications.',
-  },
-  'graphical-abstracts': {
-    title: 'Graphical Abstracts Portfolio | Rafeeque Mavoor',
-    description:
-      'Graphical abstracts and summary visuals that communicate complex studies at a glance for journals and conferences.',
+      'Peer-reviewed paper figures, multi-panel layouts, infographics, and graphical abstracts for journals and conferences—clear visuals for publications.',
   },
   'websites-apps': {
     title: 'Lab Websites & Science Web Apps | Rafeeque Mavoor',

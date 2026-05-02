@@ -27,26 +27,29 @@ import {
   canonicalPathnameIfLegacy,
   getViewFromPath,
   pathnameOnly,
+  pathnameWithSearch,
   portfolioTabFromPathname,
   PORTFOLIO_SEO,
 } from './utils/routes';
 
+function browserPathSearchHash(): string {
+  return window.location.pathname + window.location.search + window.location.hash;
+}
+
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<View>(
-    getViewFromPath(window.location.pathname + window.location.hash)
-  );
-  const [currentPath, setCurrentPath] = useState(window.location.pathname + window.location.hash);
+  const [currentView, setCurrentView] = useState<View>(getViewFromPath(browserPathSearchHash()));
+  const [currentPath, setCurrentPath] = useState(browserPathSearchHash());
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const full = window.location.pathname + window.location.hash;
+    const full = browserPathSearchHash();
     const pathOnly = pathnameOnly(full);
     const canon = canonicalPathnameIfLegacy(pathOnly);
     if (canon && canon !== pathOnly) {
-      const hash = full.includes('#') ? full.slice(full.indexOf('#')) : '';
-      window.history.replaceState({}, '', canon + hash);
-      setCurrentPath(canon + hash);
-      setCurrentView(getViewFromPath(canon + hash));
+      const rest = full.startsWith(pathOnly) ? full.slice(pathOnly.length) : '';
+      window.history.replaceState({}, '', canon + rest);
+      setCurrentPath(canon + rest);
+      setCurrentView(getViewFromPath(canon + rest));
     }
   }, []);
 
@@ -74,14 +77,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const onPopState = () => {
-      const full = window.location.pathname + window.location.hash;
+      const full = browserPathSearchHash();
       const pathOnly = pathnameOnly(full);
       const canon = canonicalPathnameIfLegacy(pathOnly);
       if (canon && canon !== pathOnly) {
-        const hash = full.includes('#') ? full.slice(full.indexOf('#')) : '';
-        window.history.replaceState({}, '', canon + hash);
-        setCurrentView(getViewFromPath(canon + hash));
-        setCurrentPath(canon + hash);
+        const rest = full.startsWith(pathOnly) ? full.slice(pathOnly.length) : '';
+        window.history.replaceState({}, '', canon + rest);
+        setCurrentView(getViewFromPath(canon + rest));
+        setCurrentPath(canon + rest);
       } else {
         setCurrentView(getViewFromPath(full));
         setCurrentPath(full);
@@ -149,7 +152,7 @@ const App: React.FC = () => {
         const seo = PORTFOLIO_SEO[tab];
         title = seo.title;
         description = seo.description;
-        path = pathnameOnly(currentPath);
+        path = pathnameWithSearch(currentPath);
         break;
       }
       case 'about':
@@ -199,7 +202,7 @@ const App: React.FC = () => {
     e.preventDefault();
     const pathOnly = path.split('#')[0] || path;
     const hash = path.includes('#') ? path.slice(path.indexOf('#') + 1) : '';
-    const currentFull = window.location.pathname + window.location.hash;
+    const currentFull = browserPathSearchHash();
     if (currentFull !== path) {
       try {
         window.history.pushState({}, '', path);

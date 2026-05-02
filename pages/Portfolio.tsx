@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '../supabase/client';
 import { GraphicalAbstract, JournalCover, LabWebsite, PortfolioFigure, PortfolioVideo, View } from '../types';
 import { Loader2, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import AppsShowcase from '../components/AppsShowcase';
 import {
   pathnameOnly,
+  portfolioFiguresGalleryFromPath,
   portfolioHrefForTab,
   portfolioTabFromPathname,
   ROUTES,
+  type PortfolioFiguresGalleryFilter,
   type PortfolioTab,
 } from '../utils/routes';
+import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
-export type { PortfolioTab };
+export type { PortfolioFiguresGalleryFilter, PortfolioTab };
 
 const getYoutubeEmbedUrl = (url: string): string => {
   try {
@@ -34,6 +37,16 @@ function portfolioFigureUrls(fig: PortfolioFigure | null): string[] {
   return fig.image_urls.filter((u): u is string => typeof u === 'string' && u.trim().length > 0);
 }
 
+function sortKeyMs(d?: string | null): number {
+  if (!d) return 0;
+  const t = new Date(d).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+type GalleryRow =
+  | { kind: 'figure'; item: PortfolioFigure; sort: number }
+  | { kind: 'abstract'; item: GraphicalAbstract; sort: number };
+
 interface PortfolioProps {
   path: string;
   navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
@@ -52,9 +65,16 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [figureSlideIndex, setFigureSlideIndex] = useState(0);
   const figureTouchStartX = useRef<number | null>(null);
   const [activeTab, setActiveTab] = useState<PortfolioTab>(() => portfolioTabFromPathname(pathnameOnly(path)));
+  const [figuresGalleryFilter, setFiguresGalleryFilter] = useState<PortfolioFiguresGalleryFilter>(() =>
+    portfolioFiguresGalleryFromPath(path)
+  );
 
   useEffect(() => {
     setActiveTab(portfolioTabFromPathname(pathnameOnly(path)));
+  }, [path]);
+
+  useEffect(() => {
+    setFiguresGalleryFilter(portfolioFiguresGalleryFromPath(path));
   }, [path]);
 
   const goTab = (tab: PortfolioTab) => (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -65,18 +85,32 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
       setActiveTab(tab);
     }
   };
+
+  const goFiguresGallery = (filter: PortfolioFiguresGalleryFilter) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    const dest =
+      filter === 'abstracts'
+        ? ROUTES.portfolioAbstracts
+        : filter === 'figures'
+          ? `${ROUTES.portfolioFigures}?view=figures`
+          : ROUTES.portfolioFigures;
+    if (navigate) {
+      navigate(e, 'portfolio', dest);
+    } else {
+      setActiveTab('figures');
+      setFiguresGalleryFilter(filter);
+    }
+  };
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [tabsDocked, setTabsDocked] = useState(false);
   const [showFloatingWorkCta, setShowFloatingWorkCta] = useState(false);
   const tabBarRef = useRef<HTMLDivElement>(null);
 
-  const portfolioCtaTabs: PortfolioTab[] = ['covers', 'figures', 'graphical-abstracts'];
+  const portfolioCtaTabs: PortfolioTab[] = ['covers', 'figures'];
   const showFloatingCtaForTab = portfolioCtaTabs.includes(activeTab);
 
   const tabHeroSubtitle: Partial<Record<PortfolioTab, string>> = {
     covers: 'A selection of published journal covers.',
-    figures: 'Figures from peer-reviewed research.',
-    'graphical-abstracts': 'Graphical abstracts for journals and conferences.',
+    figures: 'Paper figures, panels, and graphical abstracts from peer-reviewed work.',
     videos: 'Scientific illustration and process videos.',
     'websites-apps': 'Lab websites and science web experiments.',
   };
@@ -272,6 +306,17 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     </div>
   );
 
+  const galleryRows = useMemo((): GalleryRow[] => {
+    const rows: GalleryRow[] = [
+      ...figures.map((item) => ({ kind: 'figure' as const, item, sort: sortKeyMs(item.created_at) })),
+      ...graphicalAbstracts.map((item) => ({ kind: 'abstract' as const, item, sort: sortKeyMs(item.created_at) })),
+    ];
+    rows.sort((a, b) => b.sort - a.sort);
+    if (figuresGalleryFilter === 'figures') return rows.filter((r) => r.kind === 'figure');
+    if (figuresGalleryFilter === 'abstracts') return rows.filter((r) => r.kind === 'abstract');
+    return rows;
+  }, [figures, graphicalAbstracts, figuresGalleryFilter]);
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -281,8 +326,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   }
 
   const coversLayout = activeTab === 'covers';
-  /** Same horizontal padding / max width as covers, figures, abstracts (incl. videos grid). */
-  const compactColumn = ['covers', 'videos', 'graphical-abstracts', 'figures', 'websites-apps'].includes(activeTab);
+  /** Same horizontal padding / max width as covers, figures (incl. videos grid). */
+  const compactColumn = ['covers', 'videos', 'figures', 'websites-apps'].includes(activeTab);
   const stickyBottomCtaVisible = showFloatingCtaForTab && showFloatingWorkCta;
 
   return (
@@ -328,22 +373,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               </button>
               <button
                 type="button"
+                title="Figures and graphical abstracts"
                 onClick={goTab('figures')}
                 className={`rounded-lg px-2.5 py-2 text-[10px] font-semibold uppercase tracking-wide sm:px-3 sm:text-[11px] ${
                   activeTab === 'figures' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
                 }`}
               >
                 Figures
-              </button>
-              <button
-                type="button"
-                title="Graphical abstracts"
-                onClick={goTab('graphical-abstracts')}
-                className={`rounded-lg px-2.5 py-2 text-[10px] font-semibold uppercase tracking-wide sm:px-3 sm:text-[11px] ${
-                  activeTab === 'graphical-abstracts' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
-                }`}
-              >
-                Abstracts
               </button>
               <button
                 type="button"
@@ -462,96 +498,126 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
         )}
 
 
-        {activeTab === 'graphical-abstracts' && (
-          <div className="mt-2">
-            {portfolioTopCta(
-              'Graphical abstract for your paper?',
-              'One high-impact panel that editors and readers grasp in seconds—brief me on your key finding and audience.'
-            )}
-            <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 lg:gap-y-14">
-              {graphicalAbstracts.map((item) => (
-                <div key={item.id} className="flex flex-col gap-2.5">
-                  <div
-                    className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg border border-[#37352f]/10 shadow-md"
-                    onClick={() => setSelectedAbstract(item)}
-                  >
-                    <img
-                      src={item.abstract_image_url}
-                      alt={item.title}
-                      className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="absolute bottom-0 left-0 w-full translate-y-3 p-4 text-white opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100">
-                      <p className="text-[10px] font-bold uppercase tracking-widest">{item.institute_name || item.journal_name}</p>
-                      <h3 className="mt-1 font-serif text-base leading-tight">{item.title}</h3>
-                    </div>
-                  </div>
-                  <div className="px-0.5 text-center md:text-left">
-                    <p className="text-xs font-semibold leading-snug text-[#37352f]">{item.title}</p>
-                    {(item.institute_name || item.journal_name) && (
-                      <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#37352f]/50">
-                        {item.institute_name || item.journal_name}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {graphicalAbstracts.length === 0 && (
-              <div className="text-center py-20 border-2 border-dashed border-[#37352f]/10 rounded-3xl">
-                <p className="text-[#37352f]/40 font-serif italic text-xl">No graphical abstracts added yet.</p>
-              </div>
-            )}
-          </div>
-        )}
-
         {activeTab === 'figures' && (
           <div className="mt-2">
             {portfolioTopCta(
-              'Figures & panels for publication?',
-              'From multi-part figures to clean layouts for reviews—I work with your data and journal guidelines.'
+              'Figures, panels & graphical abstracts?',
+              'Publication-ready visuals—from multi-part figures to one-panel graphical abstracts—aligned with your data and journal expectations.'
             )}
-            <p className="mb-6 text-center text-sm text-[#37352f]/55">Selected work from peer-reviewed research.</p>
-            {figures.length === 0 ? (
+            <nav
+              className="mb-8 flex flex-wrap items-center justify-center gap-2"
+              aria-label="Filter figures and graphical abstracts"
+            >
+              {(
+                [
+                  { id: 'all' as const, label: 'All' },
+                  { id: 'figures' as const, label: 'Paper figures' },
+                  { id: 'abstracts' as const, label: 'Graphical abstracts' },
+                ] as const
+              ).map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={goFiguresGallery(id)}
+                  className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:px-4 sm:py-2 sm:text-xs ${
+                    figuresGalleryFilter === id
+                      ? 'border-[#37352f] bg-[#37352f] text-white shadow-sm'
+                      : 'border-[#37352f]/15 bg-white/80 text-[#37352f]/65 hover:border-[#37352f]/25 hover:text-[#37352f]'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            {galleryRows.length === 0 ? (
               <div className="mx-auto max-w-xl rounded-2xl border-2 border-dashed border-[#37352f]/10 py-16 text-center">
-                <p className="font-serif text-lg italic text-[#37352f]/40">No figures added yet.</p>
+                <p className="font-serif text-lg italic text-[#37352f]/40">
+                  {figuresGalleryFilter === 'abstracts'
+                    ? 'No graphical abstracts yet.'
+                    : figuresGalleryFilter === 'figures'
+                      ? 'No paper figures yet.'
+                      : 'No figures or graphical abstracts yet.'}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 lg:gap-y-14">
-                {figures.map((fig) => {
-                  const urls = portfolioFigureUrls(fig);
-                  const thumb = urls[0];
+                {galleryRows.map((row) => {
+                  if (row.kind === 'figure') {
+                    const fig = row.item;
+                    const urls = portfolioFigureUrls(fig);
+                    const thumb = urls[0];
+                    return (
+                      <button
+                        key={`fig-${fig.id}`}
+                        type="button"
+                        onClick={() => setSelectedFigure(fig)}
+                        className="group flex min-w-0 flex-col gap-2.5 rounded-2xl border border-[#37352f]/10 bg-white/90 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#37352f]/8 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#37352f]/30"
+                      >
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[#37352f]/10 bg-[#f3f1ee]">
+                          {thumb ? (
+                            <img
+                              src={figureImageDisplayUrl(thumb, { width: 960 })}
+                              alt=""
+                              className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-xs text-[#37352f]/45">No preview</div>
+                          )}
+                          <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-[#37352f]/85 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                            Figure
+                          </span>
+                          {urls.length > 1 && (
+                            <span className="absolute bottom-2 right-2 rounded-full bg-[#37352f]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                              {urls.length} images
+                            </span>
+                          )}
+                        </div>
+                        <div className="px-0.5 pb-1">
+                          <p className="line-clamp-2 font-serif text-sm font-semibold leading-snug text-[#37352f] transition-colors group-hover:text-black sm:text-base">
+                            {fig.paper_title}
+                          </p>
+                          {(fig.lab_name || fig.university_name) && (
+                            <p className="mt-1 line-clamp-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#37352f]/50">
+                              {[fig.lab_name, fig.university_name].filter(Boolean).join(' · ')}
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  }
+                  const abs = row.item;
                   return (
                     <button
-                      key={fig.id}
+                      key={`abs-${abs.id}`}
                       type="button"
-                      onClick={() => setSelectedFigure(fig)}
+                      onClick={() => setSelectedAbstract(abs)}
                       className="group flex min-w-0 flex-col gap-2.5 rounded-2xl border border-[#37352f]/10 bg-white/90 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#37352f]/8 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#37352f]/30"
                     >
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[#37352f]/10 bg-[#f3f1ee]">
-                        {thumb ? (
-                          <img
-                            src={thumb}
-                            alt=""
-                            className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-xs text-[#37352f]/45">No preview</div>
-                        )}
-                        {urls.length > 1 && (
-                          <span className="absolute bottom-2 right-2 rounded-full bg-[#37352f]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
-                            {urls.length} images
-                          </span>
-                        )}
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[#37352f]/10 shadow-md">
+                        <img
+                          src={abs.abstract_image_url}
+                          alt={abs.title}
+                          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.02]"
+                        />
+                        <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#37352f]/80 backdrop-blur-sm">
+                          Abstract
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute bottom-0 left-0 w-full translate-y-3 p-4 text-white opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100">
+                          <p className="text-[10px] font-bold uppercase tracking-widest">{abs.institute_name || abs.journal_name}</p>
+                          <h3 className="mt-1 font-serif text-base leading-tight">{abs.title}</h3>
+                        </div>
                       </div>
-                      <div className="px-0.5 pb-1">
-                        <p className="line-clamp-2 font-serif text-sm font-semibold leading-snug text-[#37352f] transition-colors group-hover:text-black sm:text-base">
-                          {fig.paper_title}
-                        </p>
-                        {(fig.lab_name || fig.university_name) && (
+                      <div className="px-0.5 pb-1 text-center md:text-left">
+                        <p className="line-clamp-2 text-xs font-semibold leading-snug text-[#37352f]">{abs.title}</p>
+                        {(abs.institute_name || abs.journal_name) && (
                           <p className="mt-1 line-clamp-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#37352f]/50">
-                            {[fig.lab_name, fig.university_name].filter(Boolean).join(' · ')}
+                            {abs.institute_name || abs.journal_name}
                           </p>
                         )}
                       </div>
@@ -736,10 +802,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           onClick={closeModal}
         >
           <div
-            className="flex max-h-[min(92vh,900px)] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-[#fcfaf8] shadow-2xl md:max-h-[90vh] md:flex-row"
+            className="flex max-h-[min(94vh,980px)] w-full max-w-[min(96vw,1500px)] flex-col overflow-hidden rounded-xl bg-[#fcfaf8] shadow-2xl md:max-h-[94vh] md:flex-row"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative flex min-h-[min(42vh,300px)] shrink-0 flex-col bg-[#ebe8e4] md:min-h-0 md:w-[min(52%,480px)] md:max-w-[52%]">
+            <div className="relative flex min-h-[min(44vh,320px)] min-w-0 flex-1 flex-col bg-[#ebe8e4] md:min-h-0">
               {(() => {
                 const urls = portfolioFigureUrls(selectedFigure);
                 const n = urls.length;
@@ -772,9 +838,11 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                     >
                       {src ? (
                         <img
-                          src={src}
+                          src={figureImageDisplayUrl(src, { width: 2800, quality: 88 })}
                           alt=""
-                          className="max-h-[min(50vh,560px)] w-auto max-w-full object-contain md:max-h-[min(78vh,680px)]"
+                          className="max-h-[min(56vh,620px)] w-auto max-w-full object-contain md:max-h-[min(90vh,940px)]"
+                          decoding="async"
+                          fetchPriority="high"
                           referrerPolicy="no-referrer"
                         />
                       ) : (
@@ -818,22 +886,22 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 );
               })()}
             </div>
-            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-5 sm:p-8">
-              <div className="flex items-start justify-between gap-4">
+            <div className="min-h-0 w-full max-w-full shrink-0 overflow-y-auto border-t border-[#37352f]/10 p-4 sm:p-5 md:w-60 md:max-w-[min(30%,17rem)] md:border-l md:border-t-0 md:py-5">
+              <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#37352f]/45">Publication figure</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#37352f]/45">Publication figure</p>
                   {selectedFigure.paper_url ? (
                     <a
                       href={selectedFigure.paper_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-start gap-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-[#37352f] hover:underline sm:text-3xl"
+                      className="mt-1.5 inline-flex items-start gap-1.5 font-serif text-base font-semibold leading-snug tracking-tight text-[#37352f] hover:underline sm:text-lg"
                     >
                       <span>{selectedFigure.paper_title}</span>
-                      <ExternalLink size={18} className="mt-1 shrink-0 opacity-50" />
+                      <ExternalLink size={14} className="mt-0.5 shrink-0 opacity-50" />
                     </a>
                   ) : (
-                    <h1 className="mt-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-[#37352f] sm:text-3xl">
+                    <h1 className="mt-1.5 font-serif text-base font-semibold leading-snug tracking-tight text-[#37352f] sm:text-lg">
                       {selectedFigure.paper_title}
                     </h1>
                   )}
@@ -844,45 +912,47 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                   className="shrink-0 text-[#37352f]/40 transition-colors hover:text-black"
                   aria-label="Close modal"
                 >
-                  <X size={24} />
+                  <X size={20} />
                 </button>
               </div>
 
-              <div className="mt-8 space-y-4 border-t border-[#37352f]/10 pt-6 text-sm">
+              <div className="mt-5 space-y-3 border-t border-[#37352f]/10 pt-4 text-xs">
                 {selectedFigure.university_name && (
-                  <div className="flex gap-4">
-                    <span className="w-24 shrink-0 text-[#37352f]/50">University</span>
-                    <span className="font-semibold text-[#37352f]">{selectedFigure.university_name}</span>
+                  <div className="flex gap-2">
+                    <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-[#37352f]/50">Univ.</span>
+                    <span className="min-w-0 font-medium leading-snug text-[#37352f]">{selectedFigure.university_name}</span>
                   </div>
                 )}
                 {selectedFigure.lab_name && (
-                  <div className="flex gap-4">
-                    <span className="w-24 shrink-0 text-[#37352f]/50">Lab</span>
-                    <span className="font-semibold text-[#37352f]">{selectedFigure.lab_name}</span>
+                  <div className="flex gap-2">
+                    <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-[#37352f]/50">Lab</span>
+                    <span className="min-w-0 font-medium leading-snug text-[#37352f]">{selectedFigure.lab_name}</span>
                   </div>
                 )}
                 {selectedFigure.authors && (
-                  <div className="flex gap-4">
-                    <span className="w-24 shrink-0 text-[#37352f]/50">Authors</span>
-                    <span className="leading-relaxed text-[#37352f]/85">{selectedFigure.authors}</span>
+                  <div className="flex gap-2">
+                    <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-[#37352f]/50">Authors</span>
+                    <span className="min-w-0 leading-relaxed text-[#37352f]/80">{selectedFigure.authors}</span>
                   </div>
                 )}
                 {portfolioFigureUrls(selectedFigure).length > 1 && (
-                  <div className="flex gap-4">
-                    <span className="w-24 shrink-0 text-[#37352f]/50">Panels</span>
-                    <span className="font-semibold text-[#37352f]">{portfolioFigureUrls(selectedFigure).length} images — use arrows or swipe</span>
+                  <div className="flex gap-2">
+                    <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-[#37352f]/50">Panels</span>
+                    <span className="font-medium leading-snug text-[#37352f]">
+                      {portfolioFigureUrls(selectedFigure).length} — arrows / swipe
+                    </span>
                   </div>
                 )}
                 {selectedFigure.paper_url && (
-                  <div className="flex gap-4">
-                    <span className="w-24 shrink-0 text-[#37352f]/50">Paper</span>
+                  <div className="flex gap-2">
+                    <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-[#37352f]/50">Paper</span>
                     <a
                       href={selectedFigure.paper_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline"
+                      className="inline-flex min-w-0 items-center gap-1 font-medium text-blue-600 hover:underline"
                     >
-                      Open publication <ExternalLink size={12} />
+                      Open <ExternalLink size={11} />
                     </a>
                   </div>
                 )}
@@ -910,8 +980,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#37352f]/40">Work with me</p>
                 <p className="mt-0.5 font-serif text-sm leading-snug text-[#37352f] sm:text-[0.95rem]">
                   {activeTab === 'covers' && 'Journal cover commission'}
-                  {activeTab === 'figures' && 'Publication figures'}
-                  {activeTab === 'graphical-abstracts' && 'Graphical abstract'}
+                  {activeTab === 'figures' &&
+                    (figuresGalleryFilter === 'abstracts' ? 'Graphical abstract' : 'Publication figures')}
                 </p>
               </div>
               {navigate ? (

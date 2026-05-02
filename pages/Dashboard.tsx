@@ -23,7 +23,7 @@ type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'blog' | 'brand
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
-  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'graphical-abstracts' | 'figures' | 'websites'>('covers');
+  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'figures-abstracts' | 'websites'>('covers');
   const sectionItems = useMemo(
     () => [
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
@@ -52,14 +52,22 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
             <div className="inline-flex max-w-full flex-wrap items-center gap-1 rounded-xl border border-[#37352f]/10 bg-[#37352f]/5 p-1">
               <button onClick={() => setPortfolioTab('covers')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'covers' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Covers</button>
               <button onClick={() => setPortfolioTab('videos')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'videos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Videos</button>
-              <button onClick={() => setPortfolioTab('graphical-abstracts')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'graphical-abstracts' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Graphical Abstracts</button>
-              <button onClick={() => setPortfolioTab('figures')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'figures' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Figures</button>
+              <button
+                onClick={() => setPortfolioTab('figures-abstracts')}
+                className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'figures-abstracts' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}
+              >
+                Figures & abstracts
+              </button>
               <button onClick={() => setPortfolioTab('websites')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'websites' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Websites</button>
             </div>
             {portfolioTab === 'covers' && <JournalCoverManager />}
             {portfolioTab === 'videos' && <PortfolioVideoManager />}
-            {portfolioTab === 'graphical-abstracts' && <GraphicalAbstractManager />}
-            {portfolioTab === 'figures' && <PortfolioFigureManager />}
+            {portfolioTab === 'figures-abstracts' && (
+              <div className="space-y-10">
+                <PortfolioFigureManager />
+                <GraphicalAbstractManager />
+              </div>
+            )}
             {portfolioTab === 'websites' && <LabWebsiteManager />}
           </div>
         );
