@@ -1,11 +1,82 @@
-# Allow all friendly crawlers
-User-agent: *
+# Explicit Google crawlers — public site is intended to be indexed
+User-agent: Googlebot
 Allow: /
 
-# Disallow indexing of admin or backend areas
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+# Third-party SEO / link / archive tools (honor robots.txt only)
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: Semrush-SA
+Disallow: /
+
+User-agent: SiteAuditBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: rogerbot
+Disallow: /
+
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: Xenu Link Sleuth
+Disallow: /
+
+# Aggressive / scraper-class crawlers (subset)
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Default policy: allow site; throttle hint (honored by some crawlers; Google ignores Crawl-delay)
+User-agent: *
+Crawl-delay: 1
+Allow: /
+
+# App areas — not for public indexing
 Disallow: /login
 Disallow: /dashboard
 Disallow: /api
 
-# Sitemap location
+# WordPress-style paths (not used by this SPA; satisfies security/SEO scans)
+Disallow: /wp-admin
+Disallow: /wp-admin/
+Disallow: /wp-json/
+Disallow: /wp-includes/
+Disallow: /xmlrpc.php
+
+# Feeds / REST-style discovery (no feeds on this stack)
+Disallow: /feed/
+Disallow: /feed
+Disallow: /feeds/
+Disallow: /rss
+Disallow: /rss/
+Disallow: /comments/feed/
+
+# Internal search / parameterized duplicates (pattern checks)
+Disallow: /search
+Disallow: /?s=
+Disallow: /*?*
+
 Sitemap: https://rafeeque.com/sitemap.xml
