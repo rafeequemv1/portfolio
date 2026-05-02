@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { FileText } from 'lucide-react';
 import { supabase } from '../supabase/client';
 
 const ABOUT_PROFILE_KEY = 'about_profile_image_url';
+const ABOUT_CV_PDF_KEY = 'about_cv_pdf_url';
 const FALLBACK_PROFILE_SRC = '/images/rafeeque-profile.png';
+/** Served from `public/cv/`; overridden when `about_cv_pdf_url` is set in Supabase. */
+const DEFAULT_CV_PDF_PATH = '/cv/Rafeeque-Mavoor-CV.pdf';
 
 const experience = [
   {
@@ -81,14 +85,25 @@ const skills = [
 
 const About: React.FC = () => {
   const [profileSrc, setProfileSrc] = useState<string>(FALLBACK_PROFILE_SRC);
+  const [cvPdfUrl, setCvPdfUrl] = useState<string | null>(null);
+
+  const cvHref = (cvPdfUrl && cvPdfUrl.trim()) ? cvPdfUrl.trim() : DEFAULT_CV_PDF_PATH;
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase.from('site_settings').select('value').eq('key', ABOUT_PROFILE_KEY).maybeSingle();
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('key, value')
+        .in('key', [ABOUT_PROFILE_KEY, ABOUT_CV_PDF_KEY]);
       if (cancelled || error) return;
-      const v = (data?.value as string | undefined)?.trim();
-      if (v) setProfileSrc(v);
+      for (const row of data || []) {
+        const key = (row as { key: string }).key;
+        const val = ((row as { value: string | null }).value || '').trim();
+        if (!val) continue;
+        if (key === ABOUT_PROFILE_KEY) setProfileSrc(val);
+        if (key === ABOUT_CV_PDF_KEY) setCvPdfUrl(val);
+      }
     })();
     return () => {
       cancelled = true;
@@ -108,6 +123,18 @@ const About: React.FC = () => {
               className="w-full h-full object-cover"
               onError={() => setProfileSrc((prev) => (prev !== FALLBACK_PROFILE_SRC ? FALLBACK_PROFILE_SRC : prev))}
             />
+          </div>
+          <div className="mb-6 flex justify-center lg:justify-start">
+            <a
+              href={cvHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              download="Rafeeque-Mavoor-CV.pdf"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#37352f]/15 bg-white/90 px-4 py-2.5 text-sm font-medium text-[#37352f] shadow-sm transition-colors hover:border-[#37352f]/25 hover:bg-[#37352f]/5"
+            >
+              <FileText size={18} className="text-[#c53030] shrink-0" strokeWidth={2} aria-hidden />
+              Download CV (PDF)
+            </a>
           </div>
           <h1 className="text-3xl font-serif text-center lg:text-left text-[#37352f] tracking-tight">Rafeeque Mavoor</h1>
           <p className="text-md text-center lg:text-left text-[#37352f]/60 mt-1">Lead Scientific Illustrator & Founder of SciDart Academy</p>

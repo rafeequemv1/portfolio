@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Edit2, Loader2, Upload, X } from 'lucide-react';
+import { Edit2, FileText, Loader2, Upload, X } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import { APP_PROJECTS } from '../data/appProjects';
 
 const ABOUT_PROFILE_KEY = 'about_profile_image_url';
+const ABOUT_CV_PDF_KEY = 'about_cv_pdf_url';
 
 const SiteAndAppsManager: React.FC = () => {
   const [profileUrl, setProfileUrl] = useState('');
+  const [cvPdfUrl, setCvPdfUrl] = useState('');
   const [uploadingProfile, setUploadingProfile] = useState(false);
+  const [uploadingCv, setUploadingCv] = useState(false);
+  const [savingCv, setSavingCv] = useState(false);
   const [detailsByKey, setDetailsByKey] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -18,11 +22,19 @@ const SiteAndAppsManager: React.FC = () => {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: settings }, { data: rows }] = await Promise.all([
-      supabase.from('site_settings').select('key, value').eq('key', ABOUT_PROFILE_KEY).maybeSingle(),
+    const [{ data: settingsRows }, { data: rows }] = await Promise.all([
+      supabase.from('site_settings').select('key, value').in('key', [ABOUT_PROFILE_KEY, ABOUT_CV_PDF_KEY]),
       supabase.from('portfolio_app_details').select('app_key, detail_content'),
     ]);
-    if (settings?.value) setProfileUrl(settings.value);
+    setProfileUrl('');
+    setCvPdfUrl('');
+    for (const row of settingsRows || []) {
+      const r = row as { key: string; value: string | null };
+      const v = (r.value || '').trim();
+      if (!v) continue;
+      if (r.key === ABOUT_PROFILE_KEY) setProfileUrl(v);
+      if (r.key === ABOUT_CV_PDF_KEY) setCvPdfUrl(v);
+    }
     const m: Record<string, string> = {};
     for (const row of rows || []) {
       m[(row as { app_key: string }).app_key] = (row as { detail_content: string | null }).detail_content || '';
@@ -57,6 +69,41 @@ const SiteAndAppsManager: React.FC = () => {
     );
     setSavingProfile(false);
     setUploadingProfile(false);
+    if (error) alert(error.message);
+  };
+
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      alert('Please choose a PDF file.');
+      e.target.value = '';
+      return;
+    }
+    setUploadingCv(true);
+    const fileName = `site/cv-${Date.now()}.pdf`;
+    const { error: uploadError } = await supabase.storage.from('blog-assets').upload(fileName, file, {
+      upsert: true,
+      contentType: 'application/pdf',
+    });
+    if (uploadError) {
+      alert(uploadError.message);
+      setUploadingCv(false);
+      e.target.value = '';
+      return;
+    }
+    const { data } = supabase.storage.from('blog-assets').getPublicUrl(fileName);
+    const url = data.publicUrl;
+    setCvPdfUrl(url);
+    setSavingCv(true);
+    const { error } = await supabase.from('site_settings').upsert(
+      { key: ABOUT_CV_PDF_KEY, value: url, updated_at: new Date().toISOString() },
+      { onConflict: 'key' }
+    );
+    setSavingCv(false);
+    setUploadingCv(false);
+    e.target.value = '';
     if (error) alert(error.message);
   };
 
@@ -112,6 +159,34 @@ const SiteAndAppsManager: React.FC = () => {
             <p className="text-xs text-[#37352f]/50 mt-3 max-w-md">
               Uses the <code className="text-[11px]">blog-assets</code> bucket. The About page falls back to <code className="text-[11px]">/images/rafeeque-profile.png</code> until a URL is saved here.
             </p>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-[#37352f]/10">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#37352f]/60 mb-1">CV (PDF)</h3>
+          <p className="text-sm text-[#37352f]/60 mb-4">
+            The About page always shows “Download CV (PDF)”. Visitors use the file below when set; otherwise the static file at{' '}
+            <code className="text-[11px]">/cv/Rafeeque-Mavoor-CV.pdf</code> in the repo is used. Upload here to override with a hosted PDF.
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#37352f]/15 hover:bg-[#37352f]/5 cursor-pointer text-sm font-medium text-[#37352f]">
+              {uploadingCv || savingCv ? <Loader2 className="animate-spin" size={16} /> : <FileText className="text-[#c53030]" size={18} strokeWidth={2} aria-hidden />}
+              Upload CV (PDF)
+              <input
+                type="file"
+                className="hidden"
+                accept="application/pdf,.pdf"
+                onChange={handleCvUpload}
+                disabled={uploadingCv || savingCv}
+              />
+            </label>
+            {cvPdfUrl ? (
+              <a href={cvPdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700 underline break-all max-w-md">
+                View current file
+              </a>
+            ) : (
+              <span className="text-xs text-[#37352f]/45">No CV uploaded yet — nothing shows on About.</span>
+            )}
           </div>
         </div>
       </section>

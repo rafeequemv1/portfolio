@@ -192,12 +192,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ initialTab = 'covers', navigate }
 
         <div
           ref={tabBarRef}
-          className={`sticky top-20 z-30 mb-10 transition-[background-color,box-shadow,border-color] duration-200 ${
+          className={`sticky top-20 z-30 mb-10 flex justify-center transition-[background-color,box-shadow,border-color] duration-200 ${
             tabsDocked
-              ? `relative left-1/2 w-screen max-w-[100dvw] -translate-x-1/2 border-b border-[#37352f]/10 py-2.5 shadow-sm backdrop-blur-md ${
-                  coversLayout ? 'bg-white/95' : 'bg-[#fcfaf8]/95'
-                }`
-              : 'flex justify-center py-2'
+              ? `border-b border-[#37352f]/10 py-2.5 shadow-sm backdrop-blur-md ${coversLayout ? 'bg-white/95' : 'bg-[#fcfaf8]/95'}`
+              : 'py-2'
           }`}
         >
           <div className="mx-auto flex w-full max-w-6xl justify-center px-2 sm:px-4 md:px-6">

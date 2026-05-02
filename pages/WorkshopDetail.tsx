@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../supabase/client';
 import { Workshop, View } from '../types';
 import { demoWorkshops } from '../data/demo';
@@ -7,200 +6,215 @@ import { formatWorkshopDate } from '../utils/formatWorkshopDate';
 import { workshopImageList } from '../utils/workshopImages';
 
 interface WorkshopDetailProps {
-    path: string;
-    navigate: (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => void;
+  path: string;
+  navigate: (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => void;
 }
 
 const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
-    const [workshop, setWorkshop] = useState<Workshop | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const id = path.split('/').pop();
+  const [workshop, setWorkshop] = useState<Workshop | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const id = path.split('/').pop();
 
-    useEffect(() => {
-        if (!id) {
-            setError('Workshop ID not found.');
-            setLoading(false);
-            return;
+  useEffect(() => {
+    if (!id) {
+      setError('Workshop ID not found.');
+      setLoading(false);
+      return;
+    }
+
+    const fetchWorkshopDetails = async () => {
+      setLoading(true);
+      if (id.startsWith('demo-')) {
+        const demoData = demoWorkshops.find((w) => w.id === id);
+        if (demoData) {
+          setWorkshop({
+            ...demoData,
+            gallery_images: workshopImageList(demoData),
+          });
+        } else {
+          setError('Demo workshop not found.');
         }
+      } else {
+        const { data, error: fetchError } = await supabase.from('workshops').select('*').eq('id', id).single();
 
-        const fetchWorkshopDetails = async () => {
-            setLoading(true);
-            if (id.startsWith('demo-')) {
-                const demoData = demoWorkshops.find(w => w.id === id);
-                if (demoData) {
-                    setWorkshop({
-                        ...demoData,
-                        gallery_images: workshopImageList(demoData),
-                    });
-                } else {
-                    setError('Demo workshop not found.');
-                }
-            } else {
-                const { data, error } = await supabase
-                    .from('workshops')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
-
-                if (error) {
-                    setError(error.message);
-                    console.error('Error fetching workshop:', error);
-                } else {
-                    const row = data as Record<string, unknown>;
-                    const urls = Array.isArray(row.image_urls)
-                        ? (row.image_urls as string[]).filter((u) => typeof u === 'string' && u.trim())
-                        : [];
-                    setWorkshop({
-                        ...(data as Workshop),
-                        cover_image: urls[0] || (data as { cover_image?: string }).cover_image,
-                        institute:
-                            (data as { location?: string }).location ||
-                            (data as { institute?: string }).institute ||
-                            '',
-                        gallery_images: urls.length ? urls : (data as { gallery_images?: string[] }).gallery_images || [],
-                    });
-                }
-            }
-            setLoading(false);
-        };
-
-        fetchWorkshopDetails();
-    }, [id]);
-
-    useEffect(() => {
-        if (workshop?.title) {
-            document.title = `${workshop.title} | Rafeeque Mavoor`;
+        if (fetchError) {
+          setError(fetchError.message);
+          console.error('Error fetching workshop:', fetchError);
+        } else {
+          const row = data as Record<string, unknown>;
+          const urls = Array.isArray(row.image_urls)
+            ? (row.image_urls as string[]).filter((u) => typeof u === 'string' && u.trim())
+            : [];
+          setWorkshop({
+            ...(data as Workshop),
+            cover_image: urls[0] || (data as { cover_image?: string }).cover_image,
+            institute:
+              (data as { location?: string }).location ||
+              (data as { institute?: string }).institute ||
+              '',
+            gallery_images: urls.length ? urls : (data as { gallery_images?: string[] }).gallery_images || [],
+          });
         }
-    }, [workshop]);
-    
-    if (loading) return <div className="text-center p-20">Loading workshop details...</div>;
-    if (error || !workshop) return <div className="text-center p-20 text-red-500">Error: Could not load workshop.</div>;
+      }
+      setLoading(false);
+    };
 
-    const navItems = [
-      { id: '#overview', label: 'Overview' },
-      workshop.content ? { id: '#topics-covered', label: 'Topics Covered' } : null,
-      workshop.gallery_images && workshop.gallery_images.length > 0 ? { id: '#gallery', label: 'Gallery' } : null,
-      workshop.testimonials && workshop.testimonials.length > 0 ? { id: '#testimonials', label: 'Testimonials' } : null,
-    ].filter((item): item is { id: string; label: string } => item !== null);
+    fetchWorkshopDetails();
+  }, [id]);
 
-    const gallery = workshopImageList(workshop);
+  useEffect(() => {
+    if (workshop?.title) {
+      document.title = `${workshop.title} | Rafeeque Mavoor`;
+    }
+  }, [workshop]);
 
+  const gallery = workshop ? workshopImageList(workshop) : [];
+  const scrollToIndex = useCallback((i: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const clamped = Math.max(0, Math.min(i, gallery.length - 1));
+    setActiveIndex(clamped);
+    el.scrollTo({ left: clamped * el.clientWidth, behavior: 'smooth' });
+  }, [gallery.length]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [workshop?.id]);
+
+  const onCarouselScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || gallery.length <= 1) return;
+    const w = el.clientWidth || 1;
+    const i = Math.round(el.scrollLeft / w);
+    setActiveIndex(Math.min(Math.max(0, i), gallery.length - 1));
+  }, [gallery.length]);
+
+  if (loading) {
     return (
-        <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-20 lg:py-20">
-            <div className="mb-8">
-                 <a 
-                    href="/workshops" 
-                    onClick={(e) => navigate(e, 'workshops', '/workshops')}
-                    className="inline-flex items-center gap-2 text-sm text-[#37352f]/60 hover:text-[#37352f] transition-colors font-medium"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                    All Workshops
-                </a>
-            </div>
-
-            <header className="mb-16 grid grid-cols-1 items-start gap-10 md:mb-20 md:grid-cols-5 md:gap-14 lg:gap-16">
-                <div className="md:col-span-3">
-                    <p className="mb-4 text-sm font-medium uppercase tracking-widest text-[#37352f]/50">
-                        {workshop.institute} • {formatWorkshopDate(workshop.date, true)}
-                    </p>
-                    <h1 className="mb-6 font-serif text-4xl tracking-tight text-[#37352f] lg:text-5xl">{workshop.title}</h1>
-                    <p className="mb-8 text-lg leading-relaxed text-[#37352f]/70">{workshop.description}</p>
-                    <a
-                        href="mailto:rafeequemavoor@gmail.com?subject=Workshop Inquiry"
-                        className="inline-block rounded-md bg-[#37352f] px-8 py-4 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-black"
-                    >
-                        Request This Workshop
-                    </a>
-                </div>
-
-                <div className="min-w-0 md:col-span-2">
-                    {gallery.length === 0 && (
-                        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg border border-dashed border-[#37352f]/15 bg-[#f3f1ee] text-sm text-[#37352f]/40">
-                            No images yet
-                        </div>
-                    )}
-                    {gallery.length === 1 && (
-                        <img
-                            src={gallery[0]}
-                            alt={workshop.title}
-                            className="aspect-[4/3] h-auto w-full rounded-lg object-cover shadow-xl"
-                        />
-                    )}
-                    {gallery.length === 2 && (
-                        <div className="grid grid-cols-2 gap-2">
-                            {gallery.map((src, i) => (
-                                <img key={src} src={src} alt={i === 0 ? workshop.title : ''} className="aspect-square w-full rounded-lg object-cover shadow-md" />
-                            ))}
-                        </div>
-                    )}
-                    {gallery.length >= 3 && (
-                        <div className="grid grid-cols-2 gap-2">
-                            {gallery.slice(0, 4).map((src, i) => (
-                                <img
-                                    key={`${src}-${i}`}
-                                    src={src}
-                                    alt={i === 0 ? workshop.title : ''}
-                                    className="aspect-[4/3] w-full rounded-lg object-cover shadow-md"
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </header>
-
-            <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-16">
-                <aside className="hidden lg:block lg:col-span-1">
-                    <div className="sticky top-28">
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-[#37352f]/40 mb-4">On this page</h3>
-                        <nav>
-                            <ul className="space-y-3">
-                                {navItems.map(item => (
-                                    <li key={item.id}><a href={item.id} className="text-sm text-[#37352f]/60 hover:text-[#37352f] transition-colors">{item.label}</a></li>
-                                ))}
-                            </ul>
-                        </nav>
-                    </div>
-                </aside>
-
-                <main className="lg:col-span-4 prose max-w-none prose-headings:font-serif prose-headings:text-[#37352f] prose-headings:border-t prose-headings:border-gray-200 prose-headings:pt-6 prose-headings:mt-6 prose-p:text-[#37352f]/80 prose-li:text-[#37352f]/80 prose-strong:text-[#37352f]">
-                    <h3 id="overview">Overview</h3>
-                    <p>{workshop.description}</p>
-                    
-                    {workshop.content && <div dangerouslySetInnerHTML={{ __html: workshop.content }} />}
-
-                    {workshop.gallery_images && workshop.gallery_images.length > 0 && (
-                        <>
-                            <h3 id="gallery">Gallery</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 not-prose">
-                                {workshop.gallery_images.map((img, index) => (
-                                    <div key={index} className="overflow-hidden rounded-lg shadow-sm border border-gray-100">
-                                       <img src={img} alt={`Workshop gallery image ${index + 1}`} className="object-cover aspect-square w-full h-full hover:scale-105 transition-transform duration-300" />
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
-
-                    {workshop.testimonials && workshop.testimonials.length > 0 && (
-                        <>
-                            <h3 id="testimonials">Testimonials</h3>
-                            <div className="space-y-8 not-prose">
-                                {workshop.testimonials.map((t, i) => (
-                                    <blockquote key={i} className="relative p-6 bg-white/60 border-l-4 border-[#d1e9e7]">
-                                        <p className="text-lg text-[#37352f]/90 italic leading-relaxed">"{t.quote}"</p>
-                                        <footer className="mt-4 text-sm not-italic text-right">
-                                            — <span className="font-bold">{t.author}</span>, <span className="text-[#37352f]/60">{t.role}</span>
-                                        </footer>
-                                    </blockquote>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </main>
-            </div>
-        </div>
+      <div className="mx-auto flex min-h-[50vh] max-w-xl items-center justify-center px-6">
+        <p className="font-serif text-lg text-[#37352f]/45">Loading…</p>
+      </div>
     );
+  }
+  if (error || !workshop) {
+    return (
+      <div className="mx-auto max-w-xl px-6 py-20 text-center">
+        <p className="text-[#37352f]/70">{error || 'Could not load this workshop.'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <article className="animate-fade-in-up pb-24 pt-8">
+      <div className="mx-auto mb-10 max-w-[680px] px-5 sm:px-6">
+        <a
+          href="/workshops"
+          onClick={(e) => navigate(e, 'workshops', '/workshops')}
+          className="inline-flex items-center gap-1.5 text-sm text-[#37352f]/50 transition-colors hover:text-[#37352f]"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+            <path
+              fillRule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Workshops
+        </a>
+      </div>
+
+      {gallery.length > 0 && (
+        <div className="mb-12 w-full">
+          <div
+            ref={scrollRef}
+            onScroll={onCarouselScroll}
+            className="flex touch-pan-x snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {gallery.map((src, i) => (
+              <div
+                key={`${src}-${i}`}
+                className="min-w-full shrink-0 snap-center snap-always px-4 sm:px-8 md:px-12"
+              >
+                <div className="mx-auto max-w-4xl">
+                  <img
+                    src={src}
+                    alt={i === 0 ? workshop.title : `${workshop.title} — photo ${i + 1}`}
+                    className="mx-auto max-h-[min(72vh,640px)] w-full rounded-sm object-contain"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {gallery.length > 1 && (
+            <div className="mx-auto mt-5 flex max-w-4xl justify-center gap-2 overflow-x-auto px-4 pb-1">
+              {gallery.map((src, i) => (
+                <button
+                  key={`thumb-${src}-${i}`}
+                  type="button"
+                  onClick={() => scrollToIndex(i)}
+                  className={`relative shrink-0 overflow-hidden rounded-md border-2 transition-all ${
+                    i === activeIndex
+                      ? 'border-[#37352f] shadow-sm ring-1 ring-[#37352f]/20'
+                      : 'border-transparent opacity-55 hover:opacity-90'
+                  }`}
+                  aria-label={`Show image ${i + 1}`}
+                  aria-current={i === activeIndex ? 'true' : undefined}
+                >
+                  <img src={src} alt="" className="h-14 w-[4.5rem] object-cover sm:h-16 sm:w-24" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <header className="mx-auto max-w-[680px] px-5 sm:px-6">
+        <p className="mb-3 text-[13px] font-medium uppercase tracking-[0.12em] text-[#37352f]/45">
+          {workshop.institute || 'Workshop'}
+          {workshop.date ? ` · ${formatWorkshopDate(workshop.date, true)}` : null}
+        </p>
+        <h1 className="mb-8 font-serif text-[2.25rem] font-normal leading-[1.15] tracking-tight text-[#37352f] sm:text-[2.75rem]">
+          {workshop.title}
+        </h1>
+      </header>
+
+      <div className="mx-auto max-w-[680px] px-5 sm:px-6">
+        <div className="max-w-none font-sans text-[1.125rem] leading-[1.75] text-[#37352f]/85 [&_a]:text-[#37352f] [&_a]:underline [&_strong]:font-semibold [&_strong]:text-[#37352f] [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6">
+          {workshop.description?.trim() ? (
+            <p className="whitespace-pre-wrap first:mt-0">{workshop.description}</p>
+          ) : null}
+
+          {workshop.content ? (
+            <div
+              className="mt-10 border-t border-[#37352f]/10 pt-10 [&_h2]:mt-8 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:text-[#37352f] [&_h3]:mt-6 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:text-[#37352f] [&_p]:mt-4 [&_p]:first:mt-0"
+              dangerouslySetInnerHTML={{ __html: workshop.content }}
+            />
+          ) : null}
+        </div>
+
+        {workshop.testimonials && workshop.testimonials.length > 0 && (
+          <section className="mt-16 border-t border-[#37352f]/10 pt-12">
+            <h2 className="mb-8 font-serif text-2xl font-normal text-[#37352f]">Voices from the room</h2>
+            <div className="space-y-10">
+              {workshop.testimonials.map((t, i) => (
+                <blockquote key={i} className="border-l-2 border-[#37352f]/15 pl-6">
+                  <p className="font-serif text-lg italic leading-relaxed text-[#37352f]/90">"{t.quote}"</p>
+                  <footer className="mt-3 text-sm text-[#37352f]/55">
+                    <span className="font-medium text-[#37352f]/80">{t.author}</span>
+                    {t.role ? <span className="text-[#37352f]/50"> · {t.role}</span> : null}
+                  </footer>
+                </blockquote>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </article>
+  );
 };
 
 export default WorkshopDetail;

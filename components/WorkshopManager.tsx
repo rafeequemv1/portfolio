@@ -34,6 +34,7 @@ const WorkshopManager: React.FC = () => {
 
     if (error) {
       console.error('Error fetching workshops:', error);
+      alert(`Could not load workshops: ${error.message}`);
     } else {
       const rows = (data || []).map((w: any) => ({
         ...w,

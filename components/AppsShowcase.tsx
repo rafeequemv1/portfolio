@@ -40,6 +40,15 @@ const AppsShowcase: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [selected]);
 
+  useEffect(() => {
+    if (!selected) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [selected]);
+
   const detailHtml = selected ? detailsByKey[selected.id] || '' : '';
   const defaultArticle = selected
     ? `<p class="text-[#37352f]/80 leading-relaxed">${selected.description}</p>`
@@ -104,7 +113,7 @@ const AppsShowcase: React.FC = () => {
             onClick={() => setSelected(null)}
           />
           <aside
-            className="fixed z-[95] inset-y-0 right-0 w-full max-w-lg bg-[#fcfaf8] border-l border-[#37352f]/10 shadow-2xl flex flex-col animate-fade-in-up"
+            className="fixed z-[95] inset-y-0 right-0 w-full max-w-lg min-h-0 bg-[#fcfaf8] border-l border-[#37352f]/10 shadow-2xl flex flex-col animate-fade-in-up"
             style={{ animationDuration: '0.25s' }}
             role="dialog"
             aria-modal="true"
@@ -128,7 +137,7 @@ const AppsShowcase: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-6 space-y-6 touch-pan-y">
               <article className="prose prose-sm prose-neutral max-w-none font-sans">
                 {detailHtml ? (
                   <div className="text-[#37352f]/85 leading-relaxed space-y-4 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_a]:text-blue-700 [&_a]:underline" dangerouslySetInnerHTML={{ __html: detailHtml }} />
