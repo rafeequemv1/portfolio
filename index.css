@@ -11,20 +11,18 @@
   color: #37352f;
 }
 
-/* Simple fade in animation */
+/* Motion only (no opacity) — opacity animations delay LCP for text inside the block. */
 @keyframes fadeInUp {
   from {
-    opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(10px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .text-balance {

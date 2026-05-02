@@ -8,7 +8,18 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       target: 'es2022',
-      sourcemap: true,
+      sourcemap: mode !== 'production',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+            if (id.includes('@supabase')) return 'supabase';
+            if (id.includes('node_modules/react-dom') || /node_modules\/react\//.test(id)) {
+              return 'react-vendor';
+            }
+          },
+        },
+      },
     },
     server: {
       host: true,

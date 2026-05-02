@@ -111,7 +111,8 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
                     width={170}
                     height={230}
                     sizes="170px"
-                    loading="lazy"
+                    loading={idx < 2 ? 'eager' : 'lazy'}
+                    fetchPriority={idx === 0 ? 'high' : undefined}
                     decoding="async"
                     className="h-full w-full object-cover"
                   />
