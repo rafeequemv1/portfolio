@@ -6,6 +6,10 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, (process as any).cwd(), '');
   return {
+    build: {
+      target: 'es2022',
+      sourcemap: true,
+    },
     server: {
       host: true,
       port: 5173,

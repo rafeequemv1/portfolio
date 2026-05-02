@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
 import { Brand, JournalCover, View } from '../types';
 import { ROUTES } from '../utils/routes';
+import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 const shuffleArray = <T,>(items: T[]): T[] => {
   const arr = [...items];
@@ -83,7 +84,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         </h1>
         <div className="flex items-center justify-center gap-3">
           <span className="h-[1px] w-8 bg-[#37352f]/20"></span>
-          <p className="text-[#37352f]/60 text-xs md:text-sm uppercase tracking-[0.3em] font-sans font-medium">
+          <p className="text-[#5c5a57] text-xs md:text-sm uppercase tracking-[0.3em] font-sans font-medium">
             Scientific Illustrator • Educator • Entrepreneur
           </p>
           <span className="h-[1px] w-8 bg-[#37352f]/20"></span>
@@ -91,7 +92,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         
         {/* Handwritten Note */}
         <div className="mt-12 opacity-80 rotate-[-2deg]">
-           <p className="font-hand text-2xl text-[#37352f]/70">
+           <p className="font-hand text-2xl text-[#5c5a57]">
              Visualizing science, with precision and soul.
            </p>
         </div>
@@ -104,7 +105,16 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
             <div className="cover-marquee-track">
               {[...firstRowFull, ...firstRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-${idx}`} className="cover-marquee-card">
-                  <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
+                  <img
+                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 420, quality: 82 })}
+                    alt={cover.title}
+                    width={170}
+                    height={230}
+                    sizes="170px"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -114,7 +124,16 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
             <div className="cover-marquee-track cover-marquee-track-reverse">
               {[...secondRowFull, ...secondRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-reverse-${idx}`} className="cover-marquee-card">
-                  <img src={cover.cover_image_url} alt={cover.title} className="w-full h-full object-cover" />
+                  <img
+                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 420, quality: 82 })}
+                    alt={cover.title}
+                    width={170}
+                    height={230}
+                    sizes="170px"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -131,7 +150,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               navigate(e, 'portfolio', ROUTES.portfolioCovers);
             }
           }}
-          className="inline-flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#37352f]/70 hover:text-[#37352f] transition-colors"
+          className="inline-flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#5c5a57] hover:text-[#37352f] transition-colors"
         >
           View All Covers
         </a>
@@ -140,7 +159,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
       {brands.length > 0 && (
         <section className="w-full max-w-7xl mt-10 md:mt-14 border-t border-[#37352f]/10 pt-10 md:pt-12">
           <div className="text-center mb-7">
-            <p className="text-[10px] md:text-xs uppercase tracking-[0.22em] text-[#37352f]/45 font-semibold">
+            <p className="text-[10px] md:text-xs uppercase tracking-[0.22em] text-[#5c5a57] font-semibold">
               Trusted by researchers and institutions
             </p>
           </div>
@@ -152,15 +171,23 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
                 target={brand.website_url ? '_blank' : undefined}
                 rel={brand.website_url ? 'noopener noreferrer' : undefined}
                 className="group flex flex-col items-center justify-start gap-3 text-center"
+                aria-label={
+                  brand.website_url ? `${brand.name}, opens in a new tab` : brand.name
+                }
               >
                 {brand.logo_url ? (
                   <img
-                    src={brand.logo_url}
-                    alt={brand.name}
-                    className="h-10 w-auto max-w-[min(100%,7rem)] md:h-12 lg:h-14 object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    src={figureImageDisplayUrl(brand.logo_url, { width: 200, quality: 80 })}
+                    alt=""
+                    width={160}
+                    height={56}
+                    sizes="(max-width: 768px) 112px, 128px"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-10 w-auto max-w-[min(100%,7rem)] object-contain opacity-80 transition-opacity group-hover:opacity-100 md:h-12 lg:h-14"
                   />
                 ) : null}
-                <span className="text-xs md:text-sm font-serif text-[#37352f]/85 group-hover:text-[#37352f] leading-snug px-1 transition-colors">
+                <span className="px-1 font-serif text-xs leading-snug text-[#37352f] transition-colors group-hover:text-[#37352f] md:text-sm">
                   {brand.name}
                 </span>
               </a>

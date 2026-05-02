@@ -177,6 +177,9 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
                       <img
                         src={src}
                         alt={i === 0 ? workshop.title : `${workshop.title} — photo ${i + 1}`}
+                        width={1600}
+                        height={1000}
+                        sizes="100vw"
                         className="mx-auto max-h-[min(52dvh,480px)] w-full max-w-full object-contain object-center sm:max-h-[min(62dvh,560px)] md:max-h-[min(68vh,600px)]"
                         loading={i === 0 ? 'eager' : 'lazy'}
                         decoding="async"
@@ -207,7 +210,16 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
                       aria-current={i === activeIndex ? 'true' : undefined}
                     >
                       <span className="block h-[3.25rem] w-[4.75rem] sm:h-16 sm:w-[5.5rem] md:h-[4.5rem] md:w-24">
-                        <img src={src} alt="" className="h-full w-full object-cover" />
+                        <img
+                          src={src}
+                          alt=""
+                          width={240}
+                          height={160}
+                          sizes="(max-width: 640px) 76px, 96px"
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
                       </span>
                     </button>
                   ))}

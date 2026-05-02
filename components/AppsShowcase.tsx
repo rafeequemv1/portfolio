@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
 import { APP_PROJECTS, type AppProject } from '../data/appProjects';
 import { X, ExternalLink } from 'lucide-react';
+import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 const fetchAppDetails = async (): Promise<Record<string, string>> => {
   const { data, error } = await supabase.from('portfolio_app_details').select('app_key, detail_content');
@@ -80,8 +81,11 @@ const AppsShowcase: React.FC<AppsShowcaseProps> = ({ compact = false }) => {
                 className={`relative z-10 aspect-[16/10] max-w-none overflow-hidden rounded-t-lg border-b border-[#37352f]/10 ${compact ? '-mx-4 -mt-4 mb-3 w-[calc(100%+2rem)]' : '-mx-5 -mt-5 mb-3 w-[calc(100%+2.5rem)]'}`}
               >
                 <img
-                  src={project.thumbnailUrl}
+                  src={figureImageDisplayUrl(project.thumbnailUrl, { width: 960, quality: 82 })}
                   alt=""
+                  width={960}
+                  height={600}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                   loading="lazy"
                   decoding="async"
@@ -185,8 +189,11 @@ const AppsShowcase: React.FC<AppsShowcaseProps> = ({ compact = false }) => {
                   {selected.galleryImageUrls.map((src, i) => (
                     <figure key={src} className="overflow-hidden rounded-lg border border-[#37352f]/10 bg-[#f7f5f2] shadow-sm">
                       <img
-                        src={src}
+                        src={figureImageDisplayUrl(src, { width: 1200, quality: 84 })}
                         alt={`${selected.title} — image ${i + 1}`}
+                        width={1200}
+                        height={750}
+                        sizes="(max-width: 1024px) 100vw, 512px"
                         className="h-auto w-full object-cover"
                         loading="lazy"
                         decoding="async"

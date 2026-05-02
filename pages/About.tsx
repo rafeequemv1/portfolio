@@ -120,6 +120,11 @@ const About: React.FC = () => {
             <img
               src={profileSrc}
               alt="Portrait photograph of Rafeeque Mavoor, scientific illustrator"
+              width={256}
+              height={256}
+              sizes="128px"
+              loading="eager"
+              decoding="async"
               className="w-full h-full object-cover"
               onError={() => setProfileSrc((prev) => (prev !== FALLBACK_PROFILE_SRC ? FALLBACK_PROFILE_SRC : prev))}
             />
@@ -166,7 +171,15 @@ const About: React.FC = () => {
                 <div key={index} className="flex gap-4">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#37352f]/10 bg-white p-1.5 sm:h-[4.5rem] sm:w-[4.5rem]">
                     {item.logoSrc ? (
-                      <img src={item.logoSrc} alt={item.logoAlt} className="max-h-full max-w-full object-contain" />
+                      <img
+                        src={item.logoSrc}
+                        alt={item.logoAlt}
+                        width={144}
+                        height={144}
+                        loading="lazy"
+                        decoding="async"
+                        className="max-h-full max-w-full object-contain"
+                      />
                     ) : (
                       <span
                         className="px-1 text-center text-[9px] font-semibold uppercase leading-tight text-[#37352f]/30"
@@ -222,6 +235,10 @@ const About: React.FC = () => {
                       <img
                         src={item.logoSrc}
                         alt={'logoAlt' in item && item.logoAlt ? item.logoAlt : `${item.institution} logo`}
+                        width={144}
+                        height={144}
+                        loading="lazy"
+                        decoding="async"
                         className="max-h-full max-w-full object-contain"
                       />
                     ) : (

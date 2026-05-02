@@ -84,7 +84,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
               href={path}
               onClick={(e) => onNav(e, view, path)}
               className={`relative py-1 transition-colors duration-200 ${
-                match(currentView) ? 'text-[#37352f]' : 'text-[#37352f]/40 hover:text-[#37352f]'
+                match(currentView) ? 'text-[#37352f]' : 'text-[#5c5a57] hover:text-[#37352f]'
               }`}
             >
               {label}
@@ -150,7 +150,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                   href={path}
                   onClick={(e) => onNav(e, view, path)}
                   className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation transition-colors ${
-                    match(currentView) ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
+                    match(currentView) ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
                   }`}
                 >
                   {label}
@@ -173,7 +173,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                 className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
                   currentView === 'blog' || currentView === 'blog-detail'
                     ? 'bg-[#37352f]/10 text-[#37352f]'
-                    : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
+                    : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
                 }`}
               >
                 Blog

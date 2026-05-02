@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { blogPosts as fallbackPosts } from '../data/blog';
 import { supabase } from '../supabase/client';
 import { BlogPost, View } from '../types';
+import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 interface BlogProps {
   navigate: (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => void;
@@ -71,7 +72,16 @@ const Blog: React.FC<BlogProps> = ({ navigate }) => {
               className="grid grid-cols-1 md:grid-cols-4"
             >
               <div className="md:col-span-1 h-48 md:h-full bg-[#f3f1ee]">
-                <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+                <img
+                  src={figureImageDisplayUrl(post.imageUrl, { width: 720, quality: 84 })}
+                  alt={post.title}
+                  width={720}
+                  height={480}
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="md:col-span-3 p-6 md:p-8">
                 <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.15em] text-[#37352f]/50 font-semibold mb-4">

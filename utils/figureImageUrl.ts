@@ -1,7 +1,7 @@
 /**
  * Supabase image transforms (`/render/image/...`) need a plan that supports them and width ≤ 2500.
- * By default we return the original public URL so figures always load on the free tier.
- * Set `VITE_SUPABASE_FIGURE_IMAGE_TRANSFORM=true` to use WebP render URLs (Pro / eligible projects).
+ * By default we return the original public URL so assets load on the free tier.
+ * Set `VITE_SUPABASE_FIGURE_IMAGE_TRANSFORM=true` for WebP render URLs (portfolio figures, Home thumbnails, etc.).
  */
 const MAX_TRANSFORM_WIDTH = 2500;
 

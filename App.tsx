@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AtSign, BookOpen, Instagram, Twitter, Youtube } from 'lucide-react';
 import SiteHeader from './components/SiteHeader';
 import Home from './pages/Home';
-import Contact from './pages/Contact';
-import About from './pages/About';
-import Services from './pages/Services';
-import Workshops from './pages/Workshops';
-import WorkshopDetail from './pages/WorkshopDetail';
-import Portfolio from './pages/Portfolio';
-import Blog from './pages/Blog';
-import BlogDetail from './pages/BlogDetail';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+
+const Contact = lazy(() => import('./pages/Contact'));
+const About = lazy(() => import('./pages/About'));
+const Services = lazy(() => import('./pages/Services'));
+const Workshops = lazy(() => import('./pages/Workshops'));
+const WorkshopDetail = lazy(() => import('./pages/WorkshopDetail'));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BlogDetail = lazy(() => import('./pages/BlogDetail'));
+const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 import { supabase } from './supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { View } from './types';
@@ -35,6 +36,13 @@ import {
 function browserPathSearchHash(): string {
   return window.location.pathname + window.location.search + window.location.hash;
 }
+
+const routeFallback = (
+  <div className="flex flex-1 flex-col items-center justify-center gap-2 py-24 text-sm text-[#5c5a57]" aria-busy="true">
+    <span className="h-8 w-8 animate-pulse rounded-full bg-[#37352f]/10" aria-hidden />
+    Loading…
+  </div>
+);
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(getViewFromPath(browserPathSearchHash()));
@@ -259,7 +267,7 @@ const App: React.FC = () => {
       <SiteHeader session={session} currentView={currentView} navigate={navigate} />
 
       <main className="relative flex min-h-0 flex-1 flex-col overflow-x-clip pb-[env(safe-area-inset-bottom,0px)]">
-        {renderContent()}
+        <Suspense fallback={routeFallback}>{renderContent()}</Suspense>
       </main>
 
       <footer className="flex w-full flex-col items-center justify-between gap-6 border-t border-[#e0e0e0] bg-[#fcfaf8] px-4 py-8 text-xs text-[#37352f]/50 supports-[padding:max(0px)]:pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6 md:flex-row md:gap-4 md:px-12 lg:px-24 xl:px-32">
@@ -267,7 +275,7 @@ const App: React.FC = () => {
           <span>© {new Date().getFullYear()} Rafeeque Mavoor Studio.</span>
         </div>
         <div className="flex flex-col items-center gap-4 md:items-end">
-            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-normal text-[#37352f]/70" aria-label="Site sections">
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-normal text-[#5c5a57]" aria-label="Site sections">
               <a href={ROUTES.workshops} onClick={(e) => navigate(e, 'workshops', ROUTES.workshops)} className="min-h-[44px] inline-flex items-center rounded-md px-1 underline-offset-4 hover:text-[#37352f] hover:underline">
                 Workshops
               </a>
@@ -276,7 +284,7 @@ const App: React.FC = () => {
               </a>
             </nav>
             <div className="flex flex-wrap items-center justify-center gap-4 md:justify-end md:gap-6">
-            <div className="flex items-center gap-3 text-[#37352f]/45 sm:gap-5 hover:text-[#37352f]/70">
+            <div className="flex items-center gap-3 text-[#5c5a57] sm:gap-5 hover:text-[#37352f]">
                <a href={ROUTES.blog} onClick={(e) => navigate(e, 'blog', ROUTES.blog)} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Blog" title="Blog">
                  <BookOpen className="h-5 w-5" strokeWidth={1.75} />
                </a>
@@ -297,7 +305,7 @@ const App: React.FC = () => {
                </a>
             </div>
             <div className="hidden h-6 w-px bg-[#37352f]/10 md:block" aria-hidden />
-            <button type="button" onClick={(e) => navigate(e, 'login', '/login')} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[#37352f]/40 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f]" aria-label="Admin Login">
+            <button type="button" onClick={(e) => navigate(e, 'login', '/login')} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[#5c5a57] transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f]" aria-label="Admin Login">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>

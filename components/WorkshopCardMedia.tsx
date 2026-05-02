@@ -27,6 +27,9 @@ const WorkshopCardMedia: React.FC<{
     <img
       src={src}
       alt={title}
+      width={960}
+      height={540}
+      sizes={fill ? '(max-width: 1024px) 100vw, 33vw' : '320px'}
       className={`w-full object-cover ${fill ? 'absolute inset-0 h-full' : 'h-52'}`}
       loading="lazy"
       decoding="async"

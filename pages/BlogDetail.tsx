@@ -3,6 +3,7 @@ import { blogPosts as fallbackPosts } from '../data/blog';
 import { supabase } from '../supabase/client';
 import { BlogPost, type AppNavigate } from '../types';
 import { ROUTES } from '../utils/routes';
+import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 function slugifyHeading(text: string, index: number): string {
   const base = text
@@ -232,8 +233,12 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
           </header>
 
           <img
-            src={post.imageUrl}
+            src={figureImageDisplayUrl(post.imageUrl, { width: 1400, quality: 86 })}
             alt={post.title}
+            width={1400}
+            height={900}
+            sizes="(max-width: 1280px) 100vw, 900px"
+            decoding="async"
             className="mb-10 h-72 w-full rounded-xl border border-[#37352f]/10 object-cover md:h-96"
           />
 
@@ -259,8 +264,11 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
                   >
                     {r.imageUrl ? (
                       <img
-                        src={r.imageUrl}
+                        src={figureImageDisplayUrl(r.imageUrl, { width: 280, quality: 80 })}
                         alt=""
+                        width={280}
+                        height={180}
+                        sizes="72px"
                         className="h-16 w-[4.5rem] shrink-0 rounded-lg border border-[#37352f]/8 object-cover"
                         loading="lazy"
                         decoding="async"

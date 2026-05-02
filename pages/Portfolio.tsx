@@ -16,6 +16,10 @@ import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 export type { PortfolioFiguresGalleryFilter, PortfolioTab };
 
+const PAGE_SIZE_COVERS = 9;
+const PAGE_SIZE_GALLERY = 9;
+const PAGE_SIZE_WEBSITES = 6;
+
 const getYoutubeEmbedUrl = (url: string): string => {
   try {
     const parsed = new URL(url.trim());
@@ -77,6 +81,16 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     setFiguresGalleryFilter(portfolioFiguresGalleryFromPath(path));
   }, [path]);
 
+  useEffect(() => {
+    setCoversPageCount(1);
+    setGalleryPageCount(1);
+    setWebsitesPageCount(1);
+  }, [activeTab]);
+
+  useEffect(() => {
+    setGalleryPageCount(1);
+  }, [figuresGalleryFilter]);
+
   const goTab = (tab: PortfolioTab) => (e: React.MouseEvent<HTMLButtonElement>) => {
     const dest = portfolioHrefForTab(tab);
     if (navigate) {
@@ -104,6 +118,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [tabsDocked, setTabsDocked] = useState(false);
   const [showFloatingWorkCta, setShowFloatingWorkCta] = useState(false);
   const tabBarRef = useRef<HTMLDivElement>(null);
+  const [coversPageCount, setCoversPageCount] = useState(1);
+  const [galleryPageCount, setGalleryPageCount] = useState(1);
+  const [websitesPageCount, setWebsitesPageCount] = useState(1);
 
   const portfolioCtaTabs: PortfolioTab[] = ['covers', 'figures'];
   const showFloatingCtaForTab = portfolioCtaTabs.includes(activeTab);
@@ -317,6 +334,19 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     return rows;
   }, [figures, graphicalAbstracts, figuresGalleryFilter]);
 
+  const visibleCovers = useMemo(
+    () => covers.slice(0, coversPageCount * PAGE_SIZE_COVERS),
+    [covers, coversPageCount]
+  );
+  const visibleGalleryRows = useMemo(
+    () => galleryRows.slice(0, galleryPageCount * PAGE_SIZE_GALLERY),
+    [galleryRows, galleryPageCount]
+  );
+  const visibleWebsites = useMemo(
+    () => websites.slice(0, websitesPageCount * PAGE_SIZE_WEBSITES),
+    [websites, websitesPageCount]
+  );
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -411,16 +441,21 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               'Share your journal, deadline, and story—we can align art direction with your lab’s visual identity.'
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14 md:gap-y-16 lg:gap-y-20">
-              {covers.map((cover) => (
+              {visibleCovers.map((cover) => (
                 <div key={cover.id} className="flex flex-col gap-3">
                   <div
                     className="group relative aspect-[3/4] overflow-hidden rounded-lg shadow-md border border-[#37352f]/10 cursor-pointer"
                     onClick={() => openModal(cover)}
                   >
                     <img
-                      src={cover.cover_image_url}
+                      src={figureImageDisplayUrl(cover.cover_image_url, { width: 900, quality: 82 })}
                       alt={cover.title}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                      width={600}
+                      height={800}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -448,6 +483,17 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 <p className="text-[#37352f]/40 font-serif italic text-xl">No journal covers added yet.</p>
               </div>
             )}
+            {covers.length > 0 && visibleCovers.length < covers.length ? (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setCoversPageCount((p) => p + 1)}
+                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
+                >
+                  Load more covers
+                </button>
+              </div>
+            ) : null}
           </>
         )}
 
@@ -530,7 +576,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               ))}
             </nav>
 
-            {galleryRows.length === 0 ? (
+            {visibleGalleryRows.length === 0 ? (
               <div className="mx-auto max-w-xl rounded-2xl border-2 border-dashed border-[#37352f]/10 py-16 text-center">
                 <p className="font-serif text-lg italic text-[#37352f]/40">
                   {figuresGalleryFilter === 'abstracts'
@@ -542,7 +588,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 lg:gap-y-14">
-                {galleryRows.map((row) => {
+                {visibleGalleryRows.map((row) => {
                   if (row.kind === 'figure') {
                     const fig = row.item;
                     const urls = portfolioFigureUrls(fig);
@@ -559,6 +605,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                             <img
                               src={figureImageDisplayUrl(thumb, { width: 960 })}
                               alt=""
+                              width={960}
+                              height={720}
                               className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                               loading="lazy"
                               decoding="async"
@@ -600,8 +648,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                     >
                       <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[#37352f]/10 shadow-md">
                         <img
-                          src={abs.abstract_image_url}
+                          src={figureImageDisplayUrl(abs.abstract_image_url, { width: 960, quality: 84 })}
                           alt={abs.title}
+                          width={960}
+                          height={720}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.02]"
                         />
                         <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#37352f]/80 backdrop-blur-sm">
@@ -626,6 +679,17 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 })}
               </div>
             )}
+            {galleryRows.length > 0 && visibleGalleryRows.length < galleryRows.length ? (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setGalleryPageCount((p) => p + 1)}
+                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
+                >
+                  Load more gallery items
+                </button>
+              </div>
+            ) : null}
           </div>
         )}
 
@@ -647,11 +711,20 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {websites.map((site) => (
+              {visibleWebsites.map((site) => (
                 <a key={site.id} href={site.websiteUrl} target="_blank" rel="noopener noreferrer" className="group bg-white/70 border border-[#37352f]/10 rounded-xl overflow-hidden hover:shadow-md transition-all">
                   <div className="h-44 bg-[#f3f1ee] border-b border-[#37352f]/10 overflow-hidden">
                     {site.imageUrl ? (
-                      <img src={site.imageUrl} alt={site.labName} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                      <img
+                        src={figureImageDisplayUrl(site.imageUrl, { width: 960, quality: 82 })}
+                        alt={site.labName}
+                        width={960}
+                        height={560}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-sm text-[#37352f]/45">Thumbnail coming soon</div>
                     )}
@@ -673,6 +746,18 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 </div>
               )}
             </div>
+
+            {websites.length > 0 && visibleWebsites.length < websites.length ? (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setWebsitesPageCount((p) => p + 1)}
+                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
+                >
+                  Load more websites
+                </button>
+              </div>
+            ) : null}
 
             <div className="mt-14 border-t border-[#37352f]/10 pt-12">
               <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.15em] text-[#37352f]/45">Apps</p>
@@ -696,8 +781,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           >
             <div className="flex min-h-[min(45vh,320px)] shrink-0 items-center justify-center bg-[#ebe8e4] p-3 sm:p-5 md:min-h-0 md:w-[min(52%,480px)] md:max-w-[52%]">
               <img
-                src={selectedCover.cover_image_url}
+                src={figureImageDisplayUrl(selectedCover.cover_image_url, { width: 1600, quality: 88 })}
                 alt={selectedCover.title}
+                width={1200}
+                height={1600}
                 className="max-h-[min(50vh,640px)] w-auto max-w-full object-contain md:max-h-[min(82vh,720px)]"
                 referrerPolicy="no-referrer"
               />
@@ -770,8 +857,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           >
             <div className="flex min-h-[min(40vh,280px)] shrink-0 items-center justify-center bg-[#ebe8e4] p-3 sm:p-5 md:min-h-0 md:w-[min(52%,480px)] md:max-w-[52%]">
               <img
-                src={selectedAbstract.abstract_image_url}
+                src={figureImageDisplayUrl(selectedAbstract.abstract_image_url, { width: 1600, quality: 88 })}
                 alt={selectedAbstract.title}
+                width={1200}
+                height={900}
                 className="max-h-[min(48vh,560px)] w-auto max-w-full object-contain md:max-h-[min(82vh,680px)]"
               />
             </div>
