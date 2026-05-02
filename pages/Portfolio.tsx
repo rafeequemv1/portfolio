@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../supabase/client';
 import { GraphicalAbstract, JournalCover, LabWebsite, PortfolioFigure, PortfolioVideo, View } from '../types';
-import { Loader2, ExternalLink, X } from 'lucide-react';
+import { Loader2, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import AppsShowcase from '../components/AppsShowcase';
 import {
   pathnameOnly,
@@ -29,6 +29,11 @@ const getYoutubeEmbedUrl = (url: string): string => {
   }
 };
 
+function portfolioFigureUrls(fig: PortfolioFigure | null): string[] {
+  if (!fig?.image_urls?.length) return [];
+  return fig.image_urls.filter((u): u is string => typeof u === 'string' && u.trim().length > 0);
+}
+
 interface PortfolioProps {
   path: string;
   navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
@@ -43,6 +48,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [loading, setLoading] = useState(true);
   const [selectedCover, setSelectedCover] = useState<JournalCover | null>(null);
   const [selectedAbstract, setSelectedAbstract] = useState<GraphicalAbstract | null>(null);
+  const [selectedFigure, setSelectedFigure] = useState<PortfolioFigure | null>(null);
+  const [figureSlideIndex, setFigureSlideIndex] = useState(0);
+  const figureTouchStartX = useRef<number | null>(null);
   const [activeTab, setActiveTab] = useState<PortfolioTab>(() => portfolioTabFromPathname(pathnameOnly(path)));
 
   useEffect(() => {
@@ -202,7 +210,37 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const closeModal = () => {
     setSelectedCover(null);
     setSelectedAbstract(null);
+    setSelectedFigure(null);
   };
+
+  useEffect(() => {
+    if (selectedFigure) setFigureSlideIndex(0);
+  }, [selectedFigure?.id]);
+
+  useEffect(() => {
+    if (!selectedFigure) return;
+    const n = portfolioFigureUrls(selectedFigure).length;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelectedCover(null);
+        setSelectedAbstract(null);
+        setSelectedFigure(null);
+        return;
+      }
+      if (n <= 1) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setFigureSlideIndex((i) => (i - 1 + n) % n);
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setFigureSlideIndex((i) => (i + 1) % n);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedFigure]);
 
   const servicesIllustrationHref = `${ROUTES.services}#request-illustration`;
 
@@ -479,43 +517,47 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 <p className="font-serif text-lg italic text-[#37352f]/40">No figures added yet.</p>
               </div>
             ) : (
-              <div className="mx-auto grid max-w-3xl grid-cols-1 gap-6 sm:gap-7">
-                {figures.map((fig) => (
-                  <article
-                    key={fig.id}
-                    className="rounded-lg border border-[#37352f]/10 bg-white/90 p-3 shadow-md sm:p-4"
-                  >
-                    <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                      {(fig.image_urls || []).map((url) => (
-                        <img
-                          key={url}
-                          src={url}
-                          alt=""
-                          className="max-h-52 w-auto shrink-0 rounded-md border border-[#37352f]/10 bg-[#fafafa] object-contain sm:max-h-60"
-                        />
-                      ))}
-                    </div>
-                    <div className="mt-4 space-y-1.5 border-t border-[#37352f]/10 pt-4">
-                      {fig.paper_url ? (
-                        <a
-                          href={fig.paper_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-start gap-2 font-serif text-base font-semibold leading-snug text-[#37352f] hover:underline sm:text-lg"
-                        >
-                          <span>{fig.paper_title}</span>
-                          <ExternalLink size={14} className="mt-0.5 shrink-0 opacity-50" />
-                        </a>
-                      ) : (
-                        <h3 className="font-serif text-base font-semibold leading-snug text-[#37352f] sm:text-lg">{fig.paper_title}</h3>
-                      )}
-                      {(fig.lab_name || fig.university_name) && (
-                        <p className="text-xs text-[#37352f]/75 sm:text-sm">{[fig.lab_name, fig.university_name].filter(Boolean).join(' · ')}</p>
-                      )}
-                      {fig.authors && <p className="text-[11px] leading-relaxed text-[#37352f]/55 sm:text-xs">{fig.authors}</p>}
-                    </div>
-                  </article>
-                ))}
+              <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:grid-cols-3 lg:gap-y-14">
+                {figures.map((fig) => {
+                  const urls = portfolioFigureUrls(fig);
+                  const thumb = urls[0];
+                  return (
+                    <button
+                      key={fig.id}
+                      type="button"
+                      onClick={() => setSelectedFigure(fig)}
+                      className="group flex min-w-0 flex-col gap-2.5 rounded-2xl border border-[#37352f]/10 bg-white/90 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#37352f]/8 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#37352f]/30"
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg border border-[#37352f]/10 bg-[#f3f1ee]">
+                        {thumb ? (
+                          <img
+                            src={thumb}
+                            alt=""
+                            className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs text-[#37352f]/45">No preview</div>
+                        )}
+                        {urls.length > 1 && (
+                          <span className="absolute bottom-2 right-2 rounded-full bg-[#37352f]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                            {urls.length} images
+                          </span>
+                        )}
+                      </div>
+                      <div className="px-0.5 pb-1">
+                        <p className="line-clamp-2 font-serif text-sm font-semibold leading-snug text-[#37352f] transition-colors group-hover:text-black sm:text-base">
+                          {fig.paper_title}
+                        </p>
+                        {(fig.lab_name || fig.university_name) && (
+                          <p className="mt-1 line-clamp-1 text-[10px] font-medium uppercase tracking-[0.12em] text-[#37352f]/50">
+                            {[fig.lab_name, fig.university_name].filter(Boolean).join(' · ')}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -681,6 +723,169 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 {selectedAbstract.pi_name && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">PI</span><span className="font-semibold">{selectedAbstract.pi_name}</span></div>}
                 {selectedAbstract.lab_name && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">Lab</span>{selectedAbstract.lab_url ? <a href={selectedAbstract.lab_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline flex items-center gap-1">{selectedAbstract.lab_name} <ExternalLink size={12} /></a> : <span className="font-semibold">{selectedAbstract.lab_name}</span>}</div>}
                 {selectedAbstract.paper_url && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">Paper</span><a href={selectedAbstract.paper_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline flex items-center gap-1">Read the Article <ExternalLink size={12} /></a></div>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedFigure && (
+        <div
+          className="fixed inset-0 z-[100] flex animate-fade-in-up items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-6"
+          style={{ animationDuration: '0.3s' }}
+          onClick={closeModal}
+        >
+          <div
+            className="flex max-h-[min(92vh,900px)] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-[#fcfaf8] shadow-2xl md:max-h-[90vh] md:flex-row"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative flex min-h-[min(42vh,300px)] shrink-0 flex-col bg-[#ebe8e4] md:min-h-0 md:w-[min(52%,480px)] md:max-w-[52%]">
+              {(() => {
+                const urls = portfolioFigureUrls(selectedFigure);
+                const n = urls.length;
+                const idx = n > 0 ? ((figureSlideIndex % n) + n) % n : 0;
+                const src = urls[idx];
+                const goPrev = () => {
+                  if (n) setFigureSlideIndex((i) => (i - 1 + n) % n);
+                };
+                const goNext = () => {
+                  if (n) setFigureSlideIndex((i) => (i + 1) % n);
+                };
+                return (
+                  <>
+                    <div
+                      className="relative flex min-h-[min(38vh,260px)] flex-1 items-center justify-center p-3 sm:p-5"
+                      onTouchStart={(e) => {
+                        figureTouchStartX.current = e.touches[0]?.clientX ?? null;
+                      }}
+                      onTouchEnd={(e) => {
+                        const start = figureTouchStartX.current;
+                        figureTouchStartX.current = null;
+                        if (start == null || n <= 1) return;
+                        const end = e.changedTouches[0]?.clientX ?? start;
+                        const dx = end - start;
+                        if (Math.abs(dx) > 48) {
+                          if (dx > 0) goPrev();
+                          else goNext();
+                        }
+                      }}
+                    >
+                      {src ? (
+                        <img
+                          src={src}
+                          alt=""
+                          className="max-h-[min(50vh,560px)] w-auto max-w-full object-contain md:max-h-[min(78vh,680px)]"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <p className="px-4 text-center text-sm text-[#37352f]/50">No images for this figure set.</p>
+                      )}
+                      {n > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={goPrev}
+                            className="absolute left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#37352f]/15 bg-white/95 text-[#37352f] shadow-md transition-colors hover:bg-white"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft size={22} strokeWidth={2} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={goNext}
+                            className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#37352f]/15 bg-white/95 text-[#37352f] shadow-md transition-colors hover:bg-white"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight size={22} strokeWidth={2} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    {n > 1 && (
+                      <div className="flex flex-wrap justify-center gap-1.5 border-t border-[#37352f]/10 bg-[#ebe8e4]/98 px-3 py-2.5">
+                        {urls.map((_, i) => (
+                          <button
+                            key={`${selectedFigure.id}-dot-${i}`}
+                            type="button"
+                            onClick={() => setFigureSlideIndex(i)}
+                            className={`h-1.5 rounded-full transition-all ${i === idx ? 'w-6 bg-[#37352f]' : 'w-1.5 bg-[#37352f]/30 hover:bg-[#37352f]/45'}`}
+                            aria-label={`Show image ${i + 1} of ${n}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-5 sm:p-8">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#37352f]/45">Publication figure</p>
+                  {selectedFigure.paper_url ? (
+                    <a
+                      href={selectedFigure.paper_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex items-start gap-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-[#37352f] hover:underline sm:text-3xl"
+                    >
+                      <span>{selectedFigure.paper_title}</span>
+                      <ExternalLink size={18} className="mt-1 shrink-0 opacity-50" />
+                    </a>
+                  ) : (
+                    <h1 className="mt-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-[#37352f] sm:text-3xl">
+                      {selectedFigure.paper_title}
+                    </h1>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="shrink-0 text-[#37352f]/40 transition-colors hover:text-black"
+                  aria-label="Close modal"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="mt-8 space-y-4 border-t border-[#37352f]/10 pt-6 text-sm">
+                {selectedFigure.university_name && (
+                  <div className="flex gap-4">
+                    <span className="w-24 shrink-0 text-[#37352f]/50">University</span>
+                    <span className="font-semibold text-[#37352f]">{selectedFigure.university_name}</span>
+                  </div>
+                )}
+                {selectedFigure.lab_name && (
+                  <div className="flex gap-4">
+                    <span className="w-24 shrink-0 text-[#37352f]/50">Lab</span>
+                    <span className="font-semibold text-[#37352f]">{selectedFigure.lab_name}</span>
+                  </div>
+                )}
+                {selectedFigure.authors && (
+                  <div className="flex gap-4">
+                    <span className="w-24 shrink-0 text-[#37352f]/50">Authors</span>
+                    <span className="leading-relaxed text-[#37352f]/85">{selectedFigure.authors}</span>
+                  </div>
+                )}
+                {portfolioFigureUrls(selectedFigure).length > 1 && (
+                  <div className="flex gap-4">
+                    <span className="w-24 shrink-0 text-[#37352f]/50">Panels</span>
+                    <span className="font-semibold text-[#37352f]">{portfolioFigureUrls(selectedFigure).length} images — use arrows or swipe</span>
+                  </div>
+                )}
+                {selectedFigure.paper_url && (
+                  <div className="flex gap-4">
+                    <span className="w-24 shrink-0 text-[#37352f]/50">Paper</span>
+                    <a
+                      href={selectedFigure.paper_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline"
+                    >
+                      Open publication <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
