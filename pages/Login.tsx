@@ -44,8 +44,8 @@ const Login: React.FC<LoginProps> = ({ session, navigate }) => {
 
   if (session) {
     return (
-      <div className="flex-grow flex flex-col items-center justify-center p-10 animate-fade-in-up">
-        <div className="w-full max-w-sm text-center p-8 bg-white/60 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex flex-grow flex-col items-center justify-center px-4 py-12 animate-fade-in-up sm:px-6 sm:py-16">
+        <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white/60 p-6 text-center shadow-sm sm:p-8">
           <h1 className="text-2xl font-serif text-[#37352f] mb-2">Welcome Back</h1>
           <p className="text-sm text-[#37352f]/60 mb-6 truncate">{session.user.email}</p>
           <div className="space-y-3">
@@ -68,7 +68,7 @@ const Login: React.FC<LoginProps> = ({ session, navigate }) => {
   }
 
   return (
-    <div className="flex-grow flex flex-col items-center justify-center p-10 animate-fade-in-up">
+    <div className="flex flex-grow flex-col items-center justify-center px-4 py-12 animate-fade-in-up sm:px-6 sm:py-16">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
             <h1 className="text-3xl font-serif text-[#37352f] mb-1">{isSignUp ? 'Create Account' : 'Admin Portal'}</h1>

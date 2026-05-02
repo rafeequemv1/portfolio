@@ -45,7 +45,7 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
   const workshopsToDisplay = !loading && workshops.length === 0 ? demoWorkshops : workshops;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-grow flex-col animate-fade-in-up px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-16">
+    <div className="mx-auto flex w-full max-w-6xl flex-grow flex-col animate-fade-in-up px-4 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:px-16">
       <header className="mb-12 text-center">
         <div className="relative inline-block">
           <h1 className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">Workshops & Training</h1>

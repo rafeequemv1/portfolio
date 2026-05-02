@@ -3,7 +3,7 @@ import AppsShowcase from '../components/AppsShowcase';
 
 const Apps: React.FC = () => {
   return (
-    <div className="flex-grow w-full max-w-5xl mx-auto p-8 md:px-24 md:py-16 animate-fade-in-up">
+    <div className="mx-auto w-full max-w-5xl flex-grow animate-fade-in-up px-4 py-10 sm:px-6 md:px-16 md:py-16 lg:px-24">
       <div className="mb-12 text-center">
         <div className="inline-block relative">
           <h1 className="text-3xl md:text-4xl font-serif text-[#37352f] mb-2 relative z-10 tracking-tight">Apps & Projects</h1>

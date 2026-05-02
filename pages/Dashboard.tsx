@@ -115,26 +115,27 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   };
 
   return (
-    <div className="flex-grow w-full max-w-7xl mx-auto p-6 md:p-10 lg:p-12 animate-fade-in-up">
-      <div className="grid grid-cols-[220px_1fr] md:grid-cols-[230px_1fr] lg:grid-cols-[240px_1fr] gap-6 md:gap-8 lg:gap-12 items-start">
-        <aside className="ml-1 md:ml-2 lg:ml-4">
-          <div className="bg-white/80 border border-[#37352f]/10 rounded-2xl p-3">
-            <div className="px-2 py-3 mb-2">
+    <div className="mx-auto w-full max-w-7xl flex-grow animate-fade-in-up px-4 py-6 sm:px-6 md:p-10 lg:p-12">
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[240px_1fr] lg:items-start lg:gap-12">
+        <aside className="min-w-0 lg:ml-2 xl:ml-4">
+          <div className="rounded-2xl border border-[#37352f]/10 bg-white/80 p-3">
+            <div className="mb-2 px-2 py-3">
               <p className="text-[11px] uppercase tracking-[0.2em] text-[#37352f]/45">Sections</p>
             </div>
-            <nav className="space-y-1">
+            <nav className="-mx-1 flex gap-1 overflow-x-auto overscroll-x-contain px-1 pb-1 lg:mx-0 lg:flex-col lg:space-y-1 lg:overflow-visible lg:px-0 lg:pb-0">
               {sectionItems.map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => setActiveSection(key)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                  className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-all touch-manipulation sm:gap-3 lg:w-full ${
                     activeSection === key
                       ? 'bg-[#37352f] text-white shadow-sm'
                       : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
                   }`}
                 >
-                  <Icon size={16} />
-                  <span className="font-medium">{label}</span>
+                  <Icon size={16} className="shrink-0" />
+                  <span className="whitespace-nowrap font-medium">{label}</span>
                 </button>
               ))}
             </nav>

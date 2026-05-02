@@ -73,7 +73,7 @@ const services: Service[] = [
 
 const Services: React.FC = () => {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-grow animate-fade-in-up p-8 md:px-16 md:py-16 lg:px-24">
+    <div className="mx-auto flex w-full max-w-6xl flex-grow animate-fade-in-up px-4 py-10 sm:px-6 md:px-16 md:py-16 lg:px-24">
       <div className="w-full">
         <div className="mb-12 text-center">
           <div className="relative inline-block">

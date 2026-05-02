@@ -8,8 +8,8 @@ interface ContactProps {
 
 const Contact: React.FC<ContactProps> = ({ navigate }) => {
   return (
-    <div className="flex-grow flex flex-col items-center relative p-10 md:p-20 animate-fade-in-up">
-      <div className="max-w-xl w-full bg-white/60 backdrop-blur-sm p-10 md:p-14 rounded-xl border border-[#37352f]/5 shadow-sm relative overflow-hidden">
+    <div className="relative flex flex-grow flex-col items-center px-4 py-10 animate-fade-in-up sm:px-6 md:p-16 lg:p-20">
+      <div className="relative w-full max-w-xl overflow-hidden rounded-xl border border-[#37352f]/5 bg-white/60 p-6 shadow-sm backdrop-blur-sm sm:p-8 md:p-14">
         <div className="absolute top-0 right-0 w-24 h-24 bg-[#FFF9C4] opacity-20 rounded-bl-full -mr-4 -mt-4 blur-xl" />
 
         <div className="text-center mb-10 relative z-10">

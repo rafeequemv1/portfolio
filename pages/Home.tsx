@@ -71,9 +71,9 @@ const Home: React.FC = () => {
   const secondRowFull = useMemo(() => buildFullRow(secondRow, 12), [secondRow]);
 
   return (
-    <div className="flex-grow flex flex-col items-center relative p-6 pt-16 md:pt-20 animate-fade-in-up">
-      <div className="text-center max-w-2xl mb-14 md:mb-16">
-        <h1 className="text-5xl md:text-7xl font-serif text-[#37352f] tracking-tight mb-6">
+    <div className="relative flex flex-grow flex-col items-center px-4 pb-12 pt-12 animate-fade-in-up sm:px-6 md:pb-16 md:pt-20">
+      <div className="mb-12 max-w-2xl text-center md:mb-16">
+        <h1 className="mb-5 font-serif text-4xl tracking-tight text-[#37352f] sm:text-5xl md:mb-6 md:text-7xl">
           Rafeeque Mavoor
         </h1>
         <div className="flex items-center justify-center gap-3">

@@ -111,7 +111,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 md:px-12 lg:px-24 py-12 md:py-20 animate-fade-in-up">
+    <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         
         {/* Left Sidebar */}

@@ -52,7 +52,7 @@ const Blog: React.FC<BlogProps> = ({ navigate }) => {
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 md:px-12 lg:px-24 py-12 md:py-20 animate-fade-in-up">
+    <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24">
       <header className="mb-14 max-w-3xl">
         <p className="text-xs uppercase tracking-[0.2em] text-[#37352f]/50 font-semibold mb-4">Journal</p>
         <h1 className="text-4xl md:text-5xl font-serif text-[#37352f] tracking-tight mb-5">Thoughts on design, code, and scientific communication.</h1>

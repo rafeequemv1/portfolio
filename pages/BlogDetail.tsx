@@ -64,12 +64,12 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
   }, [post]);
 
   if (loading) {
-    return <div className="w-full max-w-3xl mx-auto p-8 md:px-12 py-20 text-[#37352f]/60">Loading post...</div>;
+    return <div className="mx-auto w-full max-w-3xl px-4 py-16 text-[#37352f]/60 sm:px-6 md:px-12 md:py-20">Loading post...</div>;
   }
 
   if (!post) {
     return (
-      <div className="w-full max-w-3xl mx-auto p-8 md:px-12 py-20 text-center">
+      <div className="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6 md:px-12 md:py-20">
         <h1 className="text-3xl font-serif mb-4">Post not found</h1>
         <a
           href="/blog"
@@ -83,7 +83,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-8 md:px-12 py-12 md:py-20 animate-fade-in-up">
+    <div className="mx-auto w-full max-w-3xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20">
       <a
         href="/blog"
         onClick={(e) => navigate(e, 'blog', '/blog')}

@@ -126,7 +126,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ initialTab = 'covers', navigate }
     const el = tabBarRef.current;
     if (!el) return;
     const top = el.getBoundingClientRect().top;
-    const stickyTopPx = 81;
+    const stickyTopPx =
+      typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches ? 81 : 68;
     setTabsDocked((prev) => {
       if (prev) return top > stickyTopPx + 28 ? false : true;
       return top <= stickyTopPx;
@@ -178,8 +179,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ initialTab = 'covers', navigate }
     <>
       <div className={coversLayout ? 'w-full bg-white' : 'w-full'}>
         <div
-          className={`flex-grow w-full mx-auto animate-fade-in-up p-8 md:py-16 ${
-            coversLayout ? 'max-w-5xl md:px-10 lg:px-16 xl:max-w-4xl' : 'max-w-6xl md:px-24'
+          className={`mx-auto w-full max-w-full flex-grow animate-fade-in-up px-4 pb-8 pt-6 sm:px-6 md:py-16 ${
+            coversLayout ? 'max-w-5xl md:px-10 lg:px-16 xl:max-w-4xl' : 'max-w-6xl md:px-16 lg:px-24'
           }`}
         >
         <div className="mb-16 text-center">
@@ -192,7 +193,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ initialTab = 'covers', navigate }
 
         <div
           ref={tabBarRef}
-          className={`sticky top-20 z-30 mb-10 flex justify-center transition-[background-color,box-shadow,border-color] duration-200 ${
+          className={`sticky top-16 z-30 mb-10 flex justify-center transition-[background-color,box-shadow,border-color] duration-200 sm:top-20 ${
             tabsDocked
               ? `border-b border-[#37352f]/10 py-2.5 shadow-sm backdrop-blur-md ${coversLayout ? 'bg-white/95' : 'bg-[#fcfaf8]/95'}`
               : 'py-2'
