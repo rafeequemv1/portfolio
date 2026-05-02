@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { AtSign, BookOpen, Instagram, Twitter, Youtube } from 'lucide-react';
 import Home from './pages/Home';
 import Contact from './pages/Contact';
 import About from './pages/About';
@@ -29,18 +30,21 @@ const pathMap: { [key: string]: View } = {
 };
 
 const getViewFromPath = (path: string): View => {
-  if (path.startsWith('/workshops/') && path.length > '/workshops/'.length) {
+  const pathOnly = path.split('#')[0] || path;
+  if (pathOnly.startsWith('/workshops/') && pathOnly.length > '/workshops/'.length) {
     return 'workshop-detail';
   }
-  if (path.startsWith('/blog/') && path.length > '/blog/'.length) {
+  if (pathOnly.startsWith('/blog/') && pathOnly.length > '/blog/'.length) {
     return 'blog-detail';
   }
-  return pathMap[path] || 'home'; // Default to home for any unknown paths
+  return pathMap[pathOnly] || 'home';
 };
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<View>(getViewFromPath(window.location.pathname));
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [currentView, setCurrentView] = useState<View>(
+    getViewFromPath(window.location.pathname + window.location.hash)
+  );
+  const [currentPath, setCurrentPath] = useState(window.location.pathname + window.location.hash);
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -67,8 +71,17 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const onPopState = () => {
-      setCurrentView(getViewFromPath(window.location.pathname));
-      setCurrentPath(window.location.pathname);
+      const full = window.location.pathname + window.location.hash;
+      setCurrentView(getViewFromPath(full));
+      setCurrentPath(full);
+      const hash = window.location.hash.slice(1);
+      requestAnimationFrame(() => {
+        if (hash) {
+          document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo(0, 0);
+        }
+      });
     };
     window.addEventListener('popstate', onPopState);
     return () => {
@@ -96,7 +109,7 @@ const App: React.FC = () => {
       case 'apps':
         title = 'Apps & Experiments | Rafeeque Mavoor';
         description = 'A digital garden of tools and experiments by Rafeeque Mavoor, including OpenScienceArt, OceanOfPapers, and other scientific software.';
-        path = '/portfolio';
+        path = '/apps';
         break;
       case 'workshops':
         title = 'Workshops & Training | Rafeeque Mavoor';
@@ -123,7 +136,7 @@ const App: React.FC = () => {
       case 'blog-detail': {
         title = 'Blog | Rafeeque Mavoor';
         description = 'Read insights on scientific communication, prompt engineering, databases, and web app development.';
-        path = currentPath;
+        path = currentPath.split('#')[0];
         break;
       }
       case 'contact':
@@ -158,17 +171,28 @@ const App: React.FC = () => {
 
   }, [currentView, currentPath]);
 
-  const navigate = (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => {
+  const navigate = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, _view: View, path: string) => {
     e.preventDefault();
-    if (window.location.pathname !== path) {
+    const pathOnly = path.split('#')[0] || path;
+    const hash = path.includes('#') ? path.slice(path.indexOf('#') + 1) : '';
+    const currentFull = window.location.pathname + window.location.hash;
+    if (currentFull !== path) {
       try {
         window.history.pushState({}, '', path);
       } catch (error) {
         console.warn('history.pushState failed, likely in a sandboxed environment. Falling back to state-only navigation.', error);
       }
-      setCurrentView(view);
-      setCurrentPath(path);
-      window.scrollTo(0, 0);
+      setCurrentView(getViewFromPath(pathOnly));
+      setCurrentPath(pathOnly + (hash ? `#${hash}` : ''));
+      requestAnimationFrame(() => {
+        if (hash) {
+          document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo(0, 0);
+        }
+      });
+    } else if (hash) {
+      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -179,13 +203,13 @@ const App: React.FC = () => {
       case 'services':
         return <Services />;
       case 'apps':
-        return <Portfolio initialTab="apps" />;
+        return <Portfolio initialTab="apps" navigate={navigate} />;
       case 'workshops':
         return <Workshops navigate={navigate} />;
       case 'workshop-detail':
         return <WorkshopDetail path={currentPath} navigate={navigate} />;
       case 'portfolio':
-        return <Portfolio />;
+        return <Portfolio navigate={navigate} />;
       case 'about':
         return <About />;
       case 'blog':
@@ -193,7 +217,7 @@ const App: React.FC = () => {
       case 'blog-detail':
         return <BlogDetail path={currentPath} navigate={navigate} />;
       case 'contact':
-        return <Contact />;
+        return <Contact navigate={navigate} />;
       case 'login':
         return <Login session={session} navigate={navigate} />;
       case 'dashboard':
@@ -235,7 +259,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col relative">
+      <main className="relative flex flex-grow flex-col overflow-x-clip">
         {renderContent()}
       </main>
 
@@ -244,12 +268,25 @@ const App: React.FC = () => {
            <span>© {new Date().getFullYear()} Rafeeque Mavoor Studio.</span>
         </div>
         <div className="flex items-center gap-6 mt-4 md:mt-0">
-            <div className="flex gap-6 font-medium font-sans uppercase tracking-[0.1em] text-[9px]">
-               <a href="/blog" onClick={(e) => navigate(e, 'blog', '/blog')} className="hover:text-[#37352f] transition-colors">Blog</a>
-               <a href="https://instagram.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Instagram</a>
-               <a href="https://bsky.app/profile/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Bsky</a>
-               <a href="https://www.threads.net/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">Threads</a>
-               <a href="https://www.youtube.com/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors">YouTube</a>
+            <div className="flex items-center gap-5 text-[#37352f]/45 hover:text-[#37352f]/70">
+               <a href="/blog" onClick={(e) => navigate(e, 'blog', '/blog')} className="hover:text-[#37352f] transition-colors p-1" aria-label="Blog" title="Blog">
+                 <BookOpen className="h-4 w-4" strokeWidth={1.75} />
+               </a>
+               <a href="https://twitter.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors p-1" aria-label="Twitter / X" title="Twitter">
+                 <Twitter className="h-4 w-4" strokeWidth={1.75} />
+               </a>
+               <a href="https://instagram.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors p-1" aria-label="Instagram" title="Instagram">
+                 <Instagram className="h-4 w-4" strokeWidth={1.75} />
+               </a>
+               <a href="https://bsky.app/profile/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors p-1" aria-label="Bluesky" title="Bluesky">
+                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.054-.138.022-.276.04-.415.054-3.928.58-7.414 2.01-6.378 7.972 1.008 5.337 7.406 4.054 10.092 2.097 2.686-1.957 4.206-6.352 4.206-6.352s1.52 4.395 4.206 6.352c2.686 1.957 9.084 3.24 10.092-2.097 1.036-5.962-2.45-7.392-6.378-7.972-.139-.014-.277-.032-.415-.054.14.015.279.034.415.054 2.67.296 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.86-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>
+               </a>
+               <a href="https://www.threads.net/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors p-1" aria-label="Threads" title="Threads">
+                 <AtSign className="h-4 w-4" strokeWidth={1.75} />
+               </a>
+               <a href="https://www.youtube.com/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="hover:text-[#37352f] transition-colors p-1" aria-label="YouTube" title="YouTube">
+                 <Youtube className="h-4 w-4" strokeWidth={1.75} />
+               </a>
             </div>
             <div className="h-4 w-[1px] bg-[#37352f]/10 hidden md:block"></div>
             <button onClick={(e) => navigate(e, 'login', '/login')} className="text-[#37352f]/40 hover:text-[#37352f] transition-colors" aria-label="Admin Login">

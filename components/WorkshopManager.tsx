@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { supabase } from '../supabase/client';
 import { Workshop } from '../types';
 import { Plus, Edit2, Trash2, X, Loader2, Upload } from 'lucide-react';
-
 type WorkshopStatus = 'Upcoming' | 'Past' | 'Sold Out';
 
 const WorkshopManager: React.FC = () => {
@@ -19,7 +18,7 @@ const WorkshopManager: React.FC = () => {
     location: '',
     description: '',
     status: 'Upcoming' as WorkshopStatus,
-    coverImageUrl: '',
+    imageUrls: [] as string[],
   });
 
   useEffect(() => {
@@ -36,7 +35,14 @@ const WorkshopManager: React.FC = () => {
     if (error) {
       console.error('Error fetching workshops:', error);
     } else {
-      setWorkshops((data as Workshop[]) || []);
+      const rows = (data || []).map((w: any) => ({
+        ...w,
+        gallery_images: Array.isArray(w.image_urls)
+          ? w.image_urls.filter((u: unknown) => typeof u === 'string' && (u as string).trim())
+          : w.gallery_images || [],
+        cover_image: w.image_urls?.[0] || w.cover_image,
+      })) as Workshop[];
+      setWorkshops(rows);
     }
     setLoading(false);
   };
@@ -48,7 +54,7 @@ const WorkshopManager: React.FC = () => {
       location: '',
       description: '',
       status: 'Upcoming',
-      coverImageUrl: '',
+      imageUrls: [],
     });
   };
 
@@ -60,13 +66,15 @@ const WorkshopManager: React.FC = () => {
 
   const handleEdit = (workshop: Workshop) => {
     setEditingWorkshop(workshop);
+    const urls = workshop.gallery_images?.filter((u) => typeof u === 'string' && u.trim()) || [];
+    const imageUrls = urls.length ? urls : workshop.cover_image?.trim() ? [workshop.cover_image.trim()] : [];
     setFormData({
       title: workshop.title || '',
       date: workshop.date || '',
       location: workshop.location || '',
       description: workshop.description || '',
       status: (workshop.status as WorkshopStatus) || 'Upcoming',
-      coverImageUrl: workshop.gallery_images?.[0] || workshop.cover_image || '',
+      imageUrls,
     });
     setIsModalOpen(true);
   };
@@ -88,29 +96,40 @@ const WorkshopManager: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
+  const uploadWorkshopFile = async (file: File): Promise<string | null> => {
     const ext = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const filePath = `covers/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('workshop-gallery')
-      .upload(filePath, file, { upsert: false });
-
+    const { error: uploadError } = await supabase.storage.from('workshop-gallery').upload(filePath, file, { upsert: false });
     if (uploadError) {
       console.error('Error uploading workshop image:', uploadError);
-      alert(`Error uploading workshop image: ${uploadError.message}`);
-      setUploading(false);
-      return;
+      alert(`Error uploading: ${uploadError.message}`);
+      return null;
     }
-
     const { data } = supabase.storage.from('workshop-gallery').getPublicUrl(filePath);
-    setFormData((prev) => ({ ...prev, coverImageUrl: data.publicUrl }));
+    return data.publicUrl;
+  };
+
+  const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    const next: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file || !file.type.startsWith('image/')) continue;
+      const url = await uploadWorkshopFile(file);
+      if (url) next.push(url);
+    }
     setUploading(false);
+    e.target.value = '';
+    if (next.length) {
+      setFormData((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ...next] }));
+    }
+  };
+
+  const removeImageAt = (index: number) => {
+    setFormData((prev) => ({ ...prev, imageUrls: prev.imageUrls.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,7 +142,7 @@ const WorkshopManager: React.FC = () => {
       location: formData.location || null,
       description: formData.description || null,
       status: formData.status,
-      image_urls: formData.coverImageUrl ? [formData.coverImageUrl] : null,
+      image_urls: formData.imageUrls.length > 0 ? formData.imageUrls : null,
     };
 
     if (editingWorkshop) {
@@ -157,59 +176,59 @@ const WorkshopManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif text-[#37352f]">Workshops</h2>
-        <button
-          onClick={openNewModal}
-          className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#37352f]/90 transition-colors"
-        >
-          <Plus size={18} />
-          Add New
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="animate-spin text-[#37352f]/20" size={32} />
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {workshops.map((workshop) => (
-            <div
-              key={workshop.id}
-              className="bg-white border border-[#37352f]/10 rounded-xl p-4 flex items-center justify-between gap-4"
+            <h2 className="text-2xl font-serif text-[#37352f]">Workshop events</h2>
+            <button
+              onClick={openNewModal}
+              className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#37352f]/90 transition-colors"
             >
-              <div className="min-w-0">
-                <h3 className="font-serif text-lg text-[#37352f] truncate">{workshop.title}</h3>
-                <p className="text-xs text-[#37352f]/60 mt-1">
-                  {workshop.location || 'No location'} • {workshop.date || 'TBD'} • {workshop.status || 'Upcoming'}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleEdit(workshop)}
-                  className="p-2 rounded-full border border-[#37352f]/15 hover:bg-[#37352f]/5"
-                  aria-label="Edit workshop"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(workshop.id)}
-                  className="p-2 rounded-full border border-red-200 text-red-600 hover:bg-red-50"
-                  aria-label="Delete workshop"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
+              <Plus size={18} />
+              Add New
+            </button>
+          </div>
 
-          {workshops.length === 0 && (
-            <div className="text-center py-12 border border-dashed border-[#37352f]/15 rounded-xl text-[#37352f]/50">
-              No workshops yet. Add your first one.
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="animate-spin text-[#37352f]/20" size={32} />
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {workshops.map((workshop) => (
+                <div
+                  key={workshop.id}
+                  className="bg-white border border-[#37352f]/10 rounded-xl p-4 flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0">
+                    <h3 className="font-serif text-lg text-[#37352f] truncate">{workshop.title}</h3>
+                    <p className="text-xs text-[#37352f]/60 mt-1">
+                      {workshop.location || 'No location'} • {workshop.date || 'TBD'} • {workshop.status || 'Upcoming'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEdit(workshop)}
+                      className="p-2 rounded-full border border-[#37352f]/15 hover:bg-[#37352f]/5"
+                      aria-label="Edit workshop"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(workshop.id)}
+                      className="p-2 rounded-full border border-red-200 text-red-600 hover:bg-red-50"
+                      aria-label="Delete workshop"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {workshops.length === 0 && (
+                <div className="text-center py-12 border border-dashed border-[#37352f]/15 rounded-xl text-[#37352f]/50">
+                  No workshops yet. Add your first one.
+                </div>
+              )}
             </div>
           )}
-        </div>
-      )}
 
       {isModalOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
         <div className="fixed inset-0 z-[200] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4">
@@ -293,25 +312,43 @@ const WorkshopManager: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Workshop Image</label>
-                <div className="flex items-start gap-4">
-                  <label className="flex-1 h-28 border-2 border-dashed border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer flex items-center justify-center">
-                    {uploading ? (
-                      <Loader2 className="animate-spin text-gray-400" />
-                    ) : (
-                      <div className="text-xs text-gray-500 inline-flex items-center gap-2">
-                        <Upload size={16} />
-                        Upload from local
-                      </div>
-                    )}
-                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-                  </label>
-                  {formData.coverImageUrl && (
-                    <div className="w-28 h-28 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
-                      <img src={formData.coverImageUrl} alt="Workshop preview" className="w-full h-full object-cover" />
+                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Images (multiple)</label>
+                <p className="text-xs text-[#37352f]/45">First image is used as the primary thumbnail on cards. You can add several for the gallery.</p>
+                <label className="flex min-h-[7rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 hover:bg-gray-50">
+                  {uploading ? (
+                    <Loader2 className="animate-spin text-gray-400" />
+                  ) : (
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Upload size={16} />
+                      Upload one or more images
                     </div>
                   )}
-                </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImagesUpload}
+                    disabled={uploading}
+                  />
+                </label>
+                {formData.imageUrls.length > 0 && (
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {formData.imageUrls.map((url, idx) => (
+                      <li key={`${url}-${idx}`} className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
+                        <img src={url} alt="" className="h-full w-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeImageAt(idx)}
+                          className="absolute right-1 top-1 rounded-full bg-black/55 p-1 text-white hover:bg-black/75"
+                          aria-label={`Remove image ${idx + 1}`}
+                        >
+                          <X size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div className="pt-2 flex gap-3">

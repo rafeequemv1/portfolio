@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabase/client';
 import { Workshop, View } from '../types';
 import { demoWorkshops } from '../data/demo';
+import { formatWorkshopDate } from '../utils/formatWorkshopDate';
+import { workshopImageList } from '../utils/workshopImages';
 
 interface WorkshopDetailProps {
     path: string;
@@ -27,7 +29,10 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
             if (id.startsWith('demo-')) {
                 const demoData = demoWorkshops.find(w => w.id === id);
                 if (demoData) {
-                    setWorkshop(demoData);
+                    setWorkshop({
+                        ...demoData,
+                        gallery_images: workshopImageList(demoData),
+                    });
                 } else {
                     setError('Demo workshop not found.');
                 }
@@ -42,11 +47,18 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
                     setError(error.message);
                     console.error('Error fetching workshop:', error);
                 } else {
+                    const row = data as Record<string, unknown>;
+                    const urls = Array.isArray(row.image_urls)
+                        ? (row.image_urls as string[]).filter((u) => typeof u === 'string' && u.trim())
+                        : [];
                     setWorkshop({
-                        ...data,
-                        cover_image: data.image_urls?.[0] || data.cover_image,
-                        institute: data.location || data.institute,
-                        gallery_images: data.image_urls || data.gallery_images,
+                        ...(data as Workshop),
+                        cover_image: urls[0] || (data as { cover_image?: string }).cover_image,
+                        institute:
+                            (data as { location?: string }).location ||
+                            (data as { institute?: string }).institute ||
+                            '',
+                        gallery_images: urls.length ? urls : (data as { gallery_images?: string[] }).gallery_images || [],
                     });
                 }
             }
@@ -62,8 +74,6 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
         }
     }, [workshop]);
     
-    const formatDate = (isoString: string) => new Date(isoString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
     if (loading) return <div className="text-center p-20">Loading workshop details...</div>;
     if (error || !workshop) return <div className="text-center p-20 text-red-500">Error: Could not load workshop.</div>;
 
@@ -74,8 +84,10 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
       workshop.testimonials && workshop.testimonials.length > 0 ? { id: '#testimonials', label: 'Testimonials' } : null,
     ].filter((item): item is { id: string; label: string } => item !== null);
 
+    const gallery = workshopImageList(workshop);
+
     return (
-        <div className="w-full max-w-6xl mx-auto p-8 md:px-12 lg:px-24 py-12 md:py-20 animate-fade-in-up">
+        <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-5 py-12 sm:px-8 md:px-12 md:py-16 lg:px-20 lg:py-20">
             <div className="mb-8">
                  <a 
                     href="/workshops" 
@@ -87,23 +99,52 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
                 </a>
             </div>
 
-            <header className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-16 items-center mb-16 md:mb-20">
+            <header className="mb-16 grid grid-cols-1 items-start gap-10 md:mb-20 md:grid-cols-5 md:gap-14 lg:gap-16">
                 <div className="md:col-span-3">
-                    <p className="text-sm font-medium uppercase tracking-widest text-[#37352f]/50 mb-4">{workshop.institute} • {formatDate(workshop.date)}</p>
-                    <h1 className="text-4xl lg:text-5xl font-serif text-[#37352f] tracking-tight mb-6">{workshop.title}</h1>
-                    <p className="text-lg text-[#37352f]/70 leading-relaxed mb-8">
-                        {workshop.description}
+                    <p className="mb-4 text-sm font-medium uppercase tracking-widest text-[#37352f]/50">
+                        {workshop.institute} • {formatWorkshopDate(workshop.date, true)}
                     </p>
-                    <a href="mailto:rafeequemavoor@gmail.com?subject=Workshop Inquiry" className="inline-block bg-[#37352f] text-white text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-md hover:bg-black transition-colors">Request This Workshop</a>
+                    <h1 className="mb-6 font-serif text-4xl tracking-tight text-[#37352f] lg:text-5xl">{workshop.title}</h1>
+                    <p className="mb-8 text-lg leading-relaxed text-[#37352f]/70">{workshop.description}</p>
+                    <a
+                        href="mailto:rafeequemavoor@gmail.com?subject=Workshop Inquiry"
+                        className="inline-block rounded-md bg-[#37352f] px-8 py-4 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-black"
+                    >
+                        Request This Workshop
+                    </a>
                 </div>
 
-                <div className="md:col-span-2">
-                    {workshop.cover_image && (
-                        <img 
-                            src={workshop.cover_image} 
-                            alt={workshop.title} 
-                            className="rounded-lg shadow-xl w-full h-auto aspect-[4/3] object-cover" 
+                <div className="min-w-0 md:col-span-2">
+                    {gallery.length === 0 && (
+                        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg border border-dashed border-[#37352f]/15 bg-[#f3f1ee] text-sm text-[#37352f]/40">
+                            No images yet
+                        </div>
+                    )}
+                    {gallery.length === 1 && (
+                        <img
+                            src={gallery[0]}
+                            alt={workshop.title}
+                            className="aspect-[4/3] h-auto w-full rounded-lg object-cover shadow-xl"
                         />
+                    )}
+                    {gallery.length === 2 && (
+                        <div className="grid grid-cols-2 gap-2">
+                            {gallery.map((src, i) => (
+                                <img key={src} src={src} alt={i === 0 ? workshop.title : ''} className="aspect-square w-full rounded-lg object-cover shadow-md" />
+                            ))}
+                        </div>
+                    )}
+                    {gallery.length >= 3 && (
+                        <div className="grid grid-cols-2 gap-2">
+                            {gallery.slice(0, 4).map((src, i) => (
+                                <img
+                                    key={`${src}-${i}`}
+                                    src={src}
+                                    alt={i === 0 ? workshop.title : ''}
+                                    className="aspect-[4/3] w-full rounded-lg object-cover shadow-md"
+                                />
+                            ))}
+                        </div>
                     )}
                 </div>
             </header>

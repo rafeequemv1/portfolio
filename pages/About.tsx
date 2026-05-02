@@ -1,22 +1,30 @@
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabase/client';
 
-import React from 'react';
+const ABOUT_PROFILE_KEY = 'about_profile_image_url';
+const FALLBACK_PROFILE_SRC = '/images/rafeeque-profile.png';
 
 const experience = [
   {
     role: 'Founder',
-    company: 'Labcanvas',
+    company: 'LabCanvas',
     period: 'Nov 2024 - Present',
     duration: '1 yr 6 mos',
     location: 'Kerala, India · On-site',
     website: 'https://labcanvas.io/',
-    description: 'Building Labcanvas, a focused platform for scientific creators to design, present, and publish visual science work.'
+    logoSrc: '/images/about/labcanvas.png',
+    logoAlt: 'LabCanvas brand mark: conical flask icon with sparkle, representing the scientific creator platform',
+    description: 'Building LabCanvas, a focused platform for scientific creators to design, present, and publish visual science work.',
   },
   {
     role: 'Founder',
-    company: 'Scidart Academy',
+    company: 'SciDart Academy',
     period: 'Jul 2021 - Present',
     location: 'India · On-site',
-    description: 'An upskilling platform for scientists and engineers in the art and science of visual communication.'
+    website: 'https://scidart.com',
+    logoSrc: '/images/about/scidart.png',
+    logoAlt: 'SciDart Academy logo: bold red letter S and navy blue letter D on white',
+    description: 'An upskilling platform for scientists and engineers in the art and science of visual communication.',
   },
   {
     role: 'Associate Senior Medical Illustrator',
@@ -24,7 +32,10 @@ const experience = [
     period: 'Nov 2022 - Jan 2024',
     duration: '1 yr 3 mos',
     location: 'Bengaluru, Karnataka, India',
-    description: 'Developed high-quality medical illustrations and animations for publications and internal communications.'
+    website: 'https://www.novonordisk.com',
+    logoSrc: '/images/about/novo-nordisk.png',
+    logoAlt: 'Novo Nordisk logo: blue stylized Apis bull with sun disc on a white background',
+    description: 'Developed high-quality medical illustrations and animations for publications and internal communications.',
   },
   {
     role: 'Science Illustrator',
@@ -32,41 +43,71 @@ const experience = [
     period: 'Jan 2019 - Apr 2021',
     duration: '2 yrs 4 mos',
     location: 'Pune, India',
-    description: 'Collaborated with research groups to create compelling scientific illustrations, figures, and graphical abstracts for publications.'
+    website: 'https://www.iiserpune.ac.in',
+    logoSrc: '/images/about/iiser-pune.png',
+    logoAlt: 'IISER Pune logo: red and black symbol with IISER PUNE wordmark on white',
+    description: 'Collaborated with research groups to create compelling scientific illustrations, figures, and graphical abstracts for publications.',
   },
 ];
 
 const education = [
-    {
+  {
     institution: 'Indian Institute of Science Education and Research, Thiruvananthapuram',
     degree: 'Master’s Degree, Chemistry',
-    period: '2011 – 2016'
+    period: '2011 – 2016',
+    url: 'https://www.iisertvm.ac.in',
+    logoSrc: '/images/about/iiser-tvm.png',
+    logoAlt: 'Indian Institute of Science Education and Research Thiruvananthapuram official logo: IISER wordmark with stylised fish and DNA motif',
   },
   {
     institution: 'Arena Animation',
     degree: 'Animation, Interactive Technology & VFX',
-    period: '2016 – 2017'
+    period: '2016 – 2017',
+    url: 'https://www.arena-multimedia.com/',
+    logoSrc: '/images/about/arena-animation.png',
+    logoAlt: 'Arena Animation logo: red ARENA and black ANIMATION wordmarks on white and yellow panels in a framed badge',
   },
 ];
 
 const skills = [
   'Prompt Engineering',
-  'Database Design (PostgreSQL / Supabase)',
-  'Web App Development (React, TypeScript, Vite)',
+  'Cursor',
+  'Supabase',
   'Scientific Illustration',
+  '3D Modeling',
   '3D Molecular Visualization',
   'Visual Storytelling for Research',
 ];
 
 const About: React.FC = () => {
+  const [profileSrc, setProfileSrc] = useState<string>(FALLBACK_PROFILE_SRC);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase.from('site_settings').select('value').eq('key', ABOUT_PROFILE_KEY).maybeSingle();
+      if (cancelled || error) return;
+      const v = (data?.value as string | undefined)?.trim();
+      if (v) setProfileSrc(v);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="w-full max-w-6xl mx-auto p-8 md:px-12 lg:px-24 py-12 md:py-20 animate-fade-in-up">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         
         {/* Left Sidebar */}
         <aside className="lg:col-span-1 lg:sticky top-28 self-start">
-          <div className="w-32 h-32 rounded-full bg-[#e0e0e0] mb-6 border-4 border-white shadow-md mx-auto lg:mx-0">
-            {/* Placeholder for profile image */}
+          <div className="w-32 h-32 rounded-full bg-[#e0e0e0] mb-6 border-4 border-white shadow-md mx-auto lg:mx-0 overflow-hidden">
+            <img
+              src={profileSrc}
+              alt="Portrait photograph of Rafeeque Mavoor, scientific illustrator"
+              className="w-full h-full object-cover"
+              onError={() => setProfileSrc((prev) => (prev !== FALLBACK_PROFILE_SRC ? FALLBACK_PROFILE_SRC : prev))}
+            />
           </div>
           <h1 className="text-3xl font-serif text-center lg:text-left text-[#37352f] tracking-tight">Rafeeque Mavoor</h1>
           <p className="text-md text-center lg:text-left text-[#37352f]/60 mt-1">Lead Scientific Illustrator & Founder of SciDart Academy</p>
@@ -96,25 +137,35 @@ const About: React.FC = () => {
             <div className="space-y-6">
               {experience.map((item, index) => (
                 <div key={index} className="flex gap-4">
-                  <div className="w-12 h-12 bg-white border border-[#37352f]/10 rounded-md flex-shrink-0"></div>
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#37352f]/10 bg-white p-1.5 sm:h-[4.5rem] sm:w-[4.5rem]">
+                    {item.logoSrc ? (
+                      <img src={item.logoSrc} alt={item.logoAlt} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <span
+                        className="px-1 text-center text-[9px] font-semibold uppercase leading-tight text-[#37352f]/30"
+                        role="img"
+                        aria-label={item.logoAlt || 'Organisation logo'}
+                      >
+                        —
+                      </span>
+                    )}
+                  </div>
                   <div>
                     <h3 className="font-semibold text-lg text-[#37352f]">{item.role}</h3>
-                    <p className="text-md text-[#37352f]/80">{item.company}</p>
+                    <p className="text-md text-[#37352f]/80">
+                      {item.website ? (
+                        <a href={item.website} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-2">
+                          {item.company}
+                        </a>
+                      ) : (
+                        item.company
+                      )}
+                    </p>
                     <p className="text-xs text-[#37352f]/50 font-medium uppercase tracking-widest mt-1">
                       {item.period} {item.duration && `· ${item.duration}`}
                     </p>
                     {item.location && (
                       <p className="text-xs text-[#37352f]/45 font-medium mt-1">{item.location}</p>
-                    )}
-                    {item.website && (
-                      <a
-                        href={item.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-[#37352f]/70 hover:text-[#37352f] underline underline-offset-2 mt-1 inline-block"
-                      >
-                        {item.website}
-                      </a>
                     )}
                     <p className="text-sm font-sans text-[#37352f]/70 leading-relaxed mt-2">{item.description}</p>
                   </div>
@@ -139,9 +190,27 @@ const About: React.FC = () => {
             <div className="space-y-6">
               {education.map((item, index) => (
                 <div key={index} className="flex gap-4">
-                  <div className="w-12 h-12 bg-white border border-[#37352f]/10 rounded-md flex-shrink-0"></div>
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#37352f]/10 bg-white p-1.5 sm:h-[4.5rem] sm:w-[4.5rem]">
+                    {'logoSrc' in item && item.logoSrc ? (
+                      <img
+                        src={item.logoSrc}
+                        alt={'logoAlt' in item && item.logoAlt ? item.logoAlt : `${item.institution} logo`}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-[10px] text-[#37352f]/25">·</span>
+                    )}
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-[#37352f]">{item.institution}</h3>
+                    <h3 className="font-semibold text-lg text-[#37352f]">
+                      {'url' in item && item.url ? (
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-2">
+                          {item.institution}
+                        </a>
+                      ) : (
+                        item.institution
+                      )}
+                    </h3>
                     <p className="text-md text-[#37352f]/80">{item.degree}</p>
                     <p className="text-xs text-[#37352f]/50 font-medium uppercase tracking-widest mt-1">{item.period}</p>
                   </div>

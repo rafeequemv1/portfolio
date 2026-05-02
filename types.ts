@@ -127,6 +127,19 @@ export interface PortfolioVideo {
   created_at?: string;
 }
 
+export interface PortfolioFigure {
+  id: string;
+  image_urls: string[];
+  paper_title: string;
+  paper_url?: string | null;
+  lab_name?: string | null;
+  university_name?: string | null;
+  authors?: string | null;
+  display_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface GraphicalAbstract {
   id: string;
   title: string;

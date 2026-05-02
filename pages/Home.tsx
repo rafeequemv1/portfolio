@@ -133,24 +133,25 @@ const Home: React.FC = () => {
               Trusted by researchers and institutions
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12">
             {brands.map((brand) => (
               <a
                 key={brand.id}
                 href={brand.website_url || '#'}
                 target={brand.website_url ? '_blank' : undefined}
                 rel={brand.website_url ? 'noopener noreferrer' : undefined}
-                className="group h-20 md:h-24 px-4 rounded-xl border border-[#37352f]/10 bg-white/60 flex items-center justify-center"
+                className="group flex flex-col items-center justify-start gap-3 text-center"
               >
                 {brand.logo_url ? (
                   <img
                     src={brand.logo_url}
                     alt={brand.name}
-                    className="max-h-10 md:max-h-12 max-w-full object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                    className="h-10 w-auto max-w-[min(100%,7rem)] md:h-12 lg:h-14 object-contain opacity-80 group-hover:opacity-100 transition-opacity"
                   />
-                ) : (
-                  <span className="text-xs md:text-sm text-[#37352f]/70 text-center font-medium">{brand.name}</span>
-                )}
+                ) : null}
+                <span className="text-xs md:text-sm font-serif text-[#37352f]/85 group-hover:text-[#37352f] leading-snug px-1 transition-colors">
+                  {brand.name}
+                </span>
               </a>
             ))}
           </div>

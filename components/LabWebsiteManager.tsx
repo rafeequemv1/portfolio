@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { supabase } from '../supabase/client';
 import { LabWebsite } from '../types';
 import { Plus, Edit2, Trash2, Upload, X, Loader2, ExternalLink } from 'lucide-react';
-
 const LabWebsiteManager: React.FC = () => {
   const [websites, setWebsites] = useState<LabWebsite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,35 +129,35 @@ const LabWebsiteManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif text-[#37352f]">Websites</h2>
-        <button onClick={openNewModal} className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium">
-          <Plus size={18} />
-          Add New
-        </button>
-      </div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-2xl font-serif text-[#37352f]">Lab websites</h2>
+            <button onClick={openNewModal} className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium">
+              <Plus size={18} />
+              Add New
+            </button>
+          </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#37352f]/20" size={32} /></div>
-      ) : (
-        <div className="space-y-3">
-          {websites.map((website) => (
-            <div key={website.id} className="bg-white border border-[#37352f]/10 rounded-xl p-4 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <h3 className="font-serif text-lg text-[#37352f] truncate">{website.labName}</h3>
-                <a href={website.websiteUrl} target="_blank" rel="noreferrer" className="text-xs text-[#37352f]/60 hover:text-[#37352f] inline-flex items-center gap-1 mt-1">
-                  {website.websiteUrl} <ExternalLink size={12} />
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => handleEdit(website)} className="p-2 rounded-full border border-[#37352f]/15 hover:bg-[#37352f]/5"><Edit2 size={16} /></button>
-                <button onClick={() => handleDelete(website.id)} className="p-2 rounded-full border border-red-200 text-red-600 hover:bg-red-50"><Trash2 size={16} /></button>
-              </div>
+          {loading ? (
+            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-[#37352f]/20" size={32} /></div>
+          ) : (
+            <div className="space-y-3">
+              {websites.map((website) => (
+                <div key={website.id} className="bg-white border border-[#37352f]/10 rounded-xl p-4 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <h3 className="font-serif text-lg text-[#37352f] truncate">{website.labName}</h3>
+                    <a href={website.websiteUrl} target="_blank" rel="noreferrer" className="text-xs text-[#37352f]/60 hover:text-[#37352f] inline-flex items-center gap-1 mt-1">
+                      {website.websiteUrl} <ExternalLink size={12} />
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleEdit(website)} className="p-2 rounded-full border border-[#37352f]/15 hover:bg-[#37352f]/5"><Edit2 size={16} /></button>
+                    <button onClick={() => handleDelete(website.id)} className="p-2 rounded-full border border-red-200 text-red-600 hover:bg-red-50"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+              ))}
+              {websites.length === 0 && <div className="text-center py-10 border border-dashed rounded-xl text-[#37352f]/50">No websites added yet.</div>}
             </div>
-          ))}
-          {websites.length === 0 && <div className="text-center py-10 border border-dashed rounded-xl text-[#37352f]/50">No websites added yet.</div>}
-        </div>
-      )}
+          )}
 
       {isModalOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
         <div className="fixed inset-0 z-[210] bg-black/45 backdrop-blur-sm flex items-center justify-center p-4">
