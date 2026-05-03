@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { AtSign, BookOpen, Instagram, Twitter, Youtube } from 'lucide-react';
 import SiteHeader from './components/SiteHeader';
+import SiteFooter from './components/SiteFooter';
 import Home from './pages/Home';
 
 const Contact = lazy(() => import('./pages/Contact'));
@@ -270,49 +270,7 @@ const App: React.FC = () => {
         <Suspense fallback={routeFallback}>{renderContent()}</Suspense>
       </main>
 
-      <footer className="flex w-full flex-col items-center justify-between gap-6 border-t border-[#e0e0e0] bg-[#fcfaf8] px-4 py-8 text-xs text-[#37352f]/50 supports-[padding:max(0px)]:pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6 md:flex-row md:gap-4 md:px-12 lg:px-24 xl:px-32">
-        <div className="flex items-center gap-2 text-center font-serif italic md:text-left">
-          <span>© {new Date().getFullYear()} Rafeeque Mavoor Studio.</span>
-        </div>
-        <div className="flex flex-col items-center gap-4 md:items-end">
-            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm font-normal text-[#5c5a57]" aria-label="Site sections">
-              <a href={ROUTES.workshops} onClick={(e) => navigate(e, 'workshops', ROUTES.workshops)} className="min-h-[44px] inline-flex items-center rounded-md px-1 underline-offset-4 hover:text-[#37352f] hover:underline">
-                Workshops
-              </a>
-              <a href={ROUTES.blog} onClick={(e) => navigate(e, 'blog', ROUTES.blog)} className="min-h-[44px] inline-flex items-center rounded-md px-1 underline-offset-4 hover:text-[#37352f] hover:underline">
-                Blog
-              </a>
-            </nav>
-            <div className="flex flex-wrap items-center justify-center gap-4 md:justify-end md:gap-6">
-            <div className="flex items-center gap-3 text-[#5c5a57] sm:gap-5 hover:text-[#37352f]">
-               <a href={ROUTES.blog} onClick={(e) => navigate(e, 'blog', ROUTES.blog)} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Blog" title="Blog">
-                 <BookOpen className="h-5 w-5" strokeWidth={1.75} />
-               </a>
-               <a href="https://twitter.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Twitter / X" title="Twitter">
-                 <Twitter className="h-5 w-5" strokeWidth={1.75} />
-               </a>
-               <a href="https://instagram.com/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Instagram" title="Instagram">
-                 <Instagram className="h-5 w-5" strokeWidth={1.75} />
-               </a>
-               <a href="https://bsky.app/profile/rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Bluesky" title="Bluesky">
-                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.054-.138.022-.276.04-.415.054-3.928.58-7.414 2.01-6.378 7.972 1.008 5.337 7.406 4.054 10.092 2.097 2.686-1.957 4.206-6.352 4.206-6.352s1.52 4.395 4.206 6.352c2.686 1.957 9.084 3.24 10.092-2.097 1.036-5.962-2.45-7.392-6.378-7.972-.139-.014-.277-.032-.415-.054.14.015.279.034.415.054 2.67.296 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.86-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>
-               </a>
-               <a href="https://www.threads.net/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="Threads" title="Threads">
-                 <AtSign className="h-5 w-5" strokeWidth={1.75} />
-               </a>
-               <a href="https://www.youtube.com/@rafeequemavoor" target="_blank" rel="noopener noreferrer" className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg hover:bg-[#37352f]/5 hover:text-[#37352f] transition-colors" aria-label="YouTube" title="YouTube">
-                 <Youtube className="h-5 w-5" strokeWidth={1.75} />
-               </a>
-            </div>
-            <div className="hidden h-6 w-px bg-[#37352f]/10 md:block" aria-hidden />
-            <button type="button" onClick={(e) => navigate(e, 'login', '/login')} className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[#5c5a57] transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f]" aria-label="Admin Login">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-            </button>
-            </div>
-        </div>
-      </footer>
+      <SiteFooter navigate={navigate} />
     </div>
   );
 };

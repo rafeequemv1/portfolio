@@ -19,6 +19,22 @@ export const ROUTES = {
   dashboard: '/dashboard',
 } as const;
 
+/** Canonical URLs for footer / crawl — labels tuned for readable internal links (SEO). */
+export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View }[] = [
+  { label: 'Home', path: ROUTES.home, view: 'home' },
+  { label: 'Illustration services', path: ROUTES.services, view: 'services' },
+  { label: 'Journal cover art', path: ROUTES.portfolioCovers, view: 'portfolio' },
+  { label: 'Research figures & infographics', path: ROUTES.portfolioFigures, view: 'portfolio' },
+  { label: 'Graphical abstracts', path: ROUTES.portfolioAbstracts, view: 'portfolio' },
+  { label: 'Science illustration videos', path: ROUTES.portfolioVideos, view: 'portfolio' },
+  { label: 'Lab websites & web apps', path: ROUTES.portfolioWebApps, view: 'portfolio' },
+  { label: 'Science web apps showcase', path: ROUTES.apps, view: 'apps' },
+  { label: 'Workshops', path: ROUTES.workshops, view: 'workshops' },
+  { label: 'Blog', path: ROUTES.blog, view: 'blog' },
+  { label: 'About', path: ROUTES.about, view: 'about' },
+  { label: 'Contact', path: ROUTES.contact, view: 'contact' },
+];
+
 export type PortfolioTab = 'covers' | 'figures' | 'websites-apps' | 'videos';
 
 /** Sub-filter when the active tab is `figures` (paper figures vs graphical abstracts). */
