@@ -11,7 +11,7 @@
       ]
     },
     {
-      "source": "/.*\\.ico",
+      "source": "/(.*\\.ico)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "source": "/.*\\.png",
+      "source": "/(.*\\.png)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -29,7 +29,7 @@
       ]
     },
     {
-      "source": "/.*\\.jpg",
+      "source": "/(.*\\.jpg)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -38,7 +38,7 @@
       ]
     },
     {
-      "source": "/.*\\.jpeg",
+      "source": "/(.*\\.jpeg)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -47,7 +47,7 @@
       ]
     },
     {
-      "source": "/.*\\.webp",
+      "source": "/(.*\\.webp)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "source": "/.*\\.svg",
+      "source": "/(.*\\.svg)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "source": "/.*\\.woff2",
+      "source": "/(.*\\.woff2)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -74,7 +74,7 @@
       ]
     },
     {
-      "source": "/.*\\.json",
+      "source": "/(.*\\.json)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -83,7 +83,7 @@
       ]
     },
     {
-      "source": "/.*\\.webmanifest",
+      "source": "/(.*\\.webmanifest)",
       "headers": [
         {
           "key": "Cache-Control",
