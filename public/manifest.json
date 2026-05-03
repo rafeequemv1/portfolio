@@ -9,7 +9,7 @@
   "theme_color": "#fcfaf8",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22white%22 stroke=%22%2337352f%22 stroke-width=%222%22/><text x=%2250%22 y=%2268%22 text-anchor=%22middle%22 font-family=%22Georgia,serif%22 font-weight=%22700%22 font-size=%2248%22 fill=%22%2337352f%22>R</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml"
     }

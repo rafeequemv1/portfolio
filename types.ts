@@ -140,6 +140,16 @@ export interface PortfolioVideo {
   created_at?: string;
 }
 
+/** About page “Talks” — YouTube embed + copy; managed in dashboard. */
+export interface AboutTalk {
+  id: string;
+  title: string;
+  description?: string | null;
+  youtube_url: string;
+  display_order?: number;
+  created_at?: string;
+}
+
 export interface PortfolioFigure {
   id: string;
   image_urls: string[];

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AtSign, Facebook, Instagram, Linkedin, Mail, MessageCircle, Phone, Twitter } from 'lucide-react';
+import NewsletterSignupCard from '../components/NewsletterSignupCard';
 import { View } from '../types';
 import { ROUTES } from '../utils/routes';
 
@@ -47,6 +48,10 @@ const Contact: React.FC<ContactProps> = ({ navigate }) => {
               Go to Services — requests
             </a>
           </div>
+
+          <div className="w-12 h-px bg-[#37352f]/10 mx-auto" />
+
+          <NewsletterSignupCard />
 
           <div className="w-12 h-px bg-[#37352f]/10 mx-auto" />
 
