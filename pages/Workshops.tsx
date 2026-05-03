@@ -209,7 +209,7 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
   }, [instituteFilter, workshopsForStrand]);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-grow flex-col animate-fade-in-up px-4 py-10 sm:px-6 sm:py-12 md:px-10 md:py-16 lg:px-12 xl:px-14 2xl:max-w-[1580px]">
+    <div className="mx-auto flex w-full max-w-6xl flex-grow flex-col animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-16 lg:px-24">
       <header className="mb-12 text-center">
         <div className="relative inline-block">
           <h1 className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">Workshops & Training</h1>
@@ -268,18 +268,18 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
           {filteredWorkshops.length === 0 ? (
             <p className="py-16 text-center text-sm text-[#37352f]/50">No workshops in this category yet.</p>
           ) : (
-            <div className="flex w-full flex-col gap-10 xl:flex-row xl:items-start xl:gap-10 2xl:gap-12">
+            <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
               <aside
-                className="shrink-0 border-b border-[#37352f]/10 pb-6 xl:sticky xl:top-24 xl:self-start xl:w-[11.5rem] xl:border-b-0 xl:border-r xl:pb-0 xl:pr-6 2xl:w-52 2xl:pr-8"
+                className="shrink-0 border-b border-[#37352f]/10 pb-6 lg:sticky lg:top-28 lg:w-44 lg:self-start lg:border-b-0 lg:border-r lg:border-[#37352f]/10 lg:pb-0 lg:pr-6 xl:w-48"
                 aria-label="Filter by institute"
               >
-                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#37352f]/35">Institutes</p>
-                <nav className="flex flex-row flex-wrap gap-x-1 gap-y-0.5 xl:flex-col xl:gap-0">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#37352f]/40">Institutes</p>
+                <nav className="flex max-h-[40vh] flex-col gap-0.5 overflow-y-auto pr-1 lg:max-h-[min(70vh,36rem)]">
                   <button
                     type="button"
                     onClick={() => setInstituteFilter('all')}
-                    className={`rounded-md px-2 py-1.5 text-left text-[11px] leading-snug text-[#37352f]/55 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] xl:px-0 xl:py-1.5 ${
-                      instituteFilter === 'all' ? 'font-semibold text-[#37352f]' : 'font-normal'
+                    className={`rounded-md px-2 py-2 text-left text-[12px] leading-snug text-[#37352f]/60 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] ${
+                      instituteFilter === 'all' ? 'bg-[#37352f]/10 font-medium text-[#37352f]' : 'font-normal'
                     }`}
                   >
                     All ({workshopsForStrand.length})
@@ -289,59 +289,48 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
                       key={bucket}
                       type="button"
                       onClick={() => setInstituteFilter(bucket)}
-                      className={`max-w-full rounded-md px-2 py-1.5 text-left text-[11px] leading-snug transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] xl:px-0 xl:py-1.5 ${
+                      className={`w-full rounded-md px-2 py-2 text-left text-[12px] leading-snug transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] ${
                         instituteFilter === bucket
-                          ? 'font-semibold text-[#37352f]'
-                          : 'font-normal text-[#37352f]/55'
+                          ? 'bg-[#37352f]/10 font-medium text-[#37352f]'
+                          : 'font-normal text-[#37352f]/60'
                       }`}
                     >
-                      {short} ({count})
+                      {short}{' '}
+                      <span className="tabular-nums text-[#37352f]/40">({count})</span>
                     </button>
                   ))}
                 </nav>
               </aside>
 
               <div className="min-w-0 flex-1">
-                <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5 2xl:gap-6">
+                <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4">
                   {filteredWorkshops.map((workshop) => {
                     const accent = workshopAccentLine(workshop);
                     return (
                       <a
                         key={workshop.id}
-                    href={workshopDetailHref(workshop.id)}
-                    onClick={(e) => navigate(e, 'workshop-detail', workshopDetailHref(workshop.id))}
-                        className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#37352f]/10 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#37352f]/8"
+                        href={workshopDetailHref(workshop.id)}
+                        onClick={(e) => navigate(e, 'workshop-detail', workshopDetailHref(workshop.id))}
+                        className="group flex min-w-0 flex-col overflow-hidden rounded-md border border-[#37352f]/10 bg-white/90 transition-colors hover:border-[#37352f]/18 hover:bg-white"
                       >
-                        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden border-b border-[#37352f]/10 bg-[#f3f1ee]">
+                        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-[#f0eeeb]">
                           <WorkshopCardMedia workshop={workshop} title={workshop.title} fill />
                           {workshop.status === 'Past' && (
-                            <span className="absolute right-3 top-3 rounded-full bg-[#37352f]/75 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                            <span className="absolute right-2 top-2 rounded bg-[#37352f]/80 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white">
                               Past
                             </span>
                           )}
                         </div>
-                        <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
-                          <span className="mb-2 inline-flex w-fit rounded-full border border-[#37352f]/12 bg-white/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#37352f]/45">
-                            Workshop
-                          </span>
-                          <h2 className="font-serif text-lg leading-snug text-[#37352f] transition-colors group-hover:text-black xl:text-[1.05rem]">
+                        <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-3">
+                          <h2 className="font-serif text-[0.95rem] font-medium leading-snug text-[#37352f] transition-colors group-hover:text-black sm:text-base">
                             {workshop.title}
                           </h2>
-                          <div
-                            className="mt-2 h-[3px] w-full max-w-full rounded-full opacity-90"
-                            style={{ backgroundColor: accent }}
-                            aria-hidden
-                          />
-                          <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.12em] text-[#37352f]/45">
+                          <div className="h-0.5 w-8 rounded-full opacity-80" style={{ backgroundColor: accent }} aria-hidden />
+                          <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-[#37352f]/40">
                             {workshopCardDateLine(workshop)}
                           </p>
-                          <p className="mt-2 flex-1 text-xs leading-snug text-[#37352f]/65 line-clamp-1 sm:text-sm">
-                            {workshopCardExcerpt(workshop)}
-                          </p>
-                          <div className="mt-4 flex items-center justify-between border-t border-[#37352f]/5 pt-2.5 text-[10px] font-medium uppercase tracking-[0.15em] text-[#37352f]/35 transition-colors group-hover:text-[#37352f]/65">
-                            <span>Details</span>
-                            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                          </div>
+                          <p className="line-clamp-2 text-[11px] leading-relaxed text-[#37352f]/55">{workshopCardExcerpt(workshop)}</p>
+                          <span className="mt-1 text-[10px] text-[#37352f]/35 group-hover:text-[#37352f]/55">View →</span>
                         </div>
                       </a>
                     );

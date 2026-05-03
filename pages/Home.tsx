@@ -1,6 +1,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
+import HomeLeadModal, { type HomeLeadModalMode } from '../components/HomeLeadModal';
 import { Brand, JournalCover, View } from '../types';
 import { ROUTES } from '../utils/routes';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
@@ -21,6 +22,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ navigate }) => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [leadModal, setLeadModal] = useState<HomeLeadModalMode | null>(null);
 
   useEffect(() => {
     const fetchCovers = async () => {
@@ -99,6 +101,19 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
 
       </div>
 
+      <div className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10">
+        <button
+          type="button"
+          onClick={() => setLeadModal('work-with-me')}
+          className="inline-flex min-h-[48px] w-full max-w-sm items-center justify-center rounded-2xl bg-[#37352f] px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-[#37352f]/15 transition-transform hover:bg-black active:scale-[0.99] sm:w-auto sm:min-w-[220px]"
+        >
+          Work with me
+        </button>
+        <p className="max-w-md text-xs leading-relaxed text-[#37352f]/55">
+          Covers, figures, lab sites, or workshops—pick a focus (optional), send a short note, and get a personal reply.
+        </p>
+      </div>
+
       {covers.length > 0 && (
         <div className="w-full max-w-7xl space-y-6 md:space-y-8">
           <div className="cover-marquee">
@@ -106,7 +121,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               {[...firstRowFull, ...firstRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-${idx}`} className="cover-marquee-card">
                   <img
-                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 420, quality: 82 })}
+                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 380, quality: 80 })}
                     alt={cover.title}
                     width={170}
                     height={230}
@@ -126,7 +141,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               {[...secondRowFull, ...secondRowFull].map((cover, idx) => (
                 <div key={`${cover.id}-reverse-${idx}`} className="cover-marquee-card">
                   <img
-                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 420, quality: 82 })}
+                    src={figureImageDisplayUrl(cover.cover_image_url, { width: 380, quality: 80 })}
                     alt={cover.title}
                     width={170}
                     height={230}
@@ -142,7 +157,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         </div>
       )}
 
-      <div className="mt-10 mb-8">
+      <div className="mt-10 mb-8 flex w-full max-w-xl flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5">
         <a
           href={ROUTES.portfolioCovers}
           onClick={(e) => {
@@ -151,10 +166,17 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               navigate(e, 'portfolio', ROUTES.portfolioCovers);
             }
           }}
-          className="inline-flex items-center gap-2 text-xs md:text-sm uppercase tracking-[0.2em] font-semibold text-[#5c5a57] hover:text-[#37352f] transition-colors"
+          className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[#37352f]/15 bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#37352f] shadow-sm transition-colors hover:border-[#37352f]/30 hover:bg-white sm:text-sm"
         >
-          View All Covers
+          View all covers
         </a>
+        <button
+          type="button"
+          onClick={() => setLeadModal('cover-art')}
+          className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-[#37352f] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-black sm:text-sm"
+        >
+          Request illustration
+        </button>
       </div>
 
       {brands.length > 0 && (
@@ -178,7 +200,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               >
                 {brand.logo_url ? (
                   <img
-                    src={figureImageDisplayUrl(brand.logo_url, { width: 200, quality: 80 })}
+                    src={figureImageDisplayUrl(brand.logo_url, { width: 160, quality: 78 })}
                     alt=""
                     width={160}
                     height={56}
@@ -196,6 +218,8 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
           </div>
         </section>
       )}
+
+      {leadModal ? <HomeLeadModal mode={leadModal} onClose={() => setLeadModal(null)} navigate={navigate} /> : null}
     </div>
   );
 };

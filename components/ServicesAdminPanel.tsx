@@ -11,7 +11,7 @@ const ServicesAdminPanel: React.FC = () => {
   return (
     <div className="space-y-6">
       <p className="text-sm text-[#37352f]/60">
-        Submissions from the public Services page: general messages, lab website build requests, and workshop booking inquiries.
+        Submissions from the site: home page lead modals and Services forms (covers & figures messages), lab website requests, and workshop booking inquiries.
       </p>
       <div className="inline-flex w-full max-w-2xl flex-wrap items-center gap-1 rounded-xl border border-[#37352f]/10 bg-[#37352f]/5 p-1">
         <button

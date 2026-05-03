@@ -42,7 +42,10 @@ const ContactMessagesManager: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-[#37352f]/60">Messages sent from the Contact page form.</p>
+      <p className="text-sm text-[#37352f]/60">
+        General illustration inquiries from the Services page form and the home page “Work with me” / “Request illustration” modals. Rows are stored in{' '}
+        <code className="rounded bg-[#37352f]/5 px-1 text-xs">contact_messages</code>.
+      </p>
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-[#37352f]/25" />
