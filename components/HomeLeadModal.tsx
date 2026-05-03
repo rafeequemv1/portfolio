@@ -126,7 +126,7 @@ const HomeLeadModal: React.FC<HomeLeadModalProps> = ({ mode, onClose, navigate }
           <button
             type="button"
             onClick={onClose}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#37352f]/10 text-[#37352f]/50 transition-colors hover:border-[#37352f]/25 hover:bg-white hover:text-[#37352f]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[#37352f]/10 text-[#37352f]/50 transition-colors hover:border-[#37352f]/25 hover:bg-white hover:text-[#37352f]"
             aria-label="Close"
           >
             <X className="h-5 w-5" strokeWidth={1.75} />
@@ -144,7 +144,7 @@ const HomeLeadModal: React.FC<HomeLeadModalProps> = ({ mode, onClose, navigate }
                   setSent(false);
                   onClose();
                 }}
-                className="rounded-lg bg-[#37352f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-black"
+                className="rounded-md bg-[#37352f] px-5 py-2.5 text-sm font-semibold text-white hover:bg-black"
               >
                 Close
               </button>
@@ -163,7 +163,7 @@ const HomeLeadModal: React.FC<HomeLeadModalProps> = ({ mode, onClose, navigate }
                           key={opt.id}
                           type="button"
                           onClick={() => setSelected(active ? '' : opt.id)}
-                          className={`rounded-xl border px-3 py-3 text-left text-sm transition-all ${
+                          className={`rounded-md border px-3 py-3 text-left text-sm transition-all ${
                             active
                               ? 'border-[#37352f] bg-white shadow-md ring-2 ring-[#37352f]/10'
                               : 'border-[#37352f]/10 bg-white/60 hover:border-[#37352f]/25 hover:bg-white'
@@ -235,7 +235,7 @@ const HomeLeadModal: React.FC<HomeLeadModalProps> = ({ mode, onClose, navigate }
               <button
                 type="submit"
                 disabled={sending}
-                className="flex w-full min-h-[48px] items-center justify-center gap-2 rounded-xl bg-[#37352f] py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black disabled:opacity-60"
+                className="flex w-full min-h-[48px] items-center justify-center gap-2 rounded-md bg-[#37352f] py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black disabled:opacity-60"
               >
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" strokeWidth={2} aria-hidden />}
                 Send request

@@ -105,7 +105,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         <button
           type="button"
           onClick={() => setLeadModal('work-with-me')}
-          className="inline-flex min-h-[48px] w-full max-w-sm items-center justify-center rounded-2xl bg-[#37352f] px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-[#37352f]/15 transition-transform hover:bg-black active:scale-[0.99] sm:w-auto sm:min-w-[220px]"
+          className="inline-flex min-h-[48px] w-full max-w-sm items-center justify-center rounded-md bg-[#37352f] px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-[#37352f]/15 transition-transform hover:bg-black active:scale-[0.99] sm:w-auto sm:min-w-[220px]"
         >
           Work with me
         </button>
@@ -166,14 +166,14 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               navigate(e, 'portfolio', ROUTES.portfolioCovers);
             }
           }}
-          className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[#37352f]/15 bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#37352f] shadow-sm transition-colors hover:border-[#37352f]/30 hover:bg-white sm:text-sm"
+          className="inline-flex min-h-[48px] items-center justify-center rounded-md border border-[#37352f]/15 bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#37352f] shadow-sm transition-colors hover:border-[#37352f]/30 hover:bg-white sm:text-sm"
         >
           View all covers
         </a>
         <button
           type="button"
           onClick={() => setLeadModal('cover-art')}
-          className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-[#37352f] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-black sm:text-sm"
+          className="inline-flex min-h-[48px] items-center justify-center rounded-md bg-[#37352f] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-black sm:text-sm"
         >
           Request illustration
         </button>
