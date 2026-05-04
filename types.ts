@@ -140,6 +140,16 @@ export interface PortfolioVideo {
   created_at?: string;
 }
 
+export interface PortfolioLogoProject {
+  id: string;
+  title: string;
+  description?: string | null;
+  related_link?: string | null;
+  image_urls: string[];
+  display_order?: number;
+  created_at?: string;
+}
+
 /** About page “Talks” — YouTube embed + copy; managed in dashboard. */
 export interface AboutTalk {
   id: string;

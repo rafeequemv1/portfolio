@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '../supabase/client';
-import { GraphicalAbstract, JournalCover, LabWebsite, PortfolioFigure, PortfolioVideo, View } from '../types';
+import { GraphicalAbstract, JournalCover, LabWebsite, PortfolioFigure, PortfolioLogoProject, PortfolioVideo, View } from '../types';
 import { Loader2, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import AppsShowcase from '../components/AppsShowcase';
 import {
@@ -18,6 +18,7 @@ export type { PortfolioFiguresGalleryFilter, PortfolioTab };
 
 const PAGE_SIZE_COVERS = 9;
 const PAGE_SIZE_GALLERY = 9;
+const PAGE_SIZE_LOGOS = 6;
 const PAGE_SIZE_WEBSITES = 6;
 
 const getYoutubeEmbedUrl = (url: string): string => {
@@ -60,11 +61,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
   const [videos, setVideos] = useState<PortfolioVideo[]>([]);
   const [graphicalAbstracts, setGraphicalAbstracts] = useState<GraphicalAbstract[]>([]);
+  const [logos, setLogos] = useState<PortfolioLogoProject[]>([]);
   const [websites, setWebsites] = useState<LabWebsite[]>([]);
   const [figures, setFigures] = useState<PortfolioFigure[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCover, setSelectedCover] = useState<JournalCover | null>(null);
   const [selectedAbstract, setSelectedAbstract] = useState<GraphicalAbstract | null>(null);
+  const [selectedLogo, setSelectedLogo] = useState<PortfolioLogoProject | null>(null);
   const [selectedFigure, setSelectedFigure] = useState<PortfolioFigure | null>(null);
   const [figureSlideIndex, setFigureSlideIndex] = useState(0);
   const figureTouchStartX = useRef<number | null>(null);
@@ -84,6 +87,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   useEffect(() => {
     setCoversPageCount(1);
     setGalleryPageCount(1);
+    setLogosPageCount(1);
     setWebsitesPageCount(1);
   }, [activeTab]);
 
@@ -120,6 +124,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const tabBarRef = useRef<HTMLDivElement>(null);
   const [coversPageCount, setCoversPageCount] = useState(1);
   const [galleryPageCount, setGalleryPageCount] = useState(1);
+  const [logosPageCount, setLogosPageCount] = useState(1);
   const [websitesPageCount, setWebsitesPageCount] = useState(1);
 
   const portfolioCtaTabs: PortfolioTab[] = ['covers', 'figures'];
@@ -128,6 +133,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const tabHeroSubtitle: Partial<Record<PortfolioTab, string>> = {
     covers: 'A selection of published journal covers.',
     figures: 'Paper figures, panels, and graphical abstracts from peer-reviewed work.',
+    logos: 'Logo and visual identity projects for science brands and labs.',
     videos: 'Scientific illustration and process videos.',
     'websites-apps': 'Lab websites and science web experiments.',
   };
@@ -148,6 +154,12 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
 
       const { data: abstractsData, error: abstractsError } = await supabase
         .from('portfolio_graphical_abstracts')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false });
+
+      const { data: logosData, error: logosError } = await supabase
+        .from('portfolio_logos')
         .select('*')
         .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
@@ -180,6 +192,22 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
         console.error('Error fetching graphical abstracts:', abstractsError);
       } else {
         setGraphicalAbstracts((abstractsData as GraphicalAbstract[]) || []);
+      }
+
+      if (logosError) {
+        console.error('Error fetching logo projects:', logosError);
+      } else {
+        setLogos(
+          ((logosData || []) as Record<string, unknown>[]).map((item) => ({
+            id: String(item.id),
+            title: String(item.title || ''),
+            description: (item.description as string) || null,
+            related_link: (item.related_link as string) || null,
+            image_urls: Array.isArray(item.image_urls) ? (item.image_urls as string[]) : [],
+            display_order: typeof item.display_order === 'number' ? item.display_order : 0,
+            created_at: item.created_at as string | undefined,
+          }))
+        );
       }
 
       if (websitesError) {
@@ -261,6 +289,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const closeModal = () => {
     setSelectedCover(null);
     setSelectedAbstract(null);
+    setSelectedLogo(null);
     setSelectedFigure(null);
   };
 
@@ -269,13 +298,18 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   }, [selectedFigure?.id]);
 
   useEffect(() => {
-    if (!selectedFigure) return;
-    const n = portfolioFigureUrls(selectedFigure).length;
+    if (selectedLogo) setFigureSlideIndex(0);
+  }, [selectedLogo?.id]);
+
+  useEffect(() => {
+    const n = selectedFigure ? portfolioFigureUrls(selectedFigure).length : selectedLogo?.image_urls?.length || 0;
+    if (!selectedFigure && !selectedLogo) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         setSelectedCover(null);
         setSelectedAbstract(null);
+        setSelectedLogo(null);
         setSelectedFigure(null);
         return;
       }
@@ -291,7 +325,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedFigure]);
+  }, [selectedFigure, selectedLogo]);
 
   const servicesIllustrationHref = `${ROUTES.services}#request-illustration`;
 
@@ -342,6 +376,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     () => galleryRows.slice(0, galleryPageCount * PAGE_SIZE_GALLERY),
     [galleryRows, galleryPageCount]
   );
+  const visibleLogos = useMemo(
+    () => logos.slice(0, logosPageCount * PAGE_SIZE_LOGOS),
+    [logos, logosPageCount]
+  );
   const visibleWebsites = useMemo(
     () => websites.slice(0, websitesPageCount * PAGE_SIZE_WEBSITES),
     [websites, websitesPageCount]
@@ -357,7 +395,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
 
   const coversLayout = activeTab === 'covers';
   /** Same horizontal padding / max width as covers, figures (incl. videos grid). */
-  const compactColumn = ['covers', 'videos', 'figures', 'websites-apps'].includes(activeTab);
+  const compactColumn = ['covers', 'videos', 'figures', 'logos', 'websites-apps'].includes(activeTab);
   const stickyBottomCtaVisible = showFloatingCtaForTab && showFloatingWorkCta;
 
   return (
@@ -420,6 +458,15 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 }`}
               >
                 Web & apps
+              </button>
+              <button
+                type="button"
+                onClick={goTab('logos')}
+                className={`rounded-lg px-2.5 py-2 text-[10px] font-semibold uppercase tracking-wide sm:px-3 sm:text-[11px] ${
+                  activeTab === 'logos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:bg-[#37352f]/5 hover:text-[#37352f]'
+                }`}
+              >
+                Logos
               </button>
               <button
                 type="button"
@@ -693,6 +740,74 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           </div>
         )}
 
+        {activeTab === 'logos' && (
+          <div className="mt-2">
+            {portfolioTopCta(
+              'Need a logo system for your scientific brand?',
+              'Logo concepts, variants, and practical usage-ready identity assets for labs, programs, and research initiatives.'
+            )}
+
+            {visibleLogos.length === 0 ? (
+              <div className="mx-auto max-w-xl rounded-2xl border-2 border-dashed border-[#37352f]/10 py-16 text-center">
+                <p className="font-serif text-lg italic text-[#37352f]/40">No logo projects yet.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 md:gap-12 lg:gap-14">
+                {visibleLogos.map((logo) => (
+                  <button
+                    key={logo.id}
+                    type="button"
+                    onClick={() => setSelectedLogo(logo)}
+                    className="group flex min-w-0 flex-col gap-4 text-left transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#37352f]/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8]"
+                  >
+                    <div className="relative flex min-h-[10rem] items-center justify-center px-2 py-6 sm:min-h-[11rem] sm:py-8">
+                      {logo.image_urls?.[0] ? (
+                        <img
+                          src={figureImageDisplayUrl(logo.image_urls[0], { width: 960, quality: 84 })}
+                          alt={logo.title}
+                          width={960}
+                          height={720}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="lazy"
+                          decoding="async"
+                          className="max-h-40 w-full max-w-[88%] object-contain transition-transform duration-300 ease-out group-hover:scale-[1.02] sm:max-h-44"
+                        />
+                      ) : (
+                        <div className="flex min-h-[8rem] w-full items-center justify-center text-xs text-[#37352f]/35">No preview</div>
+                      )}
+                      {logo.image_urls?.length > 1 ? (
+                        <span className="pointer-events-none absolute bottom-1 right-1 text-[10px] font-medium tabular-nums text-[#37352f]/35">
+                          +{logo.image_urls.length - 1}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="border-t border-[#37352f]/[0.08] pt-3">
+                      <p className="line-clamp-2 font-serif text-base font-medium leading-snug tracking-tight text-[#37352f]">
+                        {logo.title}
+                      </p>
+                      {logo.description ? (
+                        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#37352f]/50">{logo.description}</p>
+                      ) : null}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {logos.length > 0 && visibleLogos.length < logos.length ? (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setLogosPageCount((p) => p + 1)}
+                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
+                >
+                  Load more logo projects
+                </button>
+              </div>
+            ) : null}
+          </div>
+        )}
+
         {activeTab === 'websites-apps' && (
           <div className="mt-2">
             <div className="mb-10 flex flex-col items-center justify-center gap-4 rounded-2xl border border-[#37352f]/10 bg-white/80 px-6 py-8 text-center shadow-sm sm:flex-row sm:text-left">
@@ -878,6 +993,127 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 {selectedAbstract.pi_name && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">PI</span><span className="font-semibold">{selectedAbstract.pi_name}</span></div>}
                 {selectedAbstract.lab_name && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">Lab</span>{selectedAbstract.lab_url ? <a href={selectedAbstract.lab_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline flex items-center gap-1">{selectedAbstract.lab_name} <ExternalLink size={12} /></a> : <span className="font-semibold">{selectedAbstract.lab_name}</span>}</div>}
                 {selectedAbstract.paper_url && <div className="flex items-center gap-4"><span className="text-[#37352f]/50 w-20 flex-shrink-0">Paper</span><a href={selectedAbstract.paper_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline flex items-center gap-1">Read the Article <ExternalLink size={12} /></a></div>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedLogo && (
+        <div
+          className="fixed inset-0 z-[100] flex animate-fade-in-up items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-6"
+          style={{ animationDuration: '0.3s' }}
+          onClick={closeModal}
+        >
+          <div
+            className="flex max-h-[min(92vh,880px)] w-full max-w-[min(92vw,1040px)] flex-col overflow-hidden rounded-lg border border-[#37352f]/[0.06] bg-[#fcfaf8] shadow-xl md:max-h-[92vh] md:flex-row"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative flex min-h-[min(44vh,320px)] min-w-0 flex-1 flex-col bg-[#fcfaf8] md:min-h-0">
+              {(() => {
+                const urls = selectedLogo.image_urls || [];
+                const n = urls.length;
+                const idx = n > 0 ? ((figureSlideIndex % n) + n) % n : 0;
+                const src = urls[idx];
+                const goPrev = () => {
+                  if (n) setFigureSlideIndex((i) => (i - 1 + n) % n);
+                };
+                const goNext = () => {
+                  if (n) setFigureSlideIndex((i) => (i + 1) % n);
+                };
+                return (
+                  <>
+                    <div
+                      className="relative flex min-h-[min(38vh,260px)] flex-1 items-center justify-center px-4 py-8 sm:px-8 sm:py-10"
+                      onTouchStart={(e) => {
+                        figureTouchStartX.current = e.touches[0]?.clientX ?? null;
+                      }}
+                      onTouchEnd={(e) => {
+                        const start = figureTouchStartX.current;
+                        figureTouchStartX.current = null;
+                        if (start == null || n <= 1) return;
+                        const end = e.changedTouches[0]?.clientX ?? start;
+                        const dx = end - start;
+                        if (Math.abs(dx) > 48) {
+                          if (dx > 0) goPrev();
+                          else goNext();
+                        }
+                      }}
+                    >
+                      {src ? (
+                        <img
+                          src={figureImageDisplayUrl(src, { width: 2000, quality: 85 })}
+                          alt={selectedLogo.title}
+                          className="max-h-[min(52vh,580px)] w-auto max-w-[92%] object-contain md:max-h-[min(84vh,780px)]"
+                          decoding="async"
+                          fetchPriority="high"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <p className="px-4 text-center text-sm text-[#37352f]/50">No images for this logo project.</p>
+                      )}
+                      {n > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={goPrev}
+                            className="absolute left-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-[#37352f]/35 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] sm:left-2"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft size={22} strokeWidth={1.75} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={goNext}
+                            className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-[#37352f]/35 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f] sm:right-2"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight size={22} strokeWidth={1.75} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    {n > 1 && (
+                      <div className="flex flex-wrap justify-center gap-1.5 border-t border-[#37352f]/[0.06] bg-[#fcfaf8]/95 px-3 py-2.5">
+                        {urls.map((_, i) => (
+                          <button
+                            key={`${selectedLogo.id}-dot-${i}`}
+                            type="button"
+                            onClick={() => setFigureSlideIndex(i)}
+                            className={`h-1.5 rounded-full transition-all ${i === idx ? 'w-6 bg-[#37352f]' : 'w-1.5 bg-[#37352f]/30 hover:bg-[#37352f]/45'}`}
+                            aria-label={`Show image ${i + 1} of ${n}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+            <div className="min-h-0 w-full max-w-full shrink-0 overflow-y-auto border-t border-[#37352f]/[0.06] p-4 sm:p-6 md:w-56 md:max-w-[min(28%,16rem)] md:border-l md:border-t-0 md:border-[#37352f]/[0.06] md:py-6">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#37352f]/45">Logo project</p>
+                  <h1 className="mt-1.5 font-serif text-base font-semibold leading-snug tracking-tight text-[#37352f] sm:text-lg">
+                    {selectedLogo.title}
+                  </h1>
+                </div>
+                <button type="button" onClick={closeModal} className="shrink-0 text-[#37352f]/40 transition-colors hover:text-black" aria-label="Close modal">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="mt-5 space-y-3 border-t border-[#37352f]/[0.06] pt-4 text-xs">
+                {selectedLogo.description ? (
+                  <p className="leading-relaxed text-[#37352f]/80">{selectedLogo.description}</p>
+                ) : null}
+                {selectedLogo.related_link ? (
+                  <a href={selectedLogo.related_link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium text-blue-600 hover:underline">
+                    Related link <ExternalLink size={11} />
+                  </a>
+                ) : null}
+                {(selectedLogo.image_urls?.length || 0) > 1 ? (
+                  <p className="text-[#37352f]/60">{selectedLogo.image_urls.length} logo variations</p>
+                ) : null}
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import BlogManager from '../components/BlogManager';
 import LabWebsiteManager from '../components/LabWebsiteManager';
 import PortfolioFigureManager from '../components/PortfolioFigureManager';
 import TalksManager from '../components/TalksManager';
+import PortfolioLogoManager from '../components/PortfolioLogoManager';
 import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen, Smartphone, ClipboardList, Mic } from 'lucide-react';
 import SiteAndAppsManager from '../components/SiteAndAppsManager';
 import ServicesAdminPanel from '../components/ServicesAdminPanel';
@@ -24,7 +25,7 @@ type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'blog' | 'talks
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
-  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'figures-abstracts' | 'websites'>('covers');
+  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'figures-abstracts' | 'logos' | 'websites'>('covers');
   const sectionItems = useMemo(
     () => [
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
@@ -60,6 +61,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
               >
                 Figures & abstracts
               </button>
+              <button onClick={() => setPortfolioTab('logos')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'logos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Logos</button>
               <button onClick={() => setPortfolioTab('websites')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'websites' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Websites</button>
             </div>
             {portfolioTab === 'covers' && <JournalCoverManager />}
@@ -70,6 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
                 <GraphicalAbstractManager />
               </div>
             )}
+            {portfolioTab === 'logos' && <PortfolioLogoManager />}
             {portfolioTab === 'websites' && <LabWebsiteManager />}
           </div>
         );

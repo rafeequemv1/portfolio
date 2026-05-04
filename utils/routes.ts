@@ -13,6 +13,7 @@ export const ROUTES = {
   portfolioCovers: '/portfolio/journal-cover-art',
   portfolioFigures: '/portfolio/research-figures-infographics',
   portfolioAbstracts: '/portfolio/graphical-abstracts-research',
+  portfolioLogos: '/portfolio/scientific-brand-logos',
   portfolioWebApps: '/portfolio/lab-websites-science-apps',
   portfolioVideos: '/portfolio/scientific-illustration-videos',
   login: '/login',
@@ -26,6 +27,7 @@ export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View 
   { label: 'Journal cover art', path: ROUTES.portfolioCovers, view: 'portfolio' },
   { label: 'Research figures & infographics', path: ROUTES.portfolioFigures, view: 'portfolio' },
   { label: 'Graphical abstracts', path: ROUTES.portfolioAbstracts, view: 'portfolio' },
+  { label: 'Scientific logos', path: ROUTES.portfolioLogos, view: 'portfolio' },
   { label: 'Science illustration videos', path: ROUTES.portfolioVideos, view: 'portfolio' },
   { label: 'Lab websites & web apps', path: ROUTES.portfolioWebApps, view: 'portfolio' },
   { label: 'Science web apps showcase', path: ROUTES.apps, view: 'apps' },
@@ -35,7 +37,7 @@ export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View 
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
 ];
 
-export type PortfolioTab = 'covers' | 'figures' | 'websites-apps' | 'videos';
+export type PortfolioTab = 'covers' | 'figures' | 'logos' | 'websites-apps' | 'videos';
 
 /** Sub-filter when the active tab is `figures` (paper figures vs graphical abstracts). */
 export type PortfolioFiguresGalleryFilter = 'all' | 'figures' | 'abstracts';
@@ -43,6 +45,7 @@ export type PortfolioFiguresGalleryFilter = 'all' | 'figures' | 'abstracts';
 export const PORTFOLIO_TAB_PATH: Record<PortfolioTab, string> = {
   covers: ROUTES.portfolioCovers,
   figures: ROUTES.portfolioFigures,
+  logos: ROUTES.portfolioLogos,
   'websites-apps': ROUTES.portfolioWebApps,
   videos: ROUTES.portfolioVideos,
 };
@@ -152,6 +155,11 @@ export const PORTFOLIO_SEO: Record<
     title: 'Research Figures, Infographics & Graphical Abstracts | Rafeeque Mavoor',
     description:
       'Peer-reviewed paper figures, multi-panel layouts, infographics, and graphical abstracts for journals and conferences—clear visuals for publications.',
+  },
+  logos: {
+    title: 'Scientific Brand Logos & Identity Marks | Rafeeque Mavoor',
+    description:
+      'Logo and visual identity projects for research labs, scientific initiatives, and academic programs, including concept development and symbol systems.',
   },
   'websites-apps': {
     title: 'Lab Websites & Science Web Apps | Rafeeque Mavoor',
