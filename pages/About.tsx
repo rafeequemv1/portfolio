@@ -113,7 +113,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24">
+    <article className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         
         {/* Left Sidebar */}
@@ -162,7 +162,7 @@ const About: React.FC = () => {
         </aside>
 
         {/* Right Content */}
-        <main className="lg:col-span-2">
+        <section className="lg:col-span-2" aria-label="Biography, talks, and experience">
           <section className="mb-12">
             <h2 className="text-2xl font-serif text-[#37352f] mb-4 border-b border-[#37352f]/10 pb-2">About</h2>
             <p className="text-[#37352f]/80 leading-relaxed font-sans">
@@ -270,10 +270,10 @@ const About: React.FC = () => {
               ))}
             </div>
           </section>
-        </main>
+        </section>
 
       </div>
-    </div>
+    </article>
   );
 };
 

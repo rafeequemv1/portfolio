@@ -15,6 +15,11 @@ const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Courses = lazy(() => import('./pages/Courses'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const EditorialGuidelines = lazy(() => import('./pages/EditorialGuidelines'));
+const HtmlSitemap = lazy(() => import('./pages/HtmlSitemap'));
+const Faq = lazy(() => import('./pages/Faq'));
 import { supabase } from './supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { View } from './types';
@@ -192,6 +197,52 @@ const App: React.FC = () => {
         description = 'Get in touch with Rafeeque Mavoor for collaborations, commissions, or mentorship in scientific illustration and visualization.';
         path = ROUTES.contact;
         break;
+      case 'privacy':
+        applyPageSeo({
+          title: 'Privacy Policy | Rafeeque Mavoor',
+          description: 'How rafeeque.com handles inquiries, analytics, and related data for visitors and clients.',
+          canonicalPath: ROUTES.privacyPolicy,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+        });
+        return;
+      case 'terms':
+        applyPageSeo({
+          title: 'Terms of Service | Rafeeque Mavoor',
+          description: 'Terms for using rafeeque.com, educational content, and related creative services.',
+          canonicalPath: ROUTES.termsOfService,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+        });
+        return;
+      case 'editorial':
+        applyPageSeo({
+          title: 'Editorial Guidelines | Rafeeque Mavoor',
+          description: 'Authorship, accuracy, disclosures, and corrections for blog and teaching content on rafeeque.com.',
+          canonicalPath: ROUTES.editorialGuidelines,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+        });
+        return;
+      case 'html-sitemap':
+        applyPageSeo({
+          title: 'HTML Site Map | Rafeeque Mavoor',
+          description: 'Human-readable list of main pages on rafeeque.com, plus a link to the XML sitemap.',
+          canonicalPath: ROUTES.htmlSitemap,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+        });
+        return;
+      case 'faq':
+        applyPageSeo({
+          title: 'FAQ | Scientific illustration & commissions | Rafeeque Mavoor',
+          description:
+            'Answers about journal covers, figures, workshops, international projects, SciDart Academy, and how to contact the studio.',
+          canonicalPath: ROUTES.faq,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+        });
+        return;
       case 'login':
         title = 'Admin Login | Rafeeque Mavoor';
         description = 'Admin login portal.';
@@ -270,6 +321,16 @@ const App: React.FC = () => {
         return <CourseDetail path={currentPath} navigate={navigate} />;
       case 'contact':
         return <Contact navigate={navigate} />;
+      case 'privacy':
+        return <PrivacyPolicy />;
+      case 'terms':
+        return <TermsOfService />;
+      case 'editorial':
+        return <EditorialGuidelines />;
+      case 'html-sitemap':
+        return <HtmlSitemap navigate={navigate} />;
+      case 'faq':
+        return <Faq />;
       case 'login':
         return <Login session={session} navigate={navigate} />;
       case 'dashboard':

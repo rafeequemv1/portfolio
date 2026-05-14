@@ -10,17 +10,19 @@ interface ContactProps {
 
 const Contact: React.FC<ContactProps> = ({ navigate }) => {
   return (
-    <div className="relative flex flex-grow flex-col items-center px-4 py-10 animate-fade-in-up sm:px-6 md:p-16 lg:p-20">
+    <section className="relative flex flex-grow flex-col items-center px-4 py-10 animate-fade-in-up sm:px-6 md:p-16 lg:p-20" aria-labelledby="contact-heading">
       <div className="relative w-full max-w-xl overflow-hidden rounded-xl border border-[#37352f]/5 bg-white/60 p-6 shadow-sm backdrop-blur-sm sm:p-8 md:p-14">
         <div className="absolute top-0 right-0 w-24 h-24 bg-[#FFF9C4] opacity-20 rounded-bl-full -mr-4 -mt-4 blur-xl" />
 
-        <div className="text-center mb-10 relative z-10">
+        <header className="text-center mb-10 relative z-10">
           <div className="inline-block relative">
-            <h1 className="text-4xl font-serif text-[#37352f] mb-3 relative z-10">Get in Touch</h1>
+            <h1 id="contact-heading" className="text-4xl font-serif text-[#37352f] mb-3 relative z-10">
+              Get in Touch
+            </h1>
             <div className="absolute bottom-1 left-0 w-full h-3 bg-[#FFF9C4] -z-0 opacity-80 rounded-sm transform -rotate-1" />
           </div>
           <p className="font-hand text-2xl text-[#37352f]/60 rotate-[-1deg] mt-2">let's create something beautiful</p>
-        </div>
+        </header>
 
         <div className="space-y-10 font-sans text-[#37352f]/80 relative z-10">
           {/* Direct message */}
@@ -141,7 +143,7 @@ const Contact: React.FC<ContactProps> = ({ navigate }) => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

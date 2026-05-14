@@ -87,10 +87,12 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
   }, []);
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 md:py-16" id="courses-index">
+    <section className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 md:py-16" id="courses-index" aria-labelledby="courses-heading">
       <header className="mb-10 text-center lg:mb-12">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#37352f]/45">Learn</p>
-        <h1 className="font-serif text-3xl tracking-tight text-[#37352f] sm:text-4xl">Short courses</h1>
+        <h1 id="courses-heading" className="font-serif text-3xl tracking-tight text-[#37352f] sm:text-4xl">
+          Short courses
+        </h1>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#37352f]/65">
           Self-paced lessons for researchers: graphical abstracts, journal-ready figures, and clear visual storytelling. Each course uses
           structured chapters (text, video, images, and optional interactive HTML) so search engines and AI assistants can follow a stable
@@ -158,7 +160,7 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
           )}
         </div>
       </div>
-    </main>
+    </section>
   );
 };
 

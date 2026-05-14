@@ -73,19 +73,21 @@ const services: Service[] = [
 
 const Services: React.FC = () => {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-grow animate-fade-in-up px-4 py-10 sm:px-6 md:px-16 md:py-16 lg:px-24">
+    <section className="mx-auto flex w-full max-w-6xl flex-grow animate-fade-in-up px-4 py-10 sm:px-6 md:px-16 md:py-16 lg:px-24" aria-labelledby="services-heading">
       <div className="w-full">
-        <div className="mb-12 text-center">
+        <header className="mb-12 text-center">
           <div className="relative inline-block">
-            <h1 className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">Work With Me</h1>
+            <h1 id="services-heading" className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">
+              Work With Me
+            </h1>
             <div className="absolute bottom-2 left-0 -z-0 h-3 w-full -rotate-1 rounded-sm bg-[#e0e7e1] opacity-80" />
           </div>
           <p className="font-hand text-2xl text-[#37352f]/60">Collaborate to bring your research to life.</p>
-        </div>
+        </header>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {services.map((service) => (
-            <div
+            <article
               key={service.id}
               className="group relative flex flex-col rounded-lg border border-[#37352f]/10 bg-white/50 p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white hover:shadow-lg hover:shadow-[#37352f]/5"
             >
@@ -102,13 +104,13 @@ const Services: React.FC = () => {
               >
                 Send a request
               </a>
-            </div>
+            </article>
           ))}
         </div>
 
         <ServiceRequestsSection />
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -32,6 +32,7 @@ const navItems: { label: string; view: View; path: string; match: (v: View) => b
     match: (v) => v === 'courses' || v === 'course-detail',
   },
   { label: 'About', view: 'about', path: ROUTES.about, match: (v) => v === 'about' },
+  { label: 'FAQ', view: 'faq', path: ROUTES.faq, match: (v) => v === 'faq' },
   { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];
 
@@ -173,6 +174,15 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                   Dashboard
                 </a>
               ) : null}
+              <a
+                href={ROUTES.faq}
+                onClick={(e) => onNav(e, 'faq', ROUTES.faq)}
+                className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
+                  currentView === 'faq' ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
+                }`}
+              >
+                FAQ
+              </a>
               <a
                 href={ROUTES.blog}
                 onClick={(e) => onNav(e, 'blog', ROUTES.blog)}

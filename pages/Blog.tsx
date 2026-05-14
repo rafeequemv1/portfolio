@@ -53,10 +53,12 @@ const Blog: React.FC<BlogProps> = ({ navigate }) => {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24">
+    <section className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-20 lg:px-24" aria-labelledby="blog-heading">
       <header className="mb-14 max-w-3xl">
         <p className="text-xs uppercase tracking-[0.2em] text-[#37352f]/50 font-semibold mb-4">Journal</p>
-        <h1 className="text-4xl md:text-5xl font-serif text-[#37352f] tracking-tight mb-5">Thoughts on design, code, and scientific communication.</h1>
+        <h1 id="blog-heading" className="text-4xl md:text-5xl font-serif text-[#37352f] tracking-tight mb-5">
+          Thoughts on design, code, and scientific communication.
+        </h1>
         <p className="text-[#37352f]/70 leading-relaxed">
           Notes on scientific illustration, workshops, and tools for researchers—from Blender pipelines to open chemistry software like MolDraw.
         </p>
@@ -99,7 +101,7 @@ const Blog: React.FC<BlogProps> = ({ navigate }) => {
           </article>
         ))}
       </section>
-    </div>
+    </section>
   );
 };
 

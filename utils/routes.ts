@@ -20,7 +20,16 @@ export const ROUTES = {
   portfolioVideos: '/portfolio/scientific-illustration-videos',
   login: '/login',
   dashboard: '/dashboard',
+  privacyPolicy: '/privacy-policy',
+  termsOfService: '/terms-of-service',
+  editorialGuidelines: '/editorial-guidelines',
+  htmlSitemap: '/html-sitemap',
+  faq: '/faq',
 } as const;
+
+/** One-line site pitch for footer trust blocks and audits. */
+export const FOOTER_SITE_TAGLINE =
+  'Scientific illustration for journal covers, research figures, and 3D molecular art—workshops and SciDart Academy courses for labs worldwide.';
 
 /** Canonical URLs for footer / crawl — labels tuned for readable internal links (SEO). */
 export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View }[] = [
@@ -38,6 +47,18 @@ export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View 
   { label: 'Blog', path: ROUTES.blog, view: 'blog' },
   { label: 'About', path: ROUTES.about, view: 'about' },
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
+];
+
+/** Short footer row: About, Contact, policies (audit “essential links”). */
+export const FOOTER_ESSENTIAL_TRUST: readonly { label: string; path: string; view: View }[] = [
+  { label: 'About', path: ROUTES.about, view: 'about' },
+  { label: 'Contact', path: ROUTES.contact, view: 'contact' },
+  { label: 'Studio & team', path: ROUTES.about, view: 'about' },
+  { label: 'Privacy', path: ROUTES.privacyPolicy, view: 'privacy' },
+  { label: 'Terms', path: ROUTES.termsOfService, view: 'terms' },
+  { label: 'Editorial', path: ROUTES.editorialGuidelines, view: 'editorial' },
+  { label: 'FAQ', path: ROUTES.faq, view: 'faq' },
+  { label: 'HTML sitemap', path: ROUTES.htmlSitemap, view: 'html-sitemap' },
 ];
 
 export type PortfolioTab = 'covers' | 'figures' | 'logos' | 'websites-apps' | 'videos';
@@ -207,6 +228,11 @@ export function getViewFromPath(fullPath: string): View {
     [ROUTES.apps]: 'apps',
     [ROUTES.login]: 'login',
     [ROUTES.dashboard]: 'dashboard',
+    [ROUTES.privacyPolicy]: 'privacy',
+    [ROUTES.termsOfService]: 'terms',
+    [ROUTES.editorialGuidelines]: 'editorial',
+    [ROUTES.htmlSitemap]: 'html-sitemap',
+    [ROUTES.faq]: 'faq',
   };
 
   const v = primary[pathname];

@@ -345,7 +345,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ path, navigate }) => {
       <CourseCompletionModal open={celebrateOpen} courseTitle={course.title} onClose={handleModalClose} />
 
       {surface === 'overview' ? (
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+        <section className="mx-auto w-full max-w-2xl flex-1 px-4 py-10 sm:px-6 sm:py-14" aria-label="Course overview">
           <a
             href={ROUTES.courses}
             onClick={(e) => navigate(e, 'courses', ROUTES.courses)}
@@ -441,9 +441,9 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ path, navigate }) => {
               ) : null}
             </div>
           </div>
-        </main>
+        </section>
       ) : (
-        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-0 px-4 py-6 sm:px-6 lg:flex-row lg:gap-0 lg:py-8">
+        <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-0 px-4 py-6 sm:px-6 lg:flex-row lg:gap-0 lg:py-8" aria-label="Course content">
           <aside
             className="mb-6 shrink-0 border-slate-200 lg:mb-0 lg:w-56 lg:border-r lg:bg-slate-50/50 lg:pr-4"
             aria-label="Course outline and progress"
@@ -647,7 +647,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ path, navigate }) => {
               </section>
             ) : null}
           </article>
-        </main>
+        </section>
       )}
     </>
   );

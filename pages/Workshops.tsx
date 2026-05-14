@@ -209,10 +209,12 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
   }, [instituteFilter, workshopsForStrand]);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-grow flex-col animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-16 lg:px-24">
+    <section className="mx-auto flex w-full max-w-6xl flex-grow flex-col animate-fade-in-up px-4 py-10 sm:px-6 md:px-12 md:py-16 lg:px-24" aria-labelledby="workshops-heading">
       <header className="mb-12 text-center">
         <div className="relative inline-block">
-          <h1 className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">Workshops & Training</h1>
+          <h1 id="workshops-heading" className="relative z-10 mb-4 font-serif text-4xl tracking-tight text-[#37352f] md:text-5xl">
+            Workshops & Training
+          </h1>
           <div className="absolute bottom-2 left-0 -z-0 h-3 w-full -rotate-1 rounded-sm bg-[#d1e9e7] opacity-80" />
         </div>
         <p className="font-hand text-2xl text-[#37352f]/60">Sharing knowledge, fostering creativity.</p>
@@ -341,7 +343,7 @@ const Workshops: React.FC<WorkshopsProps> = ({ navigate }) => {
           )}
         </>
       )}
-    </div>
+    </section>
   );
 };
 

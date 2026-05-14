@@ -337,3 +337,77 @@ export function courseDetailKeywords(course: Pick<Course, 'title' | 'description
     'graphical abstract tutorial, journal graphical abstract, research paper visual summary, scientific illustration course, publication figure design, Rafeeque Mavoor';
   return [course.title, course.category, course.description?.slice(0, 200), base].filter(Boolean).join(', ');
 }
+
+/** FAQ copy — keep aligned with `index.html` FAQPage `mainEntity` and `/faq` page body. */
+export const SITE_FAQ_ITEMS: readonly { question: string; answer: string }[] = [
+  {
+    question: 'What scientific illustration services do you offer?',
+    answer:
+      'Journal cover art, publication figures and infographics, graphical abstracts, lab websites, and on-campus or online workshops for research teams—from 3D molecular visualization to journal-ready layouts.',
+  },
+  {
+    question: 'How do I commission a journal cover or figure?',
+    answer:
+      'Use the Services page request form with your timeline, target journal or venue, reference structures or sketches, and brand preferences. You will receive a direct reply to discuss scope, licensing, and delivery formats (print and web).',
+  },
+  {
+    question: 'Do you work with international labs and publishers?',
+    answer:
+      'Yes. Projects are coordinated remotely with clear milestones; file delivery typically uses high-resolution TIFF, PDF, PNG, or vector formats aligned with your publisher’s author guidelines.',
+  },
+  {
+    question: 'What is SciDart Academy?',
+    answer:
+      'SciDart Academy is the training arm focused on scientific illustration and visual communication for researchers—short online courses, structured chapters, and workshops on tools such as Blender and graphical abstracts.',
+  },
+  {
+    question: 'Where can I read articles about your tools and workflow?',
+    answer:
+      'The blog at rafeeque.com/blog covers scientific illustration process, Blender for researchers, and open tools such as MolDraw for structures and 3D visualization.',
+  },
+  {
+    question: 'How can I contact you for workshops or collaborations?',
+    answer:
+      'Use the Contact page or the workshop and services request links in the footer. Email and phone are listed in the site footer for direct outreach.',
+  },
+];
+
+export function webSiteJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Rafeeque Mavoor',
+    alternateName: ['Rafeeque Mavoor Studio', 'SciDart'],
+    url: `${SEO_SITE_ORIGIN}/`,
+    description: SEO_HOME_DESCRIPTION,
+    inLanguage: 'en',
+    publisher: {
+      '@type': 'Person',
+      name: 'Rafeeque Mavoor',
+      url: SEO_SITE_ORIGIN,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://www.google.com/search?q={search_term_string}+site:rafeeque.com',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+export function faqPageJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: SITE_FAQ_ITEMS.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}

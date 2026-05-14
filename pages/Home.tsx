@@ -81,8 +81,8 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
 
   return (
     <div className="relative flex flex-grow flex-col items-center px-4 pb-12 pt-12 animate-fade-in-up sm:px-6 md:pb-16 md:pt-20">
-      <div className="mb-12 max-w-2xl text-center md:mb-16">
-        <h1 className="mb-5 font-serif text-4xl tracking-tight text-[#37352f] sm:text-5xl md:mb-6 md:text-7xl">
+      <section className="mb-12 max-w-2xl text-center md:mb-16" aria-labelledby="home-hero-heading">
+        <h1 id="home-hero-heading" className="mb-5 font-serif text-4xl tracking-tight text-[#37352f] sm:text-5xl md:mb-6 md:text-7xl">
           Rafeeque Mavoor
         </h1>
         <div className="flex items-center justify-center gap-3">
@@ -100,7 +100,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
            </p>
         </div>
 
-      </div>
+      </section>
 
       <section className="mb-10 max-w-2xl px-1 text-center sm:max-w-3xl md:mb-12" aria-labelledby="home-intro-heading">
         <h2 id="home-intro-heading" className="mb-4 font-serif text-2xl tracking-tight text-[#37352f] sm:text-3xl">
@@ -202,7 +202,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         </p>
       </section>
 
-      <div className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10">
+      <section className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10" aria-label="Primary actions">
         <button
           type="button"
           onClick={() => setLeadModal('work-with-me')}
@@ -213,11 +213,11 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         <p className="max-w-md text-xs leading-relaxed text-[#37352f]/55">
           Covers, figures, lab sites, or workshops—pick a focus (optional), send a short note, and get a personal reply.
         </p>
-      </div>
+      </section>
 
       {covers.length > 0 && (
-        <div className="w-full max-w-7xl space-y-6 md:space-y-8">
-          <h2 className="text-center font-serif text-xl tracking-tight text-[#37352f] sm:text-2xl md:text-3xl">
+        <section className="w-full max-w-7xl space-y-6 md:space-y-8" aria-labelledby="home-covers-heading">
+          <h2 id="home-covers-heading" className="text-center font-serif text-xl tracking-tight text-[#37352f] sm:text-2xl md:text-3xl">
             Selected journal covers
           </h2>
           <div className="cover-marquee">
@@ -258,10 +258,10 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       )}
 
-      <div className="mt-10 mb-8 flex w-full max-w-xl flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5">
+      <section className="mt-10 mb-8 flex w-full max-w-xl flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5" aria-label="Portfolio and illustration requests">
         <a
           href={ROUTES.portfolioCovers}
           onClick={(e) => {
@@ -281,7 +281,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         >
           Request illustration
         </button>
-      </div>
+      </section>
 
       {brands.length > 0 && (
         <section className="w-full max-w-7xl mt-10 md:mt-14 border-t border-[#37352f]/10 pt-10 md:pt-12">

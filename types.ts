@@ -103,6 +103,11 @@ export type View =
   | 'courses'
   | 'course-detail'
   | 'contact'
+  | 'privacy'
+  | 'terms'
+  | 'editorial'
+  | 'html-sitemap'
+  | 'faq'
   | 'login'
   | 'dashboard';
 

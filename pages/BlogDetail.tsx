@@ -50,7 +50,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
   const [related, setRelated] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
-  const articleRef = useRef<HTMLDivElement>(null);
+  const articleBodyRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -116,7 +116,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
       return;
     }
     const frameId = requestAnimationFrame(() => {
-      const root = articleRef.current;
+      const root = articleBodyRef.current;
       if (!root) return;
       const els = root.querySelectorAll('h2, h3');
       const used = new Set<string>();
@@ -150,13 +150,19 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
   }, [post]);
 
   if (loading) {
-    return <div className="mx-auto w-full max-w-3xl px-4 py-16 text-[#37352f]/60 sm:px-6 md:px-12 md:py-20">Loading post...</div>;
+    return (
+      <section className="mx-auto w-full max-w-3xl px-4 py-16 text-[#37352f]/60 sm:px-6 md:px-12 md:py-20" aria-busy="true" aria-live="polite">
+        Loading post…
+      </section>
+    );
   }
 
   if (!post) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6 md:px-12 md:py-20">
-        <h1 className="text-3xl font-serif mb-4">Post not found</h1>
+      <section className="mx-auto w-full max-w-3xl px-4 py-16 text-center sm:px-6 md:px-12 md:py-20" aria-labelledby="blog-not-found-title">
+        <h1 id="blog-not-found-title" className="mb-4 font-serif text-3xl">
+          Post not found
+        </h1>
         <a
           href={ROUTES.blog}
           onClick={(e) => navigate(e, 'blog', ROUTES.blog)}
@@ -164,7 +170,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
         >
           Back to blog
         </a>
-      </div>
+      </section>
     );
   }
 
@@ -172,7 +178,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
     'block rounded-md py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#37352f]/50 transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f]';
 
   return (
-    <div className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 xl:max-w-[1320px] xl:px-10 xl:py-16">
+    <article className="mx-auto w-full max-w-6xl animate-fade-in-up px-4 py-10 sm:px-6 xl:max-w-[1320px] xl:px-10 xl:py-16">
       <a
         href={ROUTES.blog}
         onClick={(e) => navigate(e, 'blog', ROUTES.blog)}
@@ -219,7 +225,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
           </nav>
         </aside>
 
-        <div className="order-2 min-w-0">
+        <section className="order-2 min-w-0" aria-label="Article">
           <header className="mb-10">
             <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#37352f]/50">
               <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -242,12 +248,13 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
             className="mb-10 h-72 w-full rounded-xl border border-[#37352f]/10 object-cover md:h-96"
           />
 
-          <article
-            ref={articleRef}
+          <section
+            ref={articleBodyRef}
             className="prose max-w-none prose-headings:scroll-mt-24 prose-headings:font-serif prose-headings:text-[#37352f] prose-p:text-[#37352f]/80 prose-li:text-[#37352f]/80 prose-a:text-[#37352f] prose-a:underline prose-figure:my-8 prose-figcaption:text-center prose-figcaption:text-sm prose-figcaption:text-[#37352f]/60 [&_img]:rounded-xl [&_img]:border [&_img]:border-[#37352f]/10"
+            aria-label="Article body"
             dangerouslySetInnerHTML={{ __html: post.content || '' }}
           />
-        </div>
+        </section>
 
         <aside className="order-3 lg:sticky lg:top-24 lg:self-start">
           <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#37352f]/35">More posts</p>
@@ -287,7 +294,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
           )}
         </aside>
       </div>
-    </div>
+    </article>
   );
 };
 
