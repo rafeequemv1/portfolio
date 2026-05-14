@@ -14,6 +14,8 @@ import '@fontsource/cormorant-garamond/latin-700.css';
 import '@fontsource/dancing-script/latin-400.css';
 import './index.css';
 
+document.getElementById('seo-crawler-fallback')?.remove();
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error("Could not find root element to mount to");

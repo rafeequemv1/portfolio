@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:3000": "vite --port 3000",
+    "dev:3080": "vite --port 3080",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"

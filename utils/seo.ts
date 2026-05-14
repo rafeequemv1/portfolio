@@ -1,8 +1,15 @@
 import type { Workshop } from '../types';
+import type { Course, CourseChapter } from '../courses/types';
 import { ROUTES } from './routes';
 
 /** Site origin for canonicals and absolute OG images (must match production). */
 export const SEO_SITE_ORIGIN = 'https://rafeeque.com';
+
+/** Keep in sync with `index.html` default title and meta description (SERP length limits). */
+export const SEO_HOME_TITLE = 'Rafeeque Mavoor | Scientific Illustrator & Molecular Art';
+
+export const SEO_HOME_DESCRIPTION =
+  'Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart Academy courses for research teams worldwide.';
 
 const DEFAULT_OG_IMAGE = `${SEO_SITE_ORIGIN}/og-image.jpg`;
 
@@ -29,12 +36,15 @@ export interface PageSeoOptions {
   description: string;
   /** Path only, e.g. `/workshops` or `/workshops/site-isf-ar-2024` */
   canonicalPath: string;
+  /** Pass empty string to remove the keywords meta tag (e.g. home page). */
   keywords?: string;
   /** Relative `/...` or absolute URL */
   ogImage?: string;
   ogType?: 'website' | 'article' | 'event';
   /** Extra JSON-LD object(s); injected as a separate script tag (valid alongside index.html schema). */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** e.g. `index, follow` — helps crawlers and answer engines. */
+  robots?: string;
 }
 
 /**
@@ -48,7 +58,9 @@ export function applyPageSeo(opts: PageSeoOptions) {
   document.title = opts.title;
 
   setOrCreateMeta('name', 'description', opts.description);
-  if (opts.keywords?.trim()) {
+  if (opts.keywords === '') {
+    document.head.querySelector('meta[name="keywords"]')?.remove();
+  } else if (opts.keywords?.trim()) {
     setOrCreateMeta('name', 'keywords', opts.keywords.trim());
   }
 
@@ -67,6 +79,8 @@ export function applyPageSeo(opts: PageSeoOptions) {
   setOrCreateMeta('name', 'twitter:title', opts.title);
   setOrCreateMeta('name', 'twitter:description', opts.description);
   setOrCreateMeta('name', 'twitter:image', ogImage);
+
+  setOrCreateMeta('name', 'robots', (opts.robots || 'index, follow').trim());
 
   const id = 'seo-dynamic-jsonld';
   let script = document.getElementById(id) as HTMLScriptElement | null;
@@ -187,4 +201,139 @@ export function workshopDetailKeywords(workshop: Workshop): string {
     workshop.strand === 'ai' ? 'AI for scientists' : '',
   ];
   return parts.filter(Boolean).join(', ');
+}
+
+export const COURSES_INDEX_DESC =
+  'Free and premium short courses for scientists: graphical abstracts, journal figures, Blender 3D, and visual communication — structured chapters with text, video, and interactive examples by Rafeeque Mavoor.';
+
+export const COURSES_INDEX_KEYWORDS =
+  'graphical abstract course, scientific illustration training, journal graphical abstract tutorial, research paper visual summary, Cell Nature graphical abstract, science communication course, Rafeeque Mavoor, self-paced illustration lessons';
+
+export function coursesIndexJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Short courses — scientific illustration & graphical abstracts',
+    description: COURSES_INDEX_DESC,
+    url: `${SEO_SITE_ORIGIN}${ROUTES.courses}`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Rafeeque Mavoor',
+      url: SEO_SITE_ORIGIN,
+      description: 'Scientific illustration, journal art, and researcher-focused visual education.',
+    },
+    about: {
+      '@type': 'Thing',
+      name: 'Scientific illustration, graphical abstracts, and visual communication for peer-reviewed research',
+    },
+    inLanguage: 'en',
+  };
+}
+
+/** Rich Course + breadcrumbs + chapter ItemList + FAQ for answer engines / LLM context. */
+export function courseDetailJsonLd(
+  course: Pick<Course, 'title' | 'slug' | 'description'>,
+  chapters: Pick<CourseChapter, 'id' | 'title' | 'position'>[],
+  canonicalPath: string
+): Record<string, unknown>[] {
+  const pageUrl = `${SEO_SITE_ORIGIN}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
+  const desc =
+    course.description?.trim() ||
+    `${course.title}: structured chapters on scientific illustration and research visuals — self-paced learning.`;
+
+  const crumbs: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SEO_SITE_ORIGIN },
+      { '@type': 'ListItem', position: 2, name: 'Short courses', item: `${SEO_SITE_ORIGIN}${ROUTES.courses}` },
+      { '@type': 'ListItem', position: 3, name: course.title, item: pageUrl },
+    ],
+  };
+
+  const courseLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: course.title,
+    description: desc,
+    url: pageUrl,
+    inLanguage: 'en',
+    educationalLevel: 'researcher, graduate student, postdoctoral scientist',
+    teaches:
+      'graphical abstract design, journal figure planning, visual hierarchy for scientific papers, color and typography for publication graphics',
+    provider: {
+      '@type': 'Person',
+      name: 'Rafeeque Mavoor',
+      url: SEO_SITE_ORIGIN,
+      jobTitle: 'Scientific Illustrator and Educator',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: 0,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: pageUrl,
+      category: 'Online course',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      courseWorkload: `PT${Math.max(1, chapters.length * 12)}M`,
+      url: pageUrl,
+    },
+    isAccessibleForFree: true,
+  };
+
+  const toc: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${course.title} — chapters`,
+    description: 'Ordered table of contents for crawlers and answer engines.',
+    numberOfItems: chapters.length,
+    itemListElement: chapters.map((ch, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: ch.title,
+      url: `${pageUrl}#chapter-${ch.id}`,
+    })),
+  };
+
+  const faq: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What is a graphical abstract?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'A graphical abstract is a single, self-contained visual summary of your paper—usually one panel—that helps readers and editors grasp your main finding or mechanism at a glance before reading the full article.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How detailed should a graphical abstract be?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Keep one clear visual story: avoid cramming every experiment. Prioritize the central mechanism or outcome, use readable type sizes, and follow the target journal’s file format, dimensions, and word limits.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Which tools are common for graphical abstracts?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Researchers often combine vector tools (Illustrator, Inkscape), 3D molecular visuals (Blender, PyMOL), and layout in PowerPoint or Figma—what matters is vector or high-resolution export that matches journal guidelines.',
+        },
+      },
+    ],
+  };
+
+  return [crumbs, courseLd, toc, faq];
+}
+
+export function courseDetailKeywords(course: Pick<Course, 'title' | 'description' | 'category'>): string {
+  const base =
+    'graphical abstract tutorial, journal graphical abstract, research paper visual summary, scientific illustration course, publication figure design, Rafeeque Mavoor';
+  return [course.title, course.category, course.description?.slice(0, 200), base].filter(Boolean).join(', ');
 }

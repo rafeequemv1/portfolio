@@ -8,6 +8,8 @@ export const ROUTES = {
   about: '/about-scientific-illustrator-rafeeque-mavoor',
   contact: '/contact-scientific-illustration-commissions',
   blog: '/blog',
+  /** Short self-paced courses (chapters with text, video, images). */
+  courses: '/courses',
   /** Web apps & lab sites showcase (same Portfolio tab as “Web & apps”). */
   apps: '/science-web-apps-lab-websites',
   portfolioCovers: '/portfolio/journal-cover-art',
@@ -32,6 +34,7 @@ export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View 
   { label: 'Lab websites & web apps', path: ROUTES.portfolioWebApps, view: 'portfolio' },
   { label: 'Science web apps showcase', path: ROUTES.apps, view: 'apps' },
   { label: 'Workshops', path: ROUTES.workshops, view: 'workshops' },
+  { label: 'Short courses', path: ROUTES.courses, view: 'courses' },
   { label: 'Blog', path: ROUTES.blog, view: 'blog' },
   { label: 'About', path: ROUTES.about, view: 'about' },
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
@@ -121,6 +124,20 @@ export function workshopDetailHref(id: string): string {
   return `${ROUTES.workshops}/${id}`;
 }
 
+/** `/courses/:slug` (not the index `/courses`). */
+export function isCourseDetailPath(pathname: string): boolean {
+  const p = ROUTES.courses + '/';
+  return pathname.startsWith(p) && pathname.length > p.length;
+}
+
+export function courseSlugFromPath(fullPath: string): string | undefined {
+  const pathname = pathnameOnly(fullPath);
+  const prefix = ROUTES.courses + '/';
+  if (!pathname.startsWith(prefix) || pathname.length <= prefix.length) return undefined;
+  const slug = pathname.slice(prefix.length).split('/')[0]?.trim();
+  return slug || undefined;
+}
+
 export function isAppsPath(pathname: string): boolean {
   return pathname === ROUTES.apps || pathname === '/apps';
 }
@@ -177,6 +194,7 @@ export function getViewFromPath(fullPath: string): View {
   const pathname = pathnameOnly(fullPath);
   if (isWorkshopDetailPath(pathname)) return 'workshop-detail';
   if (pathname.startsWith('/blog/') && pathname.length > '/blog/'.length) return 'blog-detail';
+  if (isCourseDetailPath(pathname)) return 'course-detail';
 
   const primary: Record<string, View> = {
     [ROUTES.home]: 'home',
@@ -185,6 +203,7 @@ export function getViewFromPath(fullPath: string): View {
     [ROUTES.about]: 'about',
     [ROUTES.contact]: 'contact',
     [ROUTES.blog]: 'blog',
+    [ROUTES.courses]: 'courses',
     [ROUTES.apps]: 'apps',
     [ROUTES.login]: 'login',
     [ROUTES.dashboard]: 'dashboard',

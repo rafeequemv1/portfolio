@@ -1,0 +1,10 @@
+const fs = require('fs');
+const path = require('path');
+const sqlPath = path.join(__dirname, '..', 'supabase', 'color_theory_conversational_updates.sql');
+let s = fs.readFileSync(sqlPath, 'utf8');
+s = s.replace(/\u201c/g, '"').replace(/\u201d/g, '"').replace(/\u2013/g, '-');
+fs.writeFileSync(sqlPath, s, 'utf8');
+const q = fs.readFileSync(sqlPath, 'utf8');
+const payload = JSON.stringify({ query: q });
+fs.writeFileSync(path.join(__dirname, '..', 'supabase', '_mcp_payload.json'), payload, 'utf8');
+console.log('payload bytes', Buffer.byteLength(payload, 'utf8'));

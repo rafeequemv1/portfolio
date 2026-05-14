@@ -4,6 +4,7 @@ import { supabase } from '../supabase/client';
 import HomeLeadModal, { type HomeLeadModalMode } from '../components/HomeLeadModal';
 import { Brand, JournalCover, View } from '../types';
 import { ROUTES } from '../utils/routes';
+import { SEO_SITE_ORIGIN } from '../utils/seo';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 const shuffleArray = <T,>(items: T[]): T[] => {
@@ -101,6 +102,106 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
 
       </div>
 
+      <section className="mb-10 max-w-2xl px-1 text-center sm:max-w-3xl md:mb-12" aria-labelledby="home-intro-heading">
+        <h2 id="home-intro-heading" className="mb-4 font-serif text-2xl tracking-tight text-[#37352f] sm:text-3xl">
+          Scientific illustration for journals and labs
+        </h2>
+        <p className="text-sm leading-relaxed text-[#5c5a57] sm:text-base">
+          From{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.portfolioCovers}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'portfolio', ROUTES.portfolioCovers);
+              }
+            }}
+          >
+            journal covers
+          </a>{' '}
+          and figures to{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.services}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'services', ROUTES.services);
+              }
+            }}
+          >
+            full illustration commissions
+          </a>
+          , plus{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.workshops}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'workshops', ROUTES.workshops);
+              }
+            }}
+          >
+            on-site and online workshops
+          </a>{' '}
+          and{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.courses}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'courses', ROUTES.courses);
+              }
+            }}
+          >
+            SciDart Academy short courses
+          </a>
+          . Read the{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.blog}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'blog', ROUTES.blog);
+              }
+            }}
+          >
+            blog
+          </a>
+          , learn more{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.about}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'about', ROUTES.about);
+              }
+            }}
+          >
+            about the studio
+          </a>
+          , or{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.contact}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'contact', ROUTES.contact);
+              }
+            }}
+          >
+            start a project
+          </a>
+          .
+        </p>
+      </section>
+
       <div className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10">
         <button
           type="button"
@@ -116,6 +217,9 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
 
       {covers.length > 0 && (
         <div className="w-full max-w-7xl space-y-6 md:space-y-8">
+          <h2 className="text-center font-serif text-xl tracking-tight text-[#37352f] sm:text-2xl md:text-3xl">
+            Selected journal covers
+          </h2>
           <div className="cover-marquee">
             <div className="cover-marquee-track">
               {[...firstRowFull, ...firstRowFull].map((cover, idx) => (
@@ -181,10 +285,10 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
 
       {brands.length > 0 && (
         <section className="w-full max-w-7xl mt-10 md:mt-14 border-t border-[#37352f]/10 pt-10 md:pt-12">
-          <div className="text-center mb-7">
-            <p className="text-[10px] md:text-xs uppercase tracking-[0.22em] text-[#5c5a57] font-semibold">
+          <div className="mb-7 text-center">
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c5a57] md:text-xs">
               Trusted by researchers and institutions
-            </p>
+            </h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12">
             {brands.map((brand) => (

@@ -12,16 +12,27 @@ import LabWebsiteManager from '../components/LabWebsiteManager';
 import PortfolioFigureManager from '../components/PortfolioFigureManager';
 import TalksManager from '../components/TalksManager';
 import PortfolioLogoManager from '../components/PortfolioLogoManager';
-import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen, Smartphone, ClipboardList, Mic } from 'lucide-react';
+import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen, Smartphone, ClipboardList, Mic, GraduationCap } from 'lucide-react';
 import SiteAndAppsManager from '../components/SiteAndAppsManager';
 import ServicesAdminPanel from '../components/ServicesAdminPanel';
+import CourseManager from '../components/CourseManager';
 
 interface DashboardProps {
   session: Session;
   navigate: (e: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>, view: any, path: string) => void;
 }
 
-type DashboardSection = 'overview' | 'portfolio' | 'workshops' | 'blog' | 'talks' | 'brands' | 'apps' | 'services' | 'settings';
+type DashboardSection =
+  | 'overview'
+  | 'portfolio'
+  | 'workshops'
+  | 'courses'
+  | 'blog'
+  | 'talks'
+  | 'brands'
+  | 'apps'
+  | 'services'
+  | 'settings';
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
@@ -31,6 +42,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
       { key: 'portfolio' as DashboardSection, label: 'Portfolio', icon: Image },
       { key: 'workshops' as DashboardSection, label: 'Workshops', icon: Calendar },
+      { key: 'courses' as DashboardSection, label: 'Courses', icon: GraduationCap },
       { key: 'blog' as DashboardSection, label: 'Blog', icon: BookOpen },
       { key: 'talks' as DashboardSection, label: 'About talks', icon: Mic },
       { key: 'apps' as DashboardSection, label: 'Apps & site', icon: Smartphone },
@@ -78,6 +90,8 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
         );
       case 'workshops':
         return <WorkshopManager />;
+      case 'courses':
+        return <CourseManager />;
       case 'blog':
         return <BlogManager />;
       case 'talks':
@@ -188,7 +202,9 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
                         ? 'Service requests'
                         : activeSection === 'talks'
                           ? 'About talks'
-                          : activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
+                          : activeSection === 'courses'
+                            ? 'Courses'
+                            : activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
               </h1>
             </div>
             <p className="text-[#37352f]/60">

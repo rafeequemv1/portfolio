@@ -90,7 +90,21 @@ export interface LabWebsite {
   display_order?: number;
 }
 
-export type View = 'home' | 'apps' | 'services' | 'workshops' | 'workshop-detail' | 'portfolio' | 'about' | 'blog' | 'blog-detail' | 'contact' | 'login' | 'dashboard';
+export type View =
+  | 'home'
+  | 'apps'
+  | 'services'
+  | 'workshops'
+  | 'workshop-detail'
+  | 'portfolio'
+  | 'about'
+  | 'blog'
+  | 'blog-detail'
+  | 'courses'
+  | 'course-detail'
+  | 'contact'
+  | 'login'
+  | 'dashboard';
 
 /** SPA navigation handler (defined in `.ts` so union element types are not parsed as JSX). */
 export type AppNavigate = (

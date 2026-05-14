@@ -13,12 +13,16 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Courses = lazy(() => import('./pages/Courses'));
+const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 import { supabase } from './supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { View } from './types';
 import {
   applyPageSeo,
   clearDynamicJsonLd,
+  SEO_HOME_DESCRIPTION,
+  SEO_HOME_TITLE,
   workshopsIndexJsonLd,
   WORKSHOP_INDEX_KEYWORDS,
   WORKSHOP_INDEX_DESC,
@@ -117,6 +121,10 @@ const App: React.FC = () => {
       return;
     }
 
+    if (currentView === 'courses' || currentView === 'course-detail') {
+      return;
+    }
+
     if (currentView !== 'workshops') {
       clearDynamicJsonLd();
     }
@@ -128,10 +136,15 @@ const App: React.FC = () => {
 
     switch (currentView) {
       case 'home':
-        title = 'Rafeeque Mavoor | Scientific Illustration & 3D Molecular Animation';
-        description = 'Portfolio of Rafeeque Mavoor, a scientific illustrator and educator specializing in high-fidelity 3D molecular renders, journal covers, and biomedical animation.';
-        path = '/';
-        break;
+        applyPageSeo({
+          title: SEO_HOME_TITLE,
+          description: SEO_HOME_DESCRIPTION,
+          canonicalPath: ROUTES.home,
+          keywords: '',
+          ogImage: '/og-image.jpg',
+          ogType: 'website',
+        });
+        return;
       case 'services':
         title = 'Work With Me | Rafeeque Mavoor | Scientific Illustration Services';
         description = 'Offering professional services in journal cover art, figures & infographics, lab websites, and on-campus workshops for scientists and researchers.';
@@ -251,6 +264,10 @@ const App: React.FC = () => {
         return <Blog navigate={navigate} />;
       case 'blog-detail':
         return <BlogDetail path={currentPath} navigate={navigate} />;
+      case 'courses':
+        return <Courses navigate={navigate} />;
+      case 'course-detail':
+        return <CourseDetail path={currentPath} navigate={navigate} />;
       case 'contact':
         return <Contact navigate={navigate} />;
       case 'login':
