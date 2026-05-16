@@ -1,4 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
+import BackToTop from './components/BackToTop';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
 import Home from './pages/Home';
@@ -23,24 +24,8 @@ const Faq = lazy(() => import('./pages/Faq'));
 import { supabase } from './supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { View } from './types';
-import {
-  applyPageSeo,
-  clearDynamicJsonLd,
-  SEO_HOME_DESCRIPTION,
-  SEO_HOME_TITLE,
-  workshopsIndexJsonLd,
-  WORKSHOP_INDEX_KEYWORDS,
-  WORKSHOP_INDEX_DESC,
-} from './utils/seo';
-import {
-  ROUTES,
-  canonicalPathnameIfLegacy,
-  getViewFromPath,
-  pathnameOnly,
-  pathnameWithSearch,
-  portfolioTabFromPathname,
-  PORTFOLIO_SEO,
-} from './utils/routes';
+import { applyPageSeo, clearDynamicJsonLd, resolvePageSeo } from './utils/seo';
+import { canonicalPathnameIfLegacy, getViewFromPath, pathnameOnly } from './utils/routes';
 
 function browserPathSearchHash(): string {
   return window.location.pathname + window.location.search + window.location.hash;
@@ -122,152 +107,12 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (currentView === 'workshop-detail' || currentView === 'blog-detail') {
-      return;
-    }
-
-    if (currentView === 'courses' || currentView === 'course-detail') {
-      return;
-    }
-
-    if (currentView !== 'workshops') {
+    if (currentView !== 'workshops' && currentView !== 'workshop-detail') {
       clearDynamicJsonLd();
     }
 
-    let title = '';
-    let description = '';
-    const baseUrl = 'https://rafeeque.com';
-    let path = '';
-
-    switch (currentView) {
-      case 'home':
-        applyPageSeo({
-          title: SEO_HOME_TITLE,
-          description: SEO_HOME_DESCRIPTION,
-          canonicalPath: ROUTES.home,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-          ogType: 'website',
-        });
-        return;
-      case 'services':
-        title = 'Work With Me | Rafeeque Mavoor | Scientific Illustration Services';
-        description = 'Offering professional services in journal cover art, figures & infographics, lab websites, and on-campus workshops for scientists and researchers.';
-        path = ROUTES.services;
-        break;
-      case 'apps': {
-        const appsSeo = PORTFOLIO_SEO['websites-apps'];
-        title = appsSeo.title;
-        description = appsSeo.description;
-        path = ROUTES.apps;
-        break;
-      }
-      case 'workshops':
-        applyPageSeo({
-          title: 'Workshops & Training | Scientific Illustration | Rafeeque Mavoor',
-          description: WORKSHOP_INDEX_DESC,
-          canonicalPath: ROUTES.workshops,
-          keywords: WORKSHOP_INDEX_KEYWORDS,
-          ogImage: '/og-image.jpg',
-          ogType: 'website',
-          jsonLd: workshopsIndexJsonLd(),
-        });
-        return;
-      case 'portfolio': {
-        const tab = portfolioTabFromPathname(pathnameOnly(currentPath));
-        const seo = PORTFOLIO_SEO[tab];
-        title = seo.title;
-        description = seo.description;
-        path = pathnameWithSearch(currentPath);
-        break;
-      }
-      case 'about':
-        title = 'About Rafeeque Mavoor | Experience & Education';
-        description = "Learn about the professional journey of Rafeeque Mavoor, from a Master's in Chemistry to a leading scientific illustrator and founder of SciDart Academy.";
-        path = ROUTES.about;
-        break;
-      case 'blog':
-        title = 'Blog | Rafeeque Mavoor | Scientific Illustration, Blender, MolDraw';
-        description =
-          'Articles on scientific illustration, Blender workshops, and open chemistry tools such as MolDraw—a free alternative to ChemDraw for structures and 3D visualization.';
-        path = ROUTES.blog;
-        break;
-      case 'contact':
-        title = 'Contact Rafeeque Mavoor | Scientific Illustration Projects';
-        description = 'Get in touch with Rafeeque Mavoor for collaborations, commissions, or mentorship in scientific illustration and visualization.';
-        path = ROUTES.contact;
-        break;
-      case 'privacy':
-        applyPageSeo({
-          title: 'Privacy Policy | Rafeeque Mavoor',
-          description: 'How rafeeque.com handles inquiries, analytics, and related data for visitors and clients.',
-          canonicalPath: ROUTES.privacyPolicy,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-        });
-        return;
-      case 'terms':
-        applyPageSeo({
-          title: 'Terms of Service | Rafeeque Mavoor',
-          description: 'Terms for using rafeeque.com, educational content, and related creative services.',
-          canonicalPath: ROUTES.termsOfService,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-        });
-        return;
-      case 'editorial':
-        applyPageSeo({
-          title: 'Editorial Guidelines | Rafeeque Mavoor',
-          description: 'Authorship, accuracy, disclosures, and corrections for blog and teaching content on rafeeque.com.',
-          canonicalPath: ROUTES.editorialGuidelines,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-        });
-        return;
-      case 'html-sitemap':
-        applyPageSeo({
-          title: 'HTML Site Map | Rafeeque Mavoor',
-          description: 'Human-readable list of main pages on rafeeque.com, plus a link to the XML sitemap.',
-          canonicalPath: ROUTES.htmlSitemap,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-        });
-        return;
-      case 'faq':
-        applyPageSeo({
-          title: 'FAQ | Scientific illustration & commissions | Rafeeque Mavoor',
-          description:
-            'Answers about journal covers, figures, workshops, international projects, SciDart Academy, and how to contact the studio.',
-          canonicalPath: ROUTES.faq,
-          keywords: '',
-          ogImage: '/og-image.jpg',
-        });
-        return;
-      case 'login':
-        title = 'Admin Login | Rafeeque Mavoor';
-        description = 'Admin login portal.';
-        path = ROUTES.login;
-        break;
-      case 'dashboard':
-        title = 'Admin Dashboard | Rafeeque Mavoor';
-        description = 'Admin dashboard for managing content.';
-        path = ROUTES.dashboard;
-        break;
-    }
-    
-    if (title) document.title = title;
-    if (description) document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-    
-    const fullUrl = `${baseUrl}${path}`;
-    if(path) {
-      document.querySelector('link[rel="canonical"]')?.setAttribute('href', fullUrl);
-      document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-      document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-      document.querySelector('meta[property="og:url"]')?.setAttribute('content', fullUrl);
-      document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
-      document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
-    }
-
+    const seo = resolvePageSeo(currentView, currentPath);
+    if (seo) applyPageSeo(seo);
   }, [currentView, currentPath]);
 
   const navigate = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, _view: View, path: string) => {
@@ -349,6 +194,7 @@ const App: React.FC = () => {
       </main>
 
       <SiteFooter navigate={navigate} />
+      <BackToTop />
     </div>
   );
 };

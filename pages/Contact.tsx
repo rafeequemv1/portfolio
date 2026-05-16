@@ -117,7 +117,7 @@ const Contact: React.FC<ContactProps> = ({ navigate }) => {
               </li>
               <li>
                 <a
-                  href="https://facebook.com/rafeequemavoor"
+                  href="https://www.facebook.com/rafeequemvr/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-[#37352f]/10 bg-white/50 px-4 py-3 text-sm text-[#37352f]/80 hover:border-[#37352f]/25 hover:bg-white transition-colors"

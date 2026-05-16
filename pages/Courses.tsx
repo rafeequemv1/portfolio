@@ -74,7 +74,7 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
 
   useEffect(() => {
     applyPageSeo({
-      title: 'Short courses | Graphical abstracts & scientific illustration | Rafeeque Mavoor',
+      title: 'Minicourses | Graphical abstracts & scientific illustration | Rafeeque Mavoor',
       description: COURSES_INDEX_DESC,
       canonicalPath: ROUTES.courses,
       keywords: COURSES_INDEX_KEYWORDS,
@@ -91,7 +91,7 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
       <header className="mb-10 text-center lg:mb-12">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#37352f]/45">Learn</p>
         <h1 id="courses-heading" className="font-serif text-3xl tracking-tight text-[#37352f] sm:text-4xl">
-          Short courses
+          Minicourses
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#37352f]/65">
           Self-paced lessons for researchers: graphical abstracts, journal-ready figures, and clear visual storytelling. Each course uses

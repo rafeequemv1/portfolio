@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
 import type { View } from '../types';
+import SiteSearch from './SiteSearch';
 import { ROUTES } from '../utils/routes';
 
 interface SiteHeaderProps {
@@ -26,13 +27,12 @@ const navItems: { label: string; view: View; path: string; match: (v: View) => b
     match: (v) => v === 'workshops' || v === 'workshop-detail',
   },
   {
-    label: 'Courses',
+    label: 'Minicourses',
     view: 'courses',
     path: ROUTES.courses,
     match: (v) => v === 'courses' || v === 'course-detail',
   },
   { label: 'About', view: 'about', path: ROUTES.about, match: (v) => v === 'about' },
-  { label: 'FAQ', view: 'faq', path: ROUTES.faq, match: (v) => v === 'faq' },
   { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];
 
@@ -76,15 +76,25 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
           onClick={(e) => onNav(e, 'home', ROUTES.home)}
           className="group flex min-w-0 items-center gap-2.5 touch-manipulation sm:gap-3"
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#37352f]/5 text-lg transition-colors group-hover:bg-[#37352f]/10">
-            🧬
-          </span>
+          <img
+            src="/logo.svg"
+            alt="Rafeeque Mavoor logo"
+            width={36}
+            height={36}
+            className="h-8 w-8 shrink-0 rounded-full sm:h-9 sm:w-9"
+            fetchPriority="high"
+          />
           <span className="truncate font-serif text-base font-bold tracking-tight text-[#37352f] transition-opacity group-hover:opacity-80 sm:text-lg">
             Rafeeque Mavoor
           </span>
         </a>
 
-        <nav className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.15em] md:flex lg:gap-8" aria-label="Main">
+        <nav
+          className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.15em] md:flex lg:gap-8"
+          aria-label="Main"
+          itemScope
+          itemType="https://schema.org/SiteNavigationElement"
+        >
           {navItems.map(({ label, view, path, match }) => (
             <a
               key={path}
@@ -112,6 +122,8 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
             </a>
           ) : null}
         </nav>
+
+        <SiteSearch id="header-site-search" compact className="hidden lg:flex" />
 
         <button
           type="button"
@@ -150,7 +162,15 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                 <X size={22} strokeWidth={1.75} />
               </button>
             </div>
-            <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto overscroll-y-contain px-2 py-4" aria-label="Mobile main">
+            <div className="border-b border-[#37352f]/10 px-4 py-3">
+              <SiteSearch id="mobile-site-search" />
+            </div>
+            <nav
+              className="flex flex-1 flex-col gap-0.5 overflow-y-auto overscroll-y-contain px-2 py-4"
+              aria-label="Mobile main"
+              itemScope
+              itemType="https://schema.org/SiteNavigationElement"
+            >
               {navItems.map(({ label, view, path, match }) => (
                 <a
                   key={path}
@@ -174,15 +194,6 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                   Dashboard
                 </a>
               ) : null}
-              <a
-                href={ROUTES.faq}
-                onClick={(e) => onNav(e, 'faq', ROUTES.faq)}
-                className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
-                  currentView === 'faq' ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
-                }`}
-              >
-                FAQ
-              </a>
               <a
                 href={ROUTES.blog}
                 onClick={(e) => onNav(e, 'blog', ROUTES.blog)}

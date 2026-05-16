@@ -26,7 +26,7 @@
     <!-- Primary SEO — keep title/description aligned with utils/seo.ts (SEO_HOME_*) -->
     <title>Rafeeque Mavoor | Scientific Illustrator & Molecular Art</title>
     <meta name="title" content="Rafeeque Mavoor | Scientific Illustrator & Molecular Art">
-    <meta name="description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart Academy courses for research teams worldwide.">
+    <meta name="description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart minicourses for research teams.">
     <meta name="author" content="Rafeeque Mavoor">
     <link rel="canonical" href="https://rafeeque.com/" />
     <link rel="alternate" hreflang="x-default" href="https://rafeeque.com/" />
@@ -37,7 +37,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rafeeque.com/">
     <meta property="og:title" content="Rafeeque Mavoor | Scientific Illustrator & Molecular Art">
-    <meta property="og:description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart Academy courses for research teams worldwide.">
+    <meta property="og:description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart minicourses for research teams.">
     <meta property="og:image" content="https://rafeeque.com/og-image.jpg">
     <meta property="og:site_name" content="Rafeeque Mavoor Studio">
 
@@ -45,7 +45,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@rafeequemavoor">
     <meta name="twitter:title" content="Rafeeque Mavoor | Scientific Illustrator & Molecular Art">
-    <meta name="twitter:description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart Academy courses for research teams worldwide.">
+    <meta name="twitter:description" content="Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart minicourses for research teams.">
     <meta name="twitter:image" content="https://rafeeque.com/og-image.jpg">
 
     <!-- Favicon -->
@@ -90,7 +90,9 @@
           "name": "Rafeeque Mavoor",
           "jobTitle": "Lead Scientific Illustrator",
           "url": "https://rafeeque.com",
+          "image": "https://rafeeque.com/logo.svg",
           "sameAs": [
+            "https://medium.com/@rafeequemavoor",
             "https://twitter.com/rafeequemavoor",
             "https://linkedin.com/in/rafeequemavoor"
           ],
@@ -118,10 +120,24 @@
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://www.google.com/search?q={search_term_string}+site:rafeeque.com"
+              "urlTemplate": "https://www.google.com/search?q={search_term_string}&sitesearch=rafeeque.com"
             },
             "query-input": "required name=search_term_string"
           }
+        },
+        {
+          "@type": "ItemList",
+          "name": "Site navigation",
+          "itemListElement": [
+            { "@type": "SiteNavigationElement", "position": 1, "name": "Home", "url": "https://rafeeque.com/" },
+            { "@type": "SiteNavigationElement", "position": 2, "name": "Portfolio", "url": "https://rafeeque.com/portfolio/journal-cover-art" },
+            { "@type": "SiteNavigationElement", "position": 3, "name": "Services", "url": "https://rafeeque.com/scientific-illustration-services" },
+            { "@type": "SiteNavigationElement", "position": 4, "name": "Workshops", "url": "https://rafeeque.com/scientific-illustration-workshops" },
+            { "@type": "SiteNavigationElement", "position": 5, "name": "Minicourses", "url": "https://rafeeque.com/courses" },
+            { "@type": "SiteNavigationElement", "position": 6, "name": "About", "url": "https://rafeeque.com/about-scientific-illustrator-rafeeque-mavoor" },
+            { "@type": "SiteNavigationElement", "position": 7, "name": "Contact", "url": "https://rafeeque.com/contact-scientific-illustration-commissions" },
+            { "@type": "SiteNavigationElement", "position": 8, "name": "Blog", "url": "https://rafeeque.com/blog" }
+          ]
         },
         {
           "@type": "FAQPage",
@@ -183,21 +199,29 @@
 <body>
     <div id="seo-crawler-fallback">
       <header>
-        <p><a href="https://rafeeque.com/">Rafeeque Mavoor</a> — scientific illustration studio</p>
+        <a href="https://rafeeque.com/">
+          <img src="/logo.svg" alt="Rafeeque Mavoor logo" width="36" height="36" />
+          Rafeeque Mavoor
+        </a>
+        <form role="search" action="https://www.google.com/search" method="get" aria-label="Search this website">
+          <input type="hidden" name="sitesearch" value="rafeeque.com" />
+          <label for="crawl-site-search">Search site</label>
+          <input id="crawl-site-search" type="search" name="q" />
+          <button type="submit">Search</button>
+        </form>
       </header>
-      <main>
-        <h1>Rafeeque Mavoor — Scientific illustrator</h1>
-        <p>
-          Journal covers, research figures, 3D molecular art, and science communication training for labs and publishers.
-          Workshops and self-paced courses via SciDart Academy.
+      <main id="top">
+        <h1 id="seo-crawl-h1">Rafeeque Mavoor</h1>
+        <p class="site-description">
+          Scientific illustration for journal covers, research figures, and 3D molecular art—workshops and SciDart Academy courses for labs worldwide.
         </p>
         <section aria-labelledby="seo-fallback-nav-heading">
           <h2 id="seo-fallback-nav-heading">Main pages</h2>
-          <nav aria-label="Site sections">
+          <nav aria-label="Site sections" itemscope itemtype="https://schema.org/SiteNavigationElement">
             <a href="https://rafeeque.com/scientific-illustration-services">Illustration services</a>
             <a href="https://rafeeque.com/portfolio/journal-cover-art">Journal cover art</a>
             <a href="https://rafeeque.com/scientific-illustration-workshops">Workshops</a>
-            <a href="https://rafeeque.com/courses">Short courses</a>
+            <a href="https://rafeeque.com/courses">Minicourses</a>
             <a href="https://rafeeque.com/blog">Blog</a>
             <a href="https://rafeeque.com/about-scientific-illustrator-rafeeque-mavoor">About</a>
             <a href="https://rafeeque.com/contact-scientific-illustration-commissions">Contact</a>
@@ -210,7 +234,11 @@
         </section>
       </main>
       <footer>
-        <p>© Rafeeque Mavoor · Kerala, India · <a href="https://rafeeque.com/">rafeeque.com</a></p>
+        <p class="site-description">
+          Scientific illustration for journal covers, research figures, and 3D molecular art—workshops and SciDart Academy courses for labs worldwide.
+        </p>
+        <p>© 2026 Rafeeque Mavoor · All rights reserved · Kerala, India · <a href="https://rafeeque.com/">rafeeque.com</a></p>
+        <p><a href="#top">Back to top</a></p>
       </footer>
     </div>
     <div id="root"></div>

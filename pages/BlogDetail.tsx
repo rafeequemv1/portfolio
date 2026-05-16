@@ -3,6 +3,7 @@ import { blogPosts as fallbackPosts } from '../data/blog';
 import { supabase } from '../supabase/client';
 import { BlogPost, type AppNavigate } from '../types';
 import { ROUTES } from '../utils/routes';
+import { applyPageSeo } from '../utils/seo';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 function slugifyHeading(text: string, index: number): string {
@@ -99,15 +100,14 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
 
   useEffect(() => {
     if (!post) return;
-    const title = `${post.title} | Rafeeque Mavoor`;
-    document.title = title;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', post.excerpt);
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://rafeeque.com/blog/${post.slug}`);
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', post.excerpt);
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', `https://rafeeque.com/blog/${post.slug}`);
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
-    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', post.excerpt);
+    const canonicalPath = `${ROUTES.blog}/${post.slug}`;
+    applyPageSeo({
+      title: `${post.title} | Rafeeque Mavoor`,
+      description: post.excerpt,
+      canonicalPath,
+      ogImage: post.imageUrl || '/og-image.jpg',
+      ogType: 'article',
+    });
   }, [post]);
 
   useEffect(() => {

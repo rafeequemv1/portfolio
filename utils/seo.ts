@@ -1,6 +1,14 @@
+import type { View } from '../types';
 import type { Workshop } from '../types';
 import type { Course, CourseChapter } from '../courses/types';
-import { ROUTES } from './routes';
+import staticRoutesJson from '../seo-static-routes.json';
+import {
+  PORTFOLIO_SEO,
+  ROUTES,
+  pathnameOnly,
+  pathnameWithSearch,
+  portfolioTabFromPathname,
+} from './routes';
 
 /** Site origin for canonicals and absolute OG images (must match production). */
 export const SEO_SITE_ORIGIN = 'https://rafeeque.com';
@@ -9,7 +17,54 @@ export const SEO_SITE_ORIGIN = 'https://rafeeque.com';
 export const SEO_HOME_TITLE = 'Rafeeque Mavoor | Scientific Illustrator & Molecular Art';
 
 export const SEO_HOME_DESCRIPTION =
-  'Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart Academy courses for research teams worldwide.';
+  'Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart minicourses for research teams.';
+
+export interface StaticPrerenderRoute {
+  path: string;
+  title: string;
+  description: string;
+  h1: string;
+}
+
+/** Build-time prerender list — keep aligned with `seo-static-routes.json`. */
+export const STATIC_PRERENDER_ROUTES = staticRoutesJson as StaticPrerenderRoute[];
+
+const STATIC_ROUTE_BY_PATH = new Map(STATIC_PRERENDER_ROUTES.map((r) => [r.path, r]));
+
+/** Trim meta descriptions for SERP (~155 chars). */
+export function truncateMetaDescription(text: string, maxLength = 155): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  const slice = trimmed.slice(0, maxLength - 1);
+  const lastSpace = slice.lastIndexOf(' ');
+  if (lastSpace > maxLength * 0.6) return `${slice.slice(0, lastSpace).trimEnd()}…`;
+  return `${slice.trimEnd()}…`;
+}
+
+function ensureCanonicalLink(): HTMLLinkElement {
+  let el = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  if (!el) {
+    el = document.createElement('link');
+    el.rel = 'canonical';
+    document.head.appendChild(el);
+  }
+  return el;
+}
+
+/** Self-referencing hreflang for the current page URL (fixes audit: missing self-reference). */
+export function setHreflangLinks(canonicalUrl: string) {
+  for (const lang of ['x-default', 'en'] as const) {
+    const selector = `link[rel="alternate"][hreflang="${lang}"]`;
+    let el = document.head.querySelector(selector) as HTMLLinkElement | null;
+    if (!el) {
+      el = document.createElement('link');
+      el.rel = 'alternate';
+      el.hreflang = lang;
+      document.head.appendChild(el);
+    }
+    el.href = canonicalUrl;
+  }
+}
 
 const DEFAULT_OG_IMAGE = `${SEO_SITE_ORIGIN}/og-image.jpg`;
 
@@ -54,21 +109,23 @@ export interface PageSeoOptions {
 export function applyPageSeo(opts: PageSeoOptions) {
   const canonicalUrl = `${SEO_SITE_ORIGIN}${opts.canonicalPath.startsWith('/') ? opts.canonicalPath : `/${opts.canonicalPath}`}`;
   const ogImage = absoluteImageUrl(opts.ogImage);
+  const description = truncateMetaDescription(opts.description);
 
   document.title = opts.title;
 
-  setOrCreateMeta('name', 'description', opts.description);
+  setOrCreateMeta('name', 'description', description);
   if (opts.keywords === '') {
     document.head.querySelector('meta[name="keywords"]')?.remove();
   } else if (opts.keywords?.trim()) {
     setOrCreateMeta('name', 'keywords', opts.keywords.trim());
   }
 
-  document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonicalUrl);
+  ensureCanonicalLink().href = canonicalUrl;
+  setHreflangLinks(canonicalUrl);
   setOrCreateMeta('name', 'title', opts.title);
 
   setOrCreateMeta('property', 'og:title', opts.title);
-  setOrCreateMeta('property', 'og:description', opts.description);
+  setOrCreateMeta('property', 'og:description', description);
   setOrCreateMeta('property', 'og:url', canonicalUrl);
   setOrCreateMeta('property', 'og:type', opts.ogType || 'website');
   setOrCreateMeta('property', 'og:image', ogImage);
@@ -77,7 +134,7 @@ export function applyPageSeo(opts: PageSeoOptions) {
 
   setOrCreateMeta('name', 'twitter:card', 'summary_large_image');
   setOrCreateMeta('name', 'twitter:title', opts.title);
-  setOrCreateMeta('name', 'twitter:description', opts.description);
+  setOrCreateMeta('name', 'twitter:description', description);
   setOrCreateMeta('name', 'twitter:image', ogImage);
 
   setOrCreateMeta('name', 'robots', (opts.robots || 'index, follow').trim());
@@ -103,8 +160,10 @@ export function clearDynamicJsonLd() {
   document.getElementById('seo-dynamic-jsonld')?.remove();
 }
 
+const WORKSHOPS_INDEX_TITLE = 'Workshops & Training | Scientific Illustration | Rafeeque Mavoor';
+
 export const WORKSHOP_INDEX_DESC =
-  'Scientific illustration and science communication workshops: Blender 3D, journal figures, AR outreach, lab video, IISER Pune iRISE, India Science Festival, Andhra University, CDRI Lucknow, Kiel University, and online cohorts led by Rafeeque Mavoor.';
+  'Scientific illustration workshops: Blender 3D, journal figures, outreach, and online training for researchers and institutions in India and abroad.';
 
 export const WORKSHOP_INDEX_KEYWORDS =
   'scientific illustration workshop, science communication training, Blender 3D researchers, journal cover workshop, graphical abstract training, IISER Pune workshop, India Science Festival, science outreach India, online illustration course, Rafeeque Mavoor';
@@ -204,7 +263,154 @@ export function workshopDetailKeywords(workshop: Workshop): string {
 }
 
 export const COURSES_INDEX_DESC =
-  'Free and premium short courses for scientists: graphical abstracts, journal figures, Blender 3D, and visual communication — structured chapters with text, video, and interactive examples by Rafeeque Mavoor.';
+  'Self-paced minicourses for scientists: graphical abstracts, journal figures, Blender 3D, and visual communication with structured chapters.';
+
+/**
+ * Central SEO registry for static views. Returns null when a child page owns SEO
+ * (workshop/blog/course detail, courses index).
+ */
+export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions | null {
+  if (
+    view === 'workshop-detail' ||
+    view === 'blog-detail' ||
+    view === 'courses' ||
+    view === 'course-detail'
+  ) {
+    return null;
+  }
+
+  const pathname = pathnameOnly(currentPath);
+  const staticRoute = STATIC_ROUTE_BY_PATH.get(pathname);
+
+  switch (view) {
+    case 'home':
+      return {
+        title: SEO_HOME_TITLE,
+        description: SEO_HOME_DESCRIPTION,
+        canonicalPath: ROUTES.home,
+        keywords: '',
+        ogImage: '/og-image.jpg',
+        ogType: 'website',
+      };
+    case 'services':
+      return staticRoute
+        ? pageSeoFromStatic(staticRoute, ROUTES.services)
+        : {
+            title: 'Work With Me | Scientific Illustration Services | Rafeeque Mavoor',
+            description:
+              'Journal cover art, figures, infographics, lab websites, and on-campus workshops for scientists and research teams worldwide.',
+            canonicalPath: ROUTES.services,
+            ogImage: '/og-image.jpg',
+          };
+    case 'workshops':
+      return {
+        title: WORKSHOPS_INDEX_TITLE,
+        description: WORKSHOP_INDEX_DESC,
+        canonicalPath: ROUTES.workshops,
+        keywords: WORKSHOP_INDEX_KEYWORDS,
+        ogImage: '/og-image.jpg',
+        ogType: 'website',
+        jsonLd: workshopsIndexJsonLd(),
+      };
+    case 'apps': {
+      const appsSeo = PORTFOLIO_SEO['websites-apps'];
+      return {
+        title: appsSeo.title,
+        description: appsSeo.description,
+        canonicalPath: ROUTES.apps,
+        ogImage: '/og-image.jpg',
+      };
+    }
+    case 'portfolio': {
+      const tab = portfolioTabFromPathname(pathname);
+      const seo = PORTFOLIO_SEO[tab];
+      return {
+        title: seo.title,
+        description: seo.description,
+        canonicalPath: pathnameWithSearch(currentPath),
+        ogImage: '/og-image.jpg',
+      };
+    }
+    case 'about':
+      return staticRoute
+        ? pageSeoFromStatic(staticRoute, ROUTES.about)
+        : {
+            title: 'About Rafeeque Mavoor | Experience & Education',
+            description:
+              'Professional journey of Rafeeque Mavoor—chemistry background, scientific illustrator, founder of SciDart Academy, and educator in visual communication.',
+            canonicalPath: ROUTES.about,
+            ogImage: '/og-image.jpg',
+          };
+    case 'blog':
+      return staticRoute
+        ? pageSeoFromStatic(staticRoute, ROUTES.blog)
+        : {
+            title: 'Blog | Scientific Illustration, Blender, MolDraw | Rafeeque Mavoor',
+            description:
+              'Articles on scientific illustration, Blender for researchers, and open chemistry tools such as MolDraw for structures and 3D visualization.',
+            canonicalPath: ROUTES.blog,
+            ogImage: '/og-image.jpg',
+          };
+    case 'contact':
+      return staticRoute
+        ? pageSeoFromStatic(staticRoute, ROUTES.contact)
+        : {
+            title: 'Contact | Scientific Illustration Projects | Rafeeque Mavoor',
+            description:
+              'Contact Rafeeque Mavoor for journal covers, figures, workshops, and collaborations in scientific illustration and visualization.',
+            canonicalPath: ROUTES.contact,
+            ogImage: '/og-image.jpg',
+          };
+    case 'privacy':
+      return pageSeoFromStatic(
+        STATIC_ROUTE_BY_PATH.get(ROUTES.privacyPolicy)!,
+        ROUTES.privacyPolicy
+      );
+    case 'terms':
+      return pageSeoFromStatic(
+        STATIC_ROUTE_BY_PATH.get(ROUTES.termsOfService)!,
+        ROUTES.termsOfService
+      );
+    case 'editorial':
+      return pageSeoFromStatic(
+        STATIC_ROUTE_BY_PATH.get(ROUTES.editorialGuidelines)!,
+        ROUTES.editorialGuidelines
+      );
+    case 'html-sitemap':
+      return pageSeoFromStatic(
+        STATIC_ROUTE_BY_PATH.get(ROUTES.htmlSitemap)!,
+        ROUTES.htmlSitemap
+      );
+    case 'faq':
+      return pageSeoFromStatic(STATIC_ROUTE_BY_PATH.get(ROUTES.faq)!, ROUTES.faq);
+    case 'login':
+      return {
+        title: 'Admin Login | Rafeeque Mavoor',
+        description: 'Admin login portal.',
+        canonicalPath: ROUTES.login,
+        robots: 'noindex, nofollow',
+      };
+    case 'dashboard':
+      return {
+        title: 'Admin Dashboard | Rafeeque Mavoor',
+        description: 'Admin dashboard for managing content.',
+        canonicalPath: ROUTES.dashboard,
+        robots: 'noindex, nofollow',
+      };
+    default:
+      return null;
+  }
+}
+
+function pageSeoFromStatic(route: StaticPrerenderRoute, canonicalPath: string): PageSeoOptions {
+  return {
+    title: route.title,
+    description: route.description,
+    canonicalPath,
+    keywords: '',
+    ogImage: '/og-image.jpg',
+  };
+}
 
 export const COURSES_INDEX_KEYWORDS =
   'graphical abstract course, scientific illustration training, journal graphical abstract tutorial, research paper visual summary, Cell Nature graphical abstract, science communication course, Rafeeque Mavoor, self-paced illustration lessons';

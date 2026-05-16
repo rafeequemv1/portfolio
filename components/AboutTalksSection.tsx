@@ -39,7 +39,7 @@ const AboutTalksSection: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="mb-12" aria-busy="true">
+      <section id="talks" className="mb-12 scroll-mt-28" aria-busy="true">
         <h2 className="mb-4 border-b border-[#37352f]/10 pb-2 font-serif text-2xl text-[#37352f]">Talks</h2>
         <p className="text-sm text-[#37352f]/50">Loading…</p>
       </section>
@@ -49,7 +49,7 @@ const AboutTalksSection: React.FC = () => {
   const talksWithEmbed = talks.filter((t) => getYoutubeEmbedUrl(t.youtube_url));
 
   return (
-    <section className="mb-12">
+    <section id="talks" className="mb-12 scroll-mt-28">
       <h2 className="mb-6 border-b border-[#37352f]/10 pb-2 font-serif text-2xl text-[#37352f]">Talks</h2>
       {talksWithEmbed.length === 0 ? (
         <p className="text-sm leading-relaxed text-[#37352f]/55">

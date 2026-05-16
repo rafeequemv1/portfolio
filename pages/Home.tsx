@@ -157,7 +157,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               }
             }}
           >
-            SciDart Academy short courses
+            SciDart Academy minicourses
           </a>
           . Read the{' '}
           <a

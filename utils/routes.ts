@@ -43,7 +43,7 @@ export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View 
   { label: 'Lab websites & web apps', path: ROUTES.portfolioWebApps, view: 'portfolio' },
   { label: 'Science web apps showcase', path: ROUTES.apps, view: 'apps' },
   { label: 'Workshops', path: ROUTES.workshops, view: 'workshops' },
-  { label: 'Short courses', path: ROUTES.courses, view: 'courses' },
+  { label: 'Minicourses', path: ROUTES.courses, view: 'courses' },
   { label: 'Blog', path: ROUTES.blog, view: 'blog' },
   { label: 'About', path: ROUTES.about, view: 'about' },
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
@@ -60,6 +60,16 @@ export const FOOTER_ESSENTIAL_TRUST: readonly { label: string; path: string; vie
   { label: 'FAQ', path: ROUTES.faq, view: 'faq' },
   { label: 'HTML sitemap', path: ROUTES.htmlSitemap, view: 'html-sitemap' },
 ];
+
+/** Featured talk recordings — footer only (full list on About → #talks). */
+export const FOOTER_FEATURED_TALKS: readonly { href: string; label: string }[] = [
+  { href: 'https://www.youtube.com/watch?v=fneTE8nqE00', label: 'Talk' },
+  { href: 'https://www.youtube.com/watch?v=kdA6DFdnaMs', label: 'Talk' },
+  { href: 'https://www.youtube.com/watch?v=ljF0SY25NJg&t=1383s', label: 'Talk' },
+  { href: 'https://www.youtube.com/watch?v=IyWSlexs9tw', label: 'Talk' },
+];
+
+export const ABOUT_TALKS_HASH = '#talks';
 
 export type PortfolioTab = 'covers' | 'figures' | 'logos' | 'websites-apps' | 'videos';
 
@@ -83,6 +93,7 @@ export const LEGACY_PATH_TO_VIEW: Record<string, View> = {
   '/services': 'services',
   '/workshops': 'workshops',
   '/about': 'about',
+  '/about-us': 'about',
   '/contact': 'contact',
   '/apps': 'apps',
   '/portfolio': 'portfolio',
@@ -247,7 +258,7 @@ export function getViewFromPath(fullPath: string): View {
 export function canonicalPathnameIfLegacy(pathname: string): string | null {
   if (pathname === '/services') return ROUTES.services;
   if (pathname === '/workshops') return ROUTES.workshops;
-  if (pathname === '/about') return ROUTES.about;
+  if (pathname === '/about' || pathname === '/about-us') return ROUTES.about;
   if (pathname === '/contact') return ROUTES.contact;
   if (pathname === '/apps') return ROUTES.apps;
   if (pathname === '/portfolio') return ROUTES.portfolioCovers;
