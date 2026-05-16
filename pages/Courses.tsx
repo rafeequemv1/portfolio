@@ -4,7 +4,14 @@ import { supabase } from '../supabase/client';
 import type { AppNavigate } from '../types';
 import type { Course } from '../courses/types';
 import { ROUTES } from '../utils/routes';
-import { applyPageSeo, clearDynamicJsonLd, coursesIndexJsonLd, COURSES_INDEX_DESC, COURSES_INDEX_KEYWORDS } from '../utils/seo';
+import {
+  applyPageSeo,
+  clearDynamicJsonLd,
+  coursesIndexJsonLd,
+  COURSES_INDEX_DESC,
+  COURSES_INDEX_KEYWORDS,
+  COURSES_INDEX_TITLE,
+} from '../utils/seo';
 
 interface CoursesProps {
   navigate: AppNavigate;
@@ -74,7 +81,7 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
 
   useEffect(() => {
     applyPageSeo({
-      title: 'Minicourses | Rafeeque Mavoor',
+      title: COURSES_INDEX_TITLE,
       description: COURSES_INDEX_DESC,
       canonicalPath: ROUTES.courses,
       keywords: COURSES_INDEX_KEYWORDS,

@@ -21,6 +21,46 @@ const PAGE_SIZE_GALLERY = 9;
 const PAGE_SIZE_LOGOS = 6;
 const PAGE_SIZE_WEBSITES = 6;
 
+/** Observes a sentinel and calls onLoadMore when it nears the viewport (infinite scroll). */
+function useAutoLoadSentinel(hasMore: boolean, onLoadMore: () => void) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const onLoadMoreRef = useRef(onLoadMore);
+  onLoadMoreRef.current = onLoadMore;
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          onLoadMoreRef.current();
+        }
+      },
+      { root: null, rootMargin: '320px 0px', threshold: 0 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore]);
+
+  return sentinelRef;
+}
+
+function AutoLoadSentinel({
+  hasMore,
+  onLoadMore,
+}: {
+  hasMore: boolean;
+  onLoadMore: () => void;
+}) {
+  const ref = useAutoLoadSentinel(hasMore, onLoadMore);
+  if (!hasMore) return null;
+  return <div ref={ref} className="h-8 w-full shrink-0" aria-hidden />;
+}
+
+
 const getYoutubeEmbedUrl = (url: string): string => {
   try {
     const parsed = new URL(url.trim());
@@ -127,7 +167,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [logosPageCount, setLogosPageCount] = useState(1);
   const [websitesPageCount, setWebsitesPageCount] = useState(1);
 
-  const portfolioCtaTabs: PortfolioTab[] = ['covers', 'figures'];
+  const portfolioCtaTabs: PortfolioTab[] = ['figures'];
   const showFloatingCtaForTab = portfolioCtaTabs.includes(activeTab);
 
   const tabHeroSubtitle: Partial<Record<PortfolioTab, string>> = {
@@ -144,7 +184,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
       const { data: coversData, error: coversError } = await supabase
         .from('journal_covers')
         .select('*')
-        .order('created_at', { ascending: true });
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false });
 
       const { data: videosData, error: videosError } = await supabase
         .from('portfolio_videos')
@@ -385,6 +426,16 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
     [websites, websitesPageCount]
   );
 
+  const hasMoreCovers = covers.length > 0 && visibleCovers.length < covers.length;
+  const hasMoreGallery = galleryRows.length > 0 && visibleGalleryRows.length < galleryRows.length;
+  const hasMoreLogos = logos.length > 0 && visibleLogos.length < logos.length;
+  const hasMoreWebsites = websites.length > 0 && visibleWebsites.length < websites.length;
+
+  const loadMoreCovers = useCallback(() => setCoversPageCount((p) => p + 1), []);
+  const loadMoreGallery = useCallback(() => setGalleryPageCount((p) => p + 1), []);
+  const loadMoreLogos = useCallback(() => setLogosPageCount((p) => p + 1), []);
+  const loadMoreWebsites = useCallback(() => setWebsitesPageCount((p) => p + 1), []);
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -483,10 +534,6 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
 
         {activeTab === 'covers' && (
           <>
-            {portfolioTopCta(
-              'Need a journal cover?',
-              'Share your journal, deadline, and story—we can align art direction with your lab’s visual identity.'
-            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14 md:gap-y-16 lg:gap-y-20">
               {visibleCovers.map((cover) => (
                 <div key={cover.id} className="flex flex-col gap-3">
@@ -530,17 +577,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 <p className="text-[#37352f]/40 font-serif italic text-xl">No journal covers added yet.</p>
               </div>
             )}
-            {covers.length > 0 && visibleCovers.length < covers.length ? (
-              <div className="mt-10 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setCoversPageCount((p) => p + 1)}
-                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
-                >
-                  Load more covers
-                </button>
-              </div>
-            ) : null}
+            <AutoLoadSentinel hasMore={hasMoreCovers} onLoadMore={loadMoreCovers} />
           </>
         )}
 
@@ -726,17 +763,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                 })}
               </div>
             )}
-            {galleryRows.length > 0 && visibleGalleryRows.length < galleryRows.length ? (
-              <div className="mt-10 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setGalleryPageCount((p) => p + 1)}
-                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
-                >
-                  Load more gallery items
-                </button>
-              </div>
-            ) : null}
+            <AutoLoadSentinel hasMore={hasMoreGallery} onLoadMore={loadMoreGallery} />
           </div>
         )}
 
@@ -794,17 +821,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               </div>
             )}
 
-            {logos.length > 0 && visibleLogos.length < logos.length ? (
-              <div className="mt-10 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setLogosPageCount((p) => p + 1)}
-                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
-                >
-                  Load more logo projects
-                </button>
-              </div>
-            ) : null}
+            <AutoLoadSentinel hasMore={hasMoreLogos} onLoadMore={loadMoreLogos} />
           </div>
         )}
 
@@ -862,17 +879,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
               )}
             </div>
 
-            {websites.length > 0 && visibleWebsites.length < websites.length ? (
-              <div className="mt-10 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setWebsitesPageCount((p) => p + 1)}
-                  className="rounded-full border border-[#37352f]/20 bg-white px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#37352f] transition-colors hover:border-[#37352f]/40 hover:bg-[#fcfaf8]"
-                >
-                  Load more websites
-                </button>
-              </div>
-            ) : null}
+            <AutoLoadSentinel hasMore={hasMoreWebsites} onLoadMore={loadMoreWebsites} />
 
             <div className="mt-14 border-t border-[#37352f]/10 pt-12">
               <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.15em] text-[#37352f]/45">Apps</p>

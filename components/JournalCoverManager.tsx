@@ -3,7 +3,20 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { supabase } from '../supabase/client';
 import { JournalCover } from '../types';
-import { Plus, Trash2, Edit2, ExternalLink, Upload, X, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, ExternalLink, Upload, X, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
+
+function sortCovers(a: JournalCover, b: JournalCover): number {
+  const oa = typeof a.display_order === 'number' ? a.display_order : 0;
+  const ob = typeof b.display_order === 'number' ? b.display_order : 0;
+  if (oa !== ob) return oa - ob;
+  return sortKeyMs(b.created_at) - sortKeyMs(a.created_at);
+}
+
+function sortKeyMs(d?: string | null): number {
+  if (!d) return 0;
+  const t = new Date(d).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
 
 const JournalCoverManager: React.FC = () => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
@@ -23,7 +36,8 @@ const JournalCoverManager: React.FC = () => {
     cover_image_url: '',
     publication_date: new Date().toISOString().split('T')[0],
     lab_name: '',
-    pi_name: ''
+    pi_name: '',
+    display_order: 0,
   });
 
   useEffect(() => {
@@ -35,6 +49,7 @@ const JournalCoverManager: React.FC = () => {
     const { data, error } = await supabase
       .from('journal_covers')
       .select('*')
+      .order('display_order', { ascending: true })
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -80,7 +95,10 @@ const JournalCoverManager: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = { ...formData };
+    const payload = {
+      ...formData,
+      display_order: Number(formData.display_order) || 0,
+    };
 
     if (editingCover) {
       const { error } = await supabase
@@ -90,9 +108,13 @@ const JournalCoverManager: React.FC = () => {
       
       if (error) console.error('Error updating cover:', error);
     } else {
+      const nextOrder =
+        covers.length > 0
+          ? Math.max(...covers.map((c) => (typeof c.display_order === 'number' ? c.display_order : 0))) + 1
+          : 0;
       const { error } = await supabase
         .from('journal_covers')
-        .insert([payload]);
+        .insert([{ ...payload, display_order: nextOrder }]);
       
       if (error) console.error('Error inserting cover:', error);
     }
@@ -115,8 +137,31 @@ const JournalCoverManager: React.FC = () => {
       cover_image_url: '',
       publication_date: new Date().toISOString().split('T')[0],
       lab_name: '',
-      pi_name: ''
+      pi_name: '',
+      display_order: 0,
     });
+  };
+
+  const reorderCover = async (id: string, direction: 'up' | 'down') => {
+    const sorted = [...covers].sort(sortCovers);
+    const index = sorted.findIndex((c) => c.id === id);
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    if (index < 0 || swapIndex < 0 || swapIndex >= sorted.length) return;
+
+    [sorted[index], sorted[swapIndex]] = [sorted[swapIndex], sorted[index]];
+
+    setLoading(true);
+    const updates = await Promise.all(
+      sorted.map((cover, idx) =>
+        supabase.from('journal_covers').update({ display_order: idx }).eq('id', cover.id)
+      )
+    );
+    const failed = updates.find((r) => r.error);
+    if (failed?.error) {
+      console.error('Error reordering covers:', failed.error);
+      alert(failed.error.message);
+    }
+    await fetchCovers();
   };
 
   const handleEdit = (cover: JournalCover) => {
@@ -131,7 +176,8 @@ const JournalCoverManager: React.FC = () => {
       cover_image_url: cover.cover_image_url || '',
       publication_date: cover.publication_date || new Date().toISOString().split('T')[0],
       lab_name: cover.lab_name || '',
-      pi_name: cover.pi_name || ''
+      pi_name: cover.pi_name || '',
+      display_order: cover.display_order ?? 0,
     });
     setIsModalOpen(true);
   };
@@ -155,8 +201,13 @@ const JournalCoverManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-serif text-[#37352f]">Journal Covers</h2>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-serif text-[#37352f]">Journal Covers</h2>
+          <p className="mt-1 text-sm text-[#37352f]/55">
+            Lower display order appears first on the portfolio covers tab. Use the arrows to reorder.
+          </p>
+        </div>
         <button
           onClick={() => { resetForm(); setEditingCover(null); setIsModalOpen(true); }}
           className="flex items-center gap-2 bg-[#37352f] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#37352f]/90 transition-colors"
@@ -172,7 +223,7 @@ const JournalCoverManager: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {covers.map((cover) => (
+          {[...covers].sort(sortCovers).map((cover, index, sorted) => (
             <div key={cover.id} className="group bg-white border border-[#37352f]/10 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
               <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">
                 <img 
@@ -183,6 +234,31 @@ const JournalCoverManager: React.FC = () => {
                 />
               </div>
               <div className="p-4">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#37352f]/45">
+                    Order {index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={index === 0 || loading}
+                      onClick={() => reorderCover(cover.id, 'up')}
+                      className="rounded-md border border-[#37352f]/15 p-1.5 text-[#37352f]/70 hover:bg-[#37352f]/5 disabled:opacity-30"
+                      aria-label="Move cover earlier"
+                    >
+                      <ChevronUp size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={index === sorted.length - 1 || loading}
+                      onClick={() => reorderCover(cover.id, 'down')}
+                      className="rounded-md border border-[#37352f]/15 p-1.5 text-[#37352f]/70 hover:bg-[#37352f]/5 disabled:opacity-30"
+                      aria-label="Move cover later"
+                    >
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
+                </div>
                 <h3 className="font-serif text-lg text-[#37352f] mb-1 line-clamp-1">{cover.title}</h3>
                 <p className="text-xs text-[#37352f]/60 mb-3 line-clamp-2">{cover.description}</p>
                 <div className="flex gap-3">
@@ -333,6 +409,20 @@ const JournalCoverManager: React.FC = () => {
                     placeholder="e.g. Prof. Jyoti Seth"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2 md:max-w-xs">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Display order</label>
+                <input
+                  type="number"
+                  name="display_order"
+                  value={formData.display_order}
+                  onChange={handleInputChange}
+                  min={0}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
+                  placeholder="0 = first on portfolio"
+                />
+                <p className="text-[11px] text-[#37352f]/45">Lower numbers appear first. Reorder arrows on each card update all positions.</p>
               </div>
 
               <div className="space-y-2">

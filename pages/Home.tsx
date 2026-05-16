@@ -7,15 +7,6 @@ import { ROUTES } from '../utils/routes';
 import { SEO_SITE_ORIGIN } from '../utils/seo';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
-const shuffleArray = <T,>(items: T[]): T[] => {
-  const arr = [...items];
-  for (let i = arr.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-};
-
 interface HomeProps {
   navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
 }
@@ -31,12 +22,13 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         .from('journal_covers')
         .select('*')
         .not('cover_image_url', 'is', null)
-        .order('created_at', { ascending: true })
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false })
         .limit(25);
 
       if (!error) {
         const valid = (data || []).filter((item: JournalCover) => Boolean(item.cover_image_url));
-        setCovers(shuffleArray(valid));
+        setCovers(valid);
       }
     };
 
@@ -145,19 +137,6 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
             }}
           >
             on-site and online workshops
-          </a>{' '}
-          and{' '}
-          <a
-            href={`${SEO_SITE_ORIGIN}${ROUTES.courses}`}
-            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
-            onClick={(e) => {
-              if (navigate) {
-                e.preventDefault();
-                navigate(e, 'courses', ROUTES.courses);
-              }
-            }}
-          >
-            SciDart Academy minicourses
           </a>
           . Read the{' '}
           <a

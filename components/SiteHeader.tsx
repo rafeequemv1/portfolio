@@ -30,6 +30,11 @@ const navItems: { label: string; view: View; path: string; match: (v: View) => b
   { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];
 
+const navLinkClass = (active: boolean) =>
+  `relative whitespace-nowrap py-1 text-sm font-semibold transition-colors ${
+    active ? 'text-[#37352f]' : 'text-[#5c5a57] hover:text-[#37352f]'
+  }`;
+
 const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -65,7 +70,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
   return (
     <>
       <header className="sticky top-0 z-50 w-full shrink-0 border-b border-[#e0e0e0] bg-[#fcfaf8]/95 backdrop-blur-md">
-        <div className="relative mx-auto flex h-11 max-w-3xl items-center justify-center gap-2 px-11 sm:h-12 sm:gap-3 sm:px-12 md:max-w-4xl">
+        <div className="relative mx-auto flex h-12 max-w-5xl items-center justify-center gap-6 px-11 sm:h-14 sm:gap-8 sm:px-12 lg:gap-10">
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
@@ -96,19 +101,17 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
           </a>
 
           <nav
-            className="hidden items-center gap-2 md:flex"
-          aria-label="Main"
-          itemScope
-          itemType="https://schema.org/SiteNavigationElement"
-        >
+            className="hidden items-center gap-4 md:flex lg:gap-5"
+            aria-label="Main"
+            itemScope
+            itemType="https://schema.org/SiteNavigationElement"
+          >
           {navItems.map(({ label, view, path, match }) => (
             <a
               key={path}
               href={path}
               onClick={(e) => onNav(e, view, path)}
-              className={`relative whitespace-nowrap py-0.5 text-xs font-normal transition-colors ${
-                match(currentView) ? 'text-[#37352f]' : 'text-[#5c5a57] hover:text-[#37352f]'
-              }`}
+              className={navLinkClass(match(currentView))}
             >
               {label}
               {match(currentView) ? <span className="absolute bottom-0 left-0 h-[1.5px] w-full bg-[#37352f]" /> : null}
@@ -118,7 +121,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
             <a
               href={ROUTES.dashboard}
               onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
-              className={`rounded border px-2 py-0.5 text-xs font-normal ${
+              className={`rounded border px-2.5 py-1 text-sm font-semibold ${
                 currentView === 'dashboard'
                   ? 'border-[#37352f] bg-[#37352f] text-white'
                   : 'border-[#37352f]/20 text-[#37352f] hover:bg-[#37352f]/5'
@@ -172,7 +175,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                   key={path}
                   href={path}
                   onClick={(e) => onNav(e, view, path)}
-                  className={`rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation transition-colors ${
+                  className={`rounded-md px-3 py-2.5 text-sm font-semibold touch-manipulation transition-colors ${
                     match(currentView) ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
                   }`}
                 >
@@ -183,7 +186,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                 <a
                   href={ROUTES.dashboard}
                   onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
-                  className={`mt-1 rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation ${
+                  className={`mt-1 rounded-md px-3 py-2.5 text-sm font-semibold touch-manipulation ${
                     currentView === 'dashboard' ? 'bg-[#37352f] text-white' : 'text-[#37352f] hover:bg-[#37352f]/5'
                   }`}
                 >
@@ -193,7 +196,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
               <a
                 href={ROUTES.blog}
                 onClick={(e) => onNav(e, 'blog', ROUTES.blog)}
-                className={`rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation ${
+                className={`rounded-md px-3 py-2.5 text-sm font-semibold touch-manipulation ${
                   currentView === 'blog' || currentView === 'blog-detail'
                     ? 'bg-[#37352f]/10 text-[#37352f]'
                     : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'

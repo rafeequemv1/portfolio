@@ -278,6 +278,8 @@ export function workshopDetailKeywords(workshop: Workshop): string {
   return parts.filter(Boolean).join(', ');
 }
 
+export const COURSES_INDEX_TITLE = 'Scientific Illustration Minicourses | Rafeeque Mavoor';
+
 export const COURSES_INDEX_DESC =
   'Self-paced minicourses for scientists: graphical abstracts, journal figures, Blender 3D, and visual communication with structured chapters.';
 
