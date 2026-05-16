@@ -36,11 +36,16 @@ export default defineConfig(({ mode, command }) => {
           manualChunks(id) {
             if (!id.includes('node_modules')) return;
             if (id.includes('@supabase')) return 'supabase';
+            if (id.includes('lucide-react')) return 'icons';
             if (id.includes('node_modules/react-dom') || /node_modules\/react\//.test(id)) {
               return 'react-vendor';
             }
           },
         },
+      },
+      modulePreload: {
+        resolveDependencies: (_filename, deps) =>
+          deps.filter((d) => !d.includes('supabase') && !d.includes('icons')),
       },
     },
     server: {

@@ -27,42 +27,48 @@ export const ROUTES = {
   faq: '/faq',
 } as const;
 
+/** Public contact — footer, schema, and contact page. */
+export const SITE_CONTACT = {
+  email: 'rafeequemavoor@gmail.com',
+  phoneDisplay: '+91 9447 267 129',
+  phoneTel: '+919447267129',
+} as const;
+
 /** One-line site pitch for footer trust blocks and audits. */
 export const FOOTER_SITE_TAGLINE =
   'Scientific illustration for journal covers, research figures, and 3D molecular art—workshops and SciDart Academy courses for labs worldwide.';
 
-/** Canonical URLs for footer / crawl — labels tuned for readable internal links (SEO). */
-export const FOOTER_SEO_NAV: readonly { label: string; path: string; view: View }[] = [
+/** All footer internal links (deduplicated paths). */
+export const FOOTER_NAV_LINKS: readonly { label: string; path: string; view: View }[] = [
   { label: 'Home', path: ROUTES.home, view: 'home' },
-  { label: 'Illustration services', path: ROUTES.services, view: 'services' },
-  { label: 'Journal cover art', path: ROUTES.portfolioCovers, view: 'portfolio' },
-  { label: 'Research figures & infographics', path: ROUTES.portfolioFigures, view: 'portfolio' },
+  { label: 'Services', path: ROUTES.services, view: 'services' },
+  { label: 'Journal covers', path: ROUTES.portfolioCovers, view: 'portfolio' },
+  { label: 'Research figures', path: ROUTES.portfolioFigures, view: 'portfolio' },
   { label: 'Graphical abstracts', path: ROUTES.portfolioAbstracts, view: 'portfolio' },
-  { label: 'Scientific logos', path: ROUTES.portfolioLogos, view: 'portfolio' },
-  { label: 'Science illustration videos', path: ROUTES.portfolioVideos, view: 'portfolio' },
-  { label: 'Lab websites & web apps', path: ROUTES.portfolioWebApps, view: 'portfolio' },
-  { label: 'Science web apps showcase', path: ROUTES.apps, view: 'apps' },
+  { label: 'Logos', path: ROUTES.portfolioLogos, view: 'portfolio' },
+  { label: 'Videos', path: ROUTES.portfolioVideos, view: 'portfolio' },
+  { label: 'Lab websites', path: ROUTES.portfolioWebApps, view: 'portfolio' },
+  { label: 'Web apps', path: ROUTES.apps, view: 'apps' },
   { label: 'Workshops', path: ROUTES.workshops, view: 'workshops' },
   { label: 'Minicourses', path: ROUTES.courses, view: 'courses' },
   { label: 'Blog', path: ROUTES.blog, view: 'blog' },
   { label: 'About', path: ROUTES.about, view: 'about' },
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
-];
-
-/** Short footer row: About, Contact, policies (audit “essential links”). */
-export const FOOTER_ESSENTIAL_TRUST: readonly { label: string; path: string; view: View }[] = [
-  { label: 'About', path: ROUTES.about, view: 'about' },
-  { label: 'Contact', path: ROUTES.contact, view: 'contact' },
-  { label: 'Studio & team', path: ROUTES.about, view: 'about' },
+  { label: 'FAQ', path: ROUTES.faq, view: 'faq' },
   { label: 'Privacy', path: ROUTES.privacyPolicy, view: 'privacy' },
   { label: 'Terms', path: ROUTES.termsOfService, view: 'terms' },
   { label: 'Editorial', path: ROUTES.editorialGuidelines, view: 'editorial' },
-  { label: 'FAQ', path: ROUTES.faq, view: 'faq' },
-  { label: 'HTML sitemap', path: ROUTES.htmlSitemap, view: 'html-sitemap' },
+  { label: 'Site map', path: ROUTES.htmlSitemap, view: 'html-sitemap' },
 ];
 
-/** Featured talk recordings — footer only (full list on About → #talks). */
-export const FOOTER_FEATURED_TALKS: readonly { href: string; label: string }[] = [
+/** @deprecated Use FOOTER_NAV_LINKS */
+export const FOOTER_SEO_NAV = FOOTER_NAV_LINKS;
+
+/** @deprecated Use FOOTER_NAV_LINKS */
+export const FOOTER_ESSENTIAL_TRUST = FOOTER_NAV_LINKS;
+
+/** Featured talk recordings — shown at the bottom of the About page. */
+export const ABOUT_FEATURED_TALKS: readonly { href: string; label: string }[] = [
   { href: 'https://www.youtube.com/watch?v=fneTE8nqE00', label: 'Talk' },
   { href: 'https://www.youtube.com/watch?v=kdA6DFdnaMs', label: 'Talk' },
   { href: 'https://www.youtube.com/watch?v=ljF0SY25NJg&t=1383s', label: 'Talk' },
@@ -196,27 +202,27 @@ export const PORTFOLIO_SEO: Record<
   { title: string; description: string }
 > = {
   covers: {
-    title: 'Journal Cover Art Portfolio | Rafeeque Mavoor | Nature, Science, Cell',
+    title: 'Journal Cover Art Portfolio | Rafeeque Mavoor',
     description:
       'Published journal cover art and scientific illustration for leading journals—editorial-quality visuals for molecular biology, chemistry, and biomedicine.',
   },
   figures: {
-    title: 'Research Figures, Infographics & Graphical Abstracts | Rafeeque Mavoor',
+    title: 'Research Figures Portfolio | Rafeeque Mavoor',
     description:
       'Peer-reviewed paper figures, multi-panel layouts, infographics, and graphical abstracts for journals and conferences—clear visuals for publications.',
   },
   logos: {
-    title: 'Scientific Brand Logos & Identity Marks | Rafeeque Mavoor',
+    title: 'Scientific Brand Logos | Rafeeque Mavoor',
     description:
       'Logo and visual identity projects for research labs, scientific initiatives, and academic programs, including concept development and symbol systems.',
   },
   'websites-apps': {
-    title: 'Lab Websites & Science Web Apps | Rafeeque Mavoor',
+    title: 'Lab Websites & Science Apps | Rafeeque Mavoor',
     description:
       'Lab websites, SciDart tools, and interactive science apps—OpenScienceArt, MolDraw, and experiments in scientific software.',
   },
   videos: {
-    title: 'Science Illustration & Process Videos | Rafeeque Mavoor',
+    title: 'Science Illustration Videos | Rafeeque Mavoor',
     description:
       'Scientific illustration walkthroughs, process reels, and education-focused video work for research communication.',
   },

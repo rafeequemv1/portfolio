@@ -26,12 +26,6 @@ const navItems: { label: string; view: View; path: string; match: (v: View) => b
     path: ROUTES.workshops,
     match: (v) => v === 'workshops' || v === 'workshop-detail',
   },
-  {
-    label: 'Minicourses',
-    view: 'courses',
-    path: ROUTES.courses,
-    match: (v) => v === 'courses' || v === 'course-detail',
-  },
   { label: 'About', view: 'about', path: ROUTES.about, match: (v) => v === 'about' },
   { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];
@@ -70,27 +64,39 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#e0e0e0] bg-[#fcfaf8]/95 px-4 backdrop-blur-md supports-[padding:max(0px)]:pl-[max(12px,env(safe-area-inset-left))] supports-[padding:max(0px)]:pr-[max(12px,env(safe-area-inset-right))] sm:h-20 sm:px-6 md:justify-center md:gap-16 lg:gap-24">
-        <a
-          href={ROUTES.home}
-          onClick={(e) => onNav(e, 'home', ROUTES.home)}
-          className="group flex min-w-0 items-center gap-2.5 touch-manipulation sm:gap-3"
-        >
-          <img
-            src="/logo.svg"
-            alt="Rafeeque Mavoor logo"
-            width={36}
-            height={36}
-            className="h-8 w-8 shrink-0 rounded-full sm:h-9 sm:w-9"
-            fetchPriority="high"
-          />
-          <span className="truncate font-serif text-base font-bold tracking-tight text-[#37352f] transition-opacity group-hover:opacity-80 sm:text-lg">
-            Rafeeque Mavoor
-          </span>
-        </a>
+      <header className="sticky top-0 z-50 w-full shrink-0 border-b border-[#e0e0e0] bg-[#fcfaf8]/95 backdrop-blur-md">
+        <div className="relative mx-auto flex h-11 max-w-3xl items-center justify-center gap-2 px-11 sm:h-12 sm:gap-3 sm:px-12 md:max-w-4xl">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="absolute left-1.5 flex h-9 w-9 items-center justify-center rounded-md text-[#37352f] touch-manipulation hover:bg-[#37352f]/5 md:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav-panel"
+            aria-label="Open menu"
+          >
+            <Menu size={20} strokeWidth={1.75} />
+          </button>
 
-        <nav
-          className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.15em] md:flex lg:gap-8"
+          <a
+            href={ROUTES.home}
+            onClick={(e) => onNav(e, 'home', ROUTES.home)}
+            className="group flex shrink-0 items-center gap-1.5 touch-manipulation"
+          >
+            <img
+              src="/logo.svg"
+              alt="Rafeeque Mavoor logo"
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-full"
+              fetchPriority="high"
+            />
+            <span className="hidden font-serif text-sm font-medium tracking-tight text-[#37352f] group-hover:opacity-80 sm:inline">
+              Rafeeque Mavoor
+            </span>
+          </a>
+
+          <nav
+            className="hidden items-center gap-2 md:flex"
           aria-label="Main"
           itemScope
           itemType="https://schema.org/SiteNavigationElement"
@@ -100,7 +106,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
               key={path}
               href={path}
               onClick={(e) => onNav(e, view, path)}
-              className={`relative py-1 transition-colors duration-200 ${
+              className={`relative whitespace-nowrap py-0.5 text-xs font-normal transition-colors ${
                 match(currentView) ? 'text-[#37352f]' : 'text-[#5c5a57] hover:text-[#37352f]'
               }`}
             >
@@ -112,29 +118,19 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
             <a
               href={ROUTES.dashboard}
               onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
-              className={`relative rounded-md border px-3 py-2 transition-colors ${
+              className={`rounded border px-2 py-0.5 text-xs font-normal ${
                 currentView === 'dashboard'
                   ? 'border-[#37352f] bg-[#37352f] text-white'
                   : 'border-[#37352f]/20 text-[#37352f] hover:bg-[#37352f]/5'
               }`}
             >
-              Dashboard
+              Admin
             </a>
           ) : null}
         </nav>
 
-        <SiteSearch id="header-site-search" compact className="hidden lg:flex" />
-
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[#37352f] touch-manipulation hover:bg-[#37352f]/5 md:hidden"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav-panel"
-          aria-label="Open menu"
-        >
-          <Menu size={24} strokeWidth={1.75} />
-        </button>
+          <span className="absolute right-1.5 w-9 md:hidden" aria-hidden />
+        </div>
       </header>
 
       {menuOpen ? (
@@ -176,7 +172,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                   key={path}
                   href={path}
                   onClick={(e) => onNav(e, view, path)}
-                  className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation transition-colors ${
+                  className={`rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation transition-colors ${
                     match(currentView) ? 'bg-[#37352f]/10 text-[#37352f]' : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'
                   }`}
                 >
@@ -187,7 +183,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
                 <a
                   href={ROUTES.dashboard}
                   onClick={(e) => onNav(e, 'dashboard', ROUTES.dashboard)}
-                  className={`mt-2 rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
+                  className={`mt-1 rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation ${
                     currentView === 'dashboard' ? 'bg-[#37352f] text-white' : 'text-[#37352f] hover:bg-[#37352f]/5'
                   }`}
                 >
@@ -197,7 +193,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({ session, currentView, navigate 
               <a
                 href={ROUTES.blog}
                 onClick={(e) => onNav(e, 'blog', ROUTES.blog)}
-                className={`rounded-lg px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] touch-manipulation ${
+                className={`rounded-md px-3 py-2.5 text-sm font-normal touch-manipulation ${
                   currentView === 'blog' || currentView === 'blog-detail'
                     ? 'bg-[#37352f]/10 text-[#37352f]'
                     : 'text-[#5c5a57] hover:bg-[#37352f]/5 hover:text-[#37352f]'

@@ -3,6 +3,7 @@ import { FileText } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import NewsletterSignupCard from '../components/NewsletterSignupCard';
 import AboutTalksSection from '../components/AboutTalksSection';
+import { ABOUT_FEATURED_TALKS } from '../utils/routes';
 
 const ABOUT_PROFILE_KEY = 'about_profile_image_url';
 const ABOUT_CV_PDF_KEY = 'about_cv_pdf_url';
@@ -173,8 +174,6 @@ const About: React.FC = () => {
             </p>
           </section>
 
-          <AboutTalksSection />
-
           <section className="mb-12">
             <h2 className="text-2xl font-serif text-[#37352f] mb-6 border-b border-[#37352f]/10 pb-2">Experience</h2>
             <div className="space-y-6">
@@ -272,6 +271,26 @@ const About: React.FC = () => {
                 </div>
               ))}
             </div>
+          </section>
+
+          <AboutTalksSection />
+
+          <section className="border-t border-[#37352f]/10 pt-8" aria-label="Featured talk recordings">
+            <h2 className="mb-4 font-serif text-xl text-[#37352f]">More recordings</h2>
+            <ul className="flex list-none flex-wrap gap-x-4 gap-y-2 px-0 text-sm text-[#5c5a57]">
+              {ABOUT_FEATURED_TALKS.map(({ href, label }, i) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-offset-2 hover:text-[#37352f] hover:underline"
+                  >
+                    {label} {i + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
         </section>
 

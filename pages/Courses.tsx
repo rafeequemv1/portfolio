@@ -74,7 +74,7 @@ const Courses: React.FC<CoursesProps> = ({ navigate }) => {
 
   useEffect(() => {
     applyPageSeo({
-      title: 'Minicourses | Graphical abstracts & scientific illustration | Rafeeque Mavoor',
+      title: 'Minicourses | Rafeeque Mavoor',
       description: COURSES_INDEX_DESC,
       canonicalPath: ROUTES.courses,
       keywords: COURSES_INDEX_KEYWORDS,

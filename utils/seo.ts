@@ -19,11 +19,26 @@ export const SEO_HOME_TITLE = 'Rafeeque Mavoor | Scientific Illustrator & Molecu
 export const SEO_HOME_DESCRIPTION =
   'Scientific illustrator in Kerala for journal covers, research figures, and 3D molecular art. Workshops and SciDart minicourses for research teams.';
 
+/** SERP title length guidance (Google typically shows ~50–60 characters). */
+export const SEO_TITLE_MAX_LENGTH = 60;
+
 export interface StaticPrerenderRoute {
   path: string;
   title: string;
   description: string;
   h1: string;
+  /** Unique crawl-shell subheading (avoids duplicate H2 across prerendered pages). */
+  h2: string;
+}
+
+export function truncateSeoTitle(title: string, maxLength = SEO_TITLE_MAX_LENGTH): string {
+  const trimmed = title.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  const slice = trimmed.slice(0, maxLength - 1);
+  const lastBar = slice.lastIndexOf('|');
+  const lastSpace = slice.lastIndexOf(' ');
+  const cut = lastBar > maxLength * 0.5 ? lastBar - 1 : lastSpace > maxLength * 0.5 ? lastSpace : maxLength - 1;
+  return `${slice.slice(0, cut).trimEnd()}…`;
 }
 
 /** Build-time prerender list — keep aligned with `seo-static-routes.json`. */
@@ -111,7 +126,8 @@ export function applyPageSeo(opts: PageSeoOptions) {
   const ogImage = absoluteImageUrl(opts.ogImage);
   const description = truncateMetaDescription(opts.description);
 
-  document.title = opts.title;
+  const title = truncateSeoTitle(opts.title);
+  document.title = title;
 
   setOrCreateMeta('name', 'description', description);
   if (opts.keywords === '') {
@@ -122,9 +138,9 @@ export function applyPageSeo(opts: PageSeoOptions) {
 
   ensureCanonicalLink().href = canonicalUrl;
   setHreflangLinks(canonicalUrl);
-  setOrCreateMeta('name', 'title', opts.title);
+  setOrCreateMeta('name', 'title', title);
 
-  setOrCreateMeta('property', 'og:title', opts.title);
+  setOrCreateMeta('property', 'og:title', title);
   setOrCreateMeta('property', 'og:description', description);
   setOrCreateMeta('property', 'og:url', canonicalUrl);
   setOrCreateMeta('property', 'og:type', opts.ogType || 'website');
@@ -133,7 +149,7 @@ export function applyPageSeo(opts: PageSeoOptions) {
   setOrCreateMeta('property', 'og:site_name', 'Rafeeque Mavoor Studio');
 
   setOrCreateMeta('name', 'twitter:card', 'summary_large_image');
-  setOrCreateMeta('name', 'twitter:title', opts.title);
+  setOrCreateMeta('name', 'twitter:title', title);
   setOrCreateMeta('name', 'twitter:description', description);
   setOrCreateMeta('name', 'twitter:image', ogImage);
 
@@ -160,7 +176,7 @@ export function clearDynamicJsonLd() {
   document.getElementById('seo-dynamic-jsonld')?.remove();
 }
 
-const WORKSHOPS_INDEX_TITLE = 'Workshops & Training | Scientific Illustration | Rafeeque Mavoor';
+const WORKSHOPS_INDEX_TITLE = 'Scientific Illustration Workshops | Rafeeque Mavoor';
 
 export const WORKSHOP_INDEX_DESC =
   'Scientific illustration workshops: Blender 3D, journal figures, outreach, and online training for researchers and institutions in India and abroad.';
@@ -296,7 +312,7 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
       return staticRoute
         ? pageSeoFromStatic(staticRoute, ROUTES.services)
         : {
-            title: 'Work With Me | Scientific Illustration Services | Rafeeque Mavoor',
+            title: 'Scientific Illustration Services | Rafeeque Mavoor',
             description:
               'Journal cover art, figures, infographics, lab websites, and on-campus workshops for scientists and research teams worldwide.',
             canonicalPath: ROUTES.services,
@@ -345,7 +361,7 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
       return staticRoute
         ? pageSeoFromStatic(staticRoute, ROUTES.blog)
         : {
-            title: 'Blog | Scientific Illustration, Blender, MolDraw | Rafeeque Mavoor',
+            title: 'Science Illustration Blog | Rafeeque Mavoor',
             description:
               'Articles on scientific illustration, Blender for researchers, and open chemistry tools such as MolDraw for structures and 3D visualization.',
             canonicalPath: ROUTES.blog,
@@ -355,7 +371,7 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
       return staticRoute
         ? pageSeoFromStatic(staticRoute, ROUTES.contact)
         : {
-            title: 'Contact | Scientific Illustration Projects | Rafeeque Mavoor',
+            title: 'Contact | Scientific Illustration | Rafeeque Mavoor',
             description:
               'Contact Rafeeque Mavoor for journal covers, figures, workshops, and collaborations in scientific illustration and visualization.',
             canonicalPath: ROUTES.contact,

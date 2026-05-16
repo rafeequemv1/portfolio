@@ -7,7 +7,6 @@ export const PRIMARY_NAV_LINKS: readonly { name: string; path: string }[] = [
   { name: 'Portfolio', path: ROUTES.portfolioCovers },
   { name: 'Services', path: ROUTES.services },
   { name: 'Workshops', path: ROUTES.workshops },
-  { name: 'Minicourses', path: ROUTES.courses },
   { name: 'About', path: ROUTES.about },
   { name: 'Contact', path: ROUTES.contact },
   { name: 'Blog', path: ROUTES.blog },

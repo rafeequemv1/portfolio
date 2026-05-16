@@ -28,6 +28,16 @@ function escapeAttr(text) {
   return escapeHtml(text);
 }
 
+function truncateSeoTitle(title, maxLength = 60) {
+  const trimmed = title.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  const slice = trimmed.slice(0, maxLength - 1);
+  const lastBar = slice.lastIndexOf('|');
+  const lastSpace = slice.lastIndexOf(' ');
+  const cut = lastBar > maxLength * 0.5 ? lastBar - 1 : lastSpace > maxLength * 0.5 ? lastSpace : maxLength - 1;
+  return `${slice.slice(0, cut).trimEnd()}…`;
+}
+
 function truncateMetaDescription(text, maxLength = 155) {
   const trimmed = text.trim();
   if (trimmed.length <= maxLength) return trimmed;
@@ -40,9 +50,10 @@ function truncateMetaDescription(text, maxLength = 155) {
 function injectRouteHtml(shell, route) {
   const canonicalPath = route.path === '/' ? '/' : route.path;
   const canonicalUrl = `${siteOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`;
-  const title = route.title;
+  const title = truncateSeoTitle(route.title);
   const description = truncateMetaDescription(route.description);
   const h1 = escapeHtml(route.h1);
+  const h2 = escapeHtml(route.h2 || route.h1);
 
   let html = shell;
 
@@ -96,6 +107,10 @@ function injectRouteHtml(shell, route) {
   );
 
   html = html.replace(/<h1 id="seo-crawl-h1">[^<]*<\/h1>/, `<h1 id="seo-crawl-h1">${h1}</h1>`);
+  html = html.replace(
+    /<h2 id="seo-fallback-subheading">[^<]*<\/h2>/,
+    `<h2 id="seo-fallback-subheading">${h2}</h2>`
+  );
 
   return html;
 }

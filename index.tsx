@@ -4,17 +4,15 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 /* Subset weights only — avoids shipping full latin bundles (~20+ woff2 files). */
 import '@fontsource/inter/latin-400.css';
-import '@fontsource/inter/latin-500.css';
 import '@fontsource/inter/latin-600.css';
-import '@fontsource/inter/latin-700.css';
-import '@fontsource/cormorant-garamond/latin-400.css';
-import '@fontsource/cormorant-garamond/latin-400-italic.css';
-import '@fontsource/cormorant-garamond/latin-600.css';
-import '@fontsource/cormorant-garamond/latin-700.css';
-import '@fontsource/dancing-script/latin-400.css';
 import './index.css';
+import { initAnalyticsWhenIdle } from './utils/analytics';
+import { loadDisplayFontsWhenIdle } from './utils/loadFonts';
 
 document.getElementById('seo-crawler-fallback')?.remove();
+
+loadDisplayFontsWhenIdle();
+initAnalyticsWhenIdle();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -21,8 +21,7 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const EditorialGuidelines = lazy(() => import('./pages/EditorialGuidelines'));
 const HtmlSitemap = lazy(() => import('./pages/HtmlSitemap'));
 const Faq = lazy(() => import('./pages/Faq'));
-import { supabase } from './supabase/client';
-import { Session } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
 import { View } from './types';
 import { applyPageSeo, clearDynamicJsonLd, resolvePageSeo } from './utils/seo';
 import { canonicalPathnameIfLegacy, getViewFromPath, pathnameOnly } from './utils/routes';
@@ -56,25 +55,38 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session && window.location.pathname === '/login') {
-        window.history.pushState({}, '', '/dashboard');
-        setCurrentView('dashboard');
-        setCurrentPath('/dashboard');
-      }
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
+    import('./supabase/client').then(({ supabase }) => {
+      if (cancelled) return;
+
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (cancelled) return;
+        setSession(session);
+        if (session && window.location.pathname === '/login') {
+          window.history.pushState({}, '', '/dashboard');
+          setCurrentView('dashboard');
+          setCurrentPath('/dashboard');
+        }
+      });
+
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (cancelled) return;
+        setSession(session);
+        if (session && window.location.pathname === '/login') {
+          window.history.pushState({}, '', '/dashboard');
+          setCurrentView('dashboard');
+          setCurrentPath('/dashboard');
+        }
+      });
+      unsubscribe = () => data.subscription.unsubscribe();
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session && window.location.pathname === '/login') {
-        window.history.pushState({}, '', '/dashboard');
-        setCurrentView('dashboard');
-        setCurrentPath('/dashboard');
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {
