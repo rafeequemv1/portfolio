@@ -3,7 +3,7 @@ import { blogPosts as fallbackPosts } from '../data/blog';
 import { supabase } from '../supabase/client';
 import { BlogPost, type AppNavigate } from '../types';
 import { ROUTES } from '../utils/routes';
-import { applyPageSeo } from '../utils/seo';
+import { applyPageSeo, blogPostingJsonLd, SEO_NOT_FOUND } from '../utils/seo';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
 
 function slugifyHeading(text: string, index: number): string {
@@ -99,7 +99,16 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
   }, [slug]);
 
   useEffect(() => {
-    if (!post) return;
+    if (loading) return;
+    if (!post) {
+      applyPageSeo({
+        title: SEO_NOT_FOUND.title,
+        description: SEO_NOT_FOUND.description,
+        canonicalPath: slug ? `${ROUTES.blog}/${slug}` : ROUTES.blog,
+        robots: SEO_NOT_FOUND.robots,
+      });
+      return;
+    }
     const canonicalPath = `${ROUTES.blog}/${post.slug}`;
     applyPageSeo({
       title: `${post.title} | Rafeeque Mavoor`,
@@ -107,8 +116,9 @@ const BlogDetail: React.FC<BlogDetailProps> = ({ path, navigate }) => {
       canonicalPath,
       ogImage: post.imageUrl || '/og-image.jpg',
       ogType: 'article',
+      jsonLd: blogPostingJsonLd(post, canonicalPath),
     });
-  }, [post]);
+  }, [post, loading, slug]);
 
   useEffect(() => {
     if (!post) {

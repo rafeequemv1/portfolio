@@ -26,7 +26,7 @@ import {
 import { ROUTES, courseSlugFromPath } from '../utils/routes';
 import CourseChapterRenderer from '../components/CourseChapterRenderer';
 import CourseCompletionModal from '../components/CourseCompletionModal';
-import { applyPageSeo, clearDynamicJsonLd, courseDetailJsonLd, courseDetailKeywords } from '../utils/seo';
+import { applyPageSeo, clearDynamicJsonLd, courseDetailJsonLd, courseDetailKeywords, SEO_NOT_FOUND } from '../utils/seo';
 
 interface CourseDetailProps {
   path: string;
@@ -181,7 +181,16 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ path, navigate }) => {
   }, [slug, chapters, progressTick]);
 
   useEffect(() => {
-    if (!course || loading) return;
+    if (loading) return;
+    if (notFound || !course) {
+      applyPageSeo({
+        title: SEO_NOT_FOUND.title,
+        description: SEO_NOT_FOUND.description,
+        canonicalPath: slug ? `${ROUTES.courses}/${slug}` : ROUTES.courses,
+        robots: SEO_NOT_FOUND.robots,
+      });
+      return () => clearDynamicJsonLd();
+    }
     const canonicalPath = `${ROUTES.courses}/${course.slug}`;
     const desc =
       course.description?.trim() ||
@@ -197,7 +206,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ path, navigate }) => {
       jsonLd: courseDetailJsonLd(course, chapters, canonicalPath),
     });
     return () => clearDynamicJsonLd();
-  }, [course, chapters, loading]);
+  }, [course, chapters, loading, notFound, slug]);
 
   const goToChapter = useCallback(
     (index: number) => {

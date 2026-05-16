@@ -111,8 +111,34 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
             }}
           >
             journal covers
-          </a>{' '}
-          and figures to{' '}
+          </a>
+          ,{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.portfolioFigures}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'portfolio', ROUTES.portfolioFigures);
+              }
+            }}
+          >
+            research figures
+          </a>
+          , and{' '}
+          <a
+            href={`${SEO_SITE_ORIGIN}${ROUTES.portfolioAbstracts}`}
+            className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
+            onClick={(e) => {
+              if (navigate) {
+                e.preventDefault();
+                navigate(e, 'portfolio', ROUTES.portfolioAbstracts);
+              }
+            }}
+          >
+            graphical abstracts
+          </a>
+          , plus{' '}
           <a
             href={`${SEO_SITE_ORIGIN}${ROUTES.services}`}
             className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
@@ -123,9 +149,9 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               }
             }}
           >
-            full illustration commissions
+            illustration commissions
           </a>
-          , plus{' '}
+          ,{' '}
           <a
             href={`${SEO_SITE_ORIGIN}${ROUTES.workshops}`}
             className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 transition-colors hover:decoration-[#37352f]/60"
@@ -263,42 +289,41 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
       </section>
 
       {brands.length > 0 && (
-        <section className="w-full max-w-7xl mt-10 md:mt-14 border-t border-[#37352f]/10 pt-10 md:pt-12">
-          <div className="mb-7 text-center">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c5a57] md:text-xs">
-              Trusted by researchers and institutions
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-12">
+        <section className="mx-auto mt-10 w-full max-w-3xl border-t border-[#37352f]/10 px-2 pt-8 md:mt-12 md:pt-9">
+          <h2 className="mb-5 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5c5a57]">
+            Trusted by researchers and institutions
+          </h2>
+          <ul className="mx-auto flex max-w-2xl list-none flex-wrap items-end justify-center gap-x-5 gap-y-6 p-0 sm:gap-x-7 sm:gap-y-7">
             {brands.map((brand) => (
-              <a
-                key={brand.id}
+              <li key={brand.id} className="flex shrink-0">
+                <a
                 href={brand.website_url || '#'}
                 target={brand.website_url ? '_blank' : undefined}
                 rel={brand.website_url ? 'noopener noreferrer' : undefined}
-                className="group flex flex-col items-center justify-start gap-3 text-center"
+                className="group flex w-[5.5rem] flex-col items-center gap-1.5 text-center sm:w-24"
                 aria-label={
                   brand.website_url ? `${brand.name}, opens in a new tab` : brand.name
                 }
               >
                 {brand.logo_url ? (
                   <img
-                    src={figureImageDisplayUrl(brand.logo_url, { width: 160, quality: 78 })}
+                    src={figureImageDisplayUrl(brand.logo_url, { width: 128, quality: 78 })}
                     alt=""
-                    width={160}
-                    height={56}
-                    sizes="(max-width: 768px) 112px, 128px"
+                    width={128}
+                    height={48}
+                    sizes="96px"
                     loading="lazy"
                     decoding="async"
-                    className="h-10 w-auto max-w-[min(100%,7rem)] object-contain opacity-80 transition-opacity group-hover:opacity-100 md:h-12 lg:h-14"
+                    className="h-8 w-auto max-w-full object-contain opacity-75 transition-opacity group-hover:opacity-100 sm:h-9"
                   />
                 ) : null}
-                <span className="px-1 font-serif text-xs leading-snug text-[#37352f] transition-colors group-hover:text-[#37352f] md:text-sm">
+                <span className="line-clamp-2 px-0.5 font-serif text-[10px] leading-tight text-[#37352f]/85 transition-colors group-hover:text-[#37352f] sm:text-[11px]">
                   {brand.name}
                 </span>
-              </a>
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 

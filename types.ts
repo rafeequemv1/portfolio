@@ -109,7 +109,8 @@ export type View =
   | 'html-sitemap'
   | 'faq'
   | 'login'
-  | 'dashboard';
+  | 'dashboard'
+  | 'not-found';
 
 /** SPA navigation handler (defined in `.ts` so union element types are not parsed as JSX). */
 export type AppNavigate = (

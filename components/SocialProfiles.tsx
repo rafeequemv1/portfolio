@@ -19,21 +19,21 @@ function BlueskyIcon({ className }: { className?: string }) {
   );
 }
 
-export function SocialIcon({ id, className }: { id: SocialLinkId; className?: string }) {
+export function SocialIcon({ id, className, size = 16 }: { id: SocialLinkId; className?: string; size?: number }) {
   const cn = className ?? 'h-4 w-4';
   switch (id) {
     case 'blog':
-      return <BookOpen className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <BookOpen className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     case 'medium':
       return <MediumIcon className={cn} />;
     case 'x':
-      return <Twitter className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <Twitter className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     case 'instagram':
-      return <Instagram className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <Instagram className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     case 'linkedin':
-      return <Linkedin className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <Linkedin className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     case 'facebook':
-      return <Facebook className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <Facebook className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     case 'bluesky':
       return <BlueskyIcon className={cn} />;
     case 'threads':
@@ -43,7 +43,7 @@ export function SocialIcon({ id, className }: { id: SocialLinkId; className?: st
         </span>
       );
     case 'youtube':
-      return <Youtube className={cn} size={16} strokeWidth={1.75} aria-hidden />;
+      return <Youtube className={cn} size={size} strokeWidth={1.75} aria-hidden />;
     default:
       return null;
   }
@@ -51,9 +51,12 @@ export function SocialIcon({ id, className }: { id: SocialLinkId; className?: st
 
 type NavigateFn = (e: React.MouseEvent<HTMLAnchorElement>, view: View, path: string) => void;
 
+export type SocialProfilesVariant = 'footer' | 'about';
+
 interface SocialProfilesProps {
-  variant: 'footer' | 'about';
+  variant: SocialProfilesVariant;
   navigate?: NavigateFn;
+  className?: string;
 }
 
 function SocialAnchor({
@@ -62,12 +65,18 @@ function SocialAnchor({
   navigate,
 }: {
   link: SocialLinkEntry;
-  variant: SocialProfilesProps['variant'];
+  variant: SocialProfilesVariant;
   navigate?: NavigateFn;
 }) {
   const isInternal = Boolean(link.view && navigate);
   const rel = link.external ? 'noopener noreferrer' : undefined;
   const target = link.external ? '_blank' : undefined;
+  const onClick = isInternal
+    ? (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        navigate!(e, link.view!, link.href);
+      }
+    : undefined;
 
   if (variant === 'footer') {
     return (
@@ -75,24 +84,14 @@ function SocialAnchor({
         href={link.href}
         target={target}
         rel={rel}
-        title={`${link.label} ${link.handle}`}
-        className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[#5c5a57] transition-colors hover:bg-[#37352f]/8 hover:text-[#37352f]"
-        onClick={
-          isInternal
-            ? (e) => {
-                e.preventDefault();
-                navigate!(e, link.view!, link.href);
-              }
-            : undefined
-        }
+        title={link.label}
+        className="flex flex-col items-center gap-1.5 rounded-lg px-1 py-2 text-[#5c5a57] transition-colors hover:bg-[#37352f]/5 hover:text-[#37352f]"
+        onClick={onClick}
       >
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#37352f]/5 text-[#37352f]/70">
-          <SocialIcon id={link.id} className="h-4 w-4" />
+        <span className="inline-flex h-8 w-8 items-center justify-center text-[#37352f]/65">
+          <SocialIcon id={link.id} className="h-[18px] w-[18px]" size={18} />
         </span>
-        <span className="flex min-w-0 flex-col items-start leading-tight">
-          <span className="text-[11px] font-semibold text-[#37352f]">{link.label}</span>
-          <span className="max-w-[9rem] truncate text-[10px] text-[#37352f]/50 sm:max-w-none">{link.handle}</span>
-        </span>
+        <span className="text-[10px] font-medium leading-none text-[#37352f]/80">{link.label}</span>
       </a>
     );
   }
@@ -102,31 +101,21 @@ function SocialAnchor({
       href={link.href}
       target={target}
       rel={rel}
-      className="flex items-center gap-3 rounded-lg border border-[#37352f]/10 bg-white/50 px-4 py-3 text-sm text-[#37352f]/80 transition-colors hover:border-[#37352f]/25 hover:bg-white"
-      onClick={
-        isInternal
-          ? (e) => {
-              e.preventDefault();
-              navigate!(e, link.view!, link.href);
-            }
-          : undefined
-      }
+      title={link.label}
+      aria-label={link.label}
+      className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#37352f]/40 transition-colors hover:bg-[#37352f]/6 hover:text-[#37352f]"
+      onClick={onClick}
     >
-      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#37352f]/5 text-[#37352f]/60">
-        <SocialIcon id={link.id} className="h-[18px] w-[18px]" />
-      </span>
-      <span className="font-medium text-[#37352f]">{link.label}</span>
-      <span className="ml-auto text-[10px] uppercase tracking-wider text-[#37352f]/40">{link.handle}</span>
+      <SocialIcon id={link.id} className="h-3.5 w-3.5" size={14} />
     </a>
   );
 }
 
-const SocialProfiles: React.FC<SocialProfilesProps> = ({ variant, navigate }) => {
+const SocialProfiles: React.FC<SocialProfilesProps> = ({ variant, navigate, className = '' }) => {
   if (variant === 'footer') {
     return (
-      <nav aria-label="Social profiles" className="border-t border-[#37352f]/10 pt-4">
-        <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#37352f]/45">Connect</p>
-        <ul className="mx-auto flex max-w-2xl list-none flex-wrap justify-center gap-1 px-0">
+      <nav aria-label="Social profiles" className={className}>
+        <ul className="grid list-none grid-cols-3 gap-1 p-0 sm:grid-cols-4 md:grid-cols-5">
           {SOCIAL_LINKS.map((link) => (
             <li key={link.id}>
               <SocialAnchor link={link} variant="footer" navigate={navigate} />
@@ -138,18 +127,15 @@ const SocialProfiles: React.FC<SocialProfilesProps> = ({ variant, navigate }) =>
   }
 
   return (
-    <div className="mt-6">
-      <p className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#37352f]/45 lg:text-left">
-        Social
-      </p>
-      <ul className="flex list-none flex-col gap-2 pl-0">
+    <nav className={`mt-5 ${className}`.trim()} aria-label="Social profiles">
+      <ul className="flex list-none flex-wrap justify-center gap-1 p-0 lg:justify-start">
         {SOCIAL_LINKS.map((link) => (
           <li key={link.id}>
             <SocialAnchor link={link} variant="about" navigate={navigate} />
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   );
 };
 

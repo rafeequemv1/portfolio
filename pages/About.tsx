@@ -4,6 +4,7 @@ import { supabase } from '../supabase/client';
 import NewsletterSignupCard from '../components/NewsletterSignupCard';
 import AboutTalksSection from '../components/AboutTalksSection';
 import SocialProfiles from '../components/SocialProfiles';
+import { ABOUT_PUBLICATIONS } from '../data/aboutPublications';
 import { ABOUT_FEATURED_TALKS } from '../utils/routes';
 
 const ABOUT_PROFILE_KEY = 'about_profile_image_url';
@@ -163,6 +164,32 @@ const About: React.FC = () => {
             <p className="text-[#37352f]/80 leading-relaxed font-sans">
               With a foundation in Chemistry and a passion for visual storytelling, I bridge the gap between complex scientific discoveries and clear, compelling visual communication. My work focuses on creating high-fidelity 3D molecular renders, biomedical animations, and journal cover art for leading research institutions and publications. I am also the founder of SciDart Academy, an educational platform dedicated to upskilling scientists in the art of illustration.
             </p>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-serif text-[#37352f] mb-3 border-b border-[#37352f]/10 pb-2">Publications</h2>
+            <p className="mb-4 text-xs text-[#37352f]/55 font-sans">Selected co-authored research (chemistry &amp; materials).</p>
+            <ol className="list-decimal space-y-2.5 pl-5 text-sm leading-snug text-[#37352f]/85 font-sans">
+              {ABOUT_PUBLICATIONS.map((pub) => (
+                <li key={pub.href}>
+                  <a
+                    href={pub.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#37352f] underline decoration-[#37352f]/20 underline-offset-2 hover:decoration-[#37352f]/50"
+                  >
+                    {pub.title}
+                  </a>
+                  {pub.journal ? (
+                    <span className="text-[#37352f]/50">
+                      {' '}
+                      — <em>{pub.journal}</em>
+                      {pub.year ? ` (${pub.year})` : ''}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
           </section>
 
           <section className="mb-12">

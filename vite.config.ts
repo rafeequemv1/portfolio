@@ -3,6 +3,27 @@ import type { Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+/** Ensure every bundled @font-face uses font-display: swap (PageSpeed / Lighthouse). */
+function enforceFontDisplaySwap(): Plugin {
+  return {
+    name: 'enforce-font-display-swap',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      for (const file of Object.values(bundle)) {
+        if (file.type !== 'asset' || !file.fileName.endsWith('.css')) continue;
+        if (typeof file.source !== 'string') continue;
+        file.source = file.source.replace(/@font-face\s*\{([^}]+)\}/gi, (block, body) => {
+          if (/font-display\s*:/i.test(body)) {
+            return block.replace(/font-display\s*:\s*[^;}+]+/gi, 'font-display: swap');
+          }
+          const trimmed = body.trim().replace(/;+\s*$/, '');
+          return `@font-face { ${trimmed}; font-display: swap; }`;
+        });
+      }
+    },
+  };
+}
+
 /** Replace render-blocking <link rel="stylesheet"> with preload + onload (see web.dev/defer-non-critical-css). */
 function nonBlockingMainCss(): Plugin {
   return {
@@ -56,7 +77,7 @@ export default defineConfig(({ mode, command }) => {
     plugins: [
       react(),
       tailwindcss(),
-      ...(command === 'build' ? [nonBlockingMainCss()] : []),
+      ...(command === 'build' ? [enforceFontDisplaySwap(), nonBlockingMainCss()] : []),
     ],
     define: {
       'process.env.API_KEY': JSON.stringify(env.API_KEY)

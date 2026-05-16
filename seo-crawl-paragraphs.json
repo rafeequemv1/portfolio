@@ -1,0 +1,179 @@
+{
+  "/": {
+    "paragraphs": [
+      "Rafeeque Mavoor is a scientific illustrator and educator based in Kerala, India. The studio produces journal cover art, research figures, graphical abstracts, 3D molecular visuals, and visual identity work for university labs and publishers.",
+      "Published cover artwork spans chemistry, molecular biology, materials science, and related fields. Figures and infographics are built for peer-reviewed papers, theses, grants, and conference presentations, with delivery in print- and web-ready formats.",
+      "Workshops and outreach sessions cover Blender for scientists, journal figure design, and science communication for students and faculty. Programs can be delivered on campus in India or online for international groups.",
+      "SciDart Academy minicourses teach self-paced skills: structured chapters on graphical abstracts, color and layout for figures, and tool workflows researchers use in daily writing.",
+      "Use the services page to request a commission, the workshops page for training inquiries, or contact for direct email and phone. Portfolio galleries show covers, figures, abstracts, logos, videos, and lab websites."
+    ]
+  },
+  "/scientific-illustration-services": {
+    "paragraphs": [
+      "Commission scientific illustration for journal covers, multi-panel figures, infographics, and graphical abstracts. Work is scoped around your deadline, target journal or venue, and the structures or data you supply.",
+      "Cover projects include art direction aligned with the paper narrative, typography and layout suited to the journal, and high-resolution files for print and online use. Figure work covers schematics, renderings, and annotation for clarity at journal scale.",
+      "Lab website design and visual identity support help research groups present people, projects, and publications clearly. Workshop bookings for institutions are arranged separately from one-off illustration requests.",
+      "Submit the request form on this page with your timeline, references, and preferred formats. You will receive a direct reply to confirm scope, licensing, and delivery."
+    ]
+  },
+  "/scientific-illustration-workshops": {
+    "paragraphs": [
+      "Scientific illustration workshops for universities, conferences, and research programs. Sessions combine demonstration and hands-on practice so participants leave with files they can adapt to their own papers and slides.",
+      "Topics include Blender 3D for molecular and cellular subjects, journal figure layout, graphical abstract design, and visual storytelling for public outreach. Formats range from single-day intensives to multi-day campus residencies.",
+      "Online workshops are available for international labs when travel is not required. On-site programs in India can include classroom instruction, small-group mentoring, and faculty or student outreach events.",
+      "Contact the studio with your audience size, dates, and learning goals to plan a program. Past workshops appear in the portfolio and about sections where listed."
+    ]
+  },
+  "/courses": {
+    "paragraphs": [
+      "Self-paced minicourses for scientists and graduate students who want clearer figures and graphical abstracts without a full design degree. Each course is organized into chapters with text, images, and optional video or interactive blocks.",
+      "Subjects include color and contrast for scientific images, journal-ready layout habits, and tool-specific workflows where noted on the course page. Progress is self-directed; content is written for researchers who publish regularly.",
+      "Courses are published under SciDart Academy, the training arm of the studio. Enrollment and access details are shown on each course listing after you open it from this index.",
+      "For custom institutional training or live workshops, see the workshops page or contact page rather than minicourse checkout."
+    ]
+  },
+  "/blog": {
+    "paragraphs": [
+      "Articles on scientific illustration process, software workflows, and open tools for researchers. Posts explain practical steps—file setup, rendering choices, and layout decisions—rather than generic design theory.",
+      "Topics include Blender for science art, figure preparation for journals, and chemistry visualization tools such as MolDraw where featured. New posts are added as tutorials and project notes are published.",
+      "Use the blog archive to browse by title. For commissioned artwork or training, use services, workshops, or contact instead of blog comments."
+    ]
+  },
+  "/about-scientific-illustrator-rafeeque-mavoor": {
+    "paragraphs": [
+      "Rafeeque Mavoor trained in chemistry and moved into scientific illustration and visual education full time. Work focuses on accurate, publication-oriented art for journals, labs, and science outreach.",
+      "Experience includes founding SciDart Academy for researcher training, building LabCanvas and related science communication tools, and delivering workshops at Indian and international institutions. A downloadable CV is linked from this page.",
+      "The portfolio shows journal covers, figures, graphical abstracts, brand marks, lab sites, and video work. Talks and invited sessions are listed where recordings or descriptions are available.",
+      "Newsletter signup on this page covers studio updates and course announcements. For project inquiries, use contact or the services request form."
+    ]
+  },
+  "/contact-scientific-illustration-commissions": {
+    "paragraphs": [
+      "Contact Rafeeque Mavoor for journal cover commissions, figure packages, workshop bookings, and collaborations. Based in Kerala, India; projects are handled remotely with clients worldwide.",
+      "Illustration and workshop requests are handled through the services page forms so files and briefs stay in one thread. Email and phone on this page are for direct outreach when you prefer.",
+      "Include your deadline, target journal or event, and any reference sketches, structures, or draft figures when writing. You will receive a reply to confirm availability and next steps.",
+      "Social profiles are linked in the footer and on the about page for updates and published work."
+    ]
+  },
+  "/privacy-policy": {
+    "paragraphs": [
+      "This site (rafeeque.com) is operated by Rafeeque Mavoor. This policy explains what information may be collected when you use public pages, lead forms, newsletter signup, or account areas where applicable, and how it is used.",
+      "When you submit a request through forms, we collect the fields you provide such as name, email, institution, and message. When you sign in to an admin area, authentication data is processed by hosting and database providers including Supabase under their security practices.",
+      "We may use analytics such as Google Analytics to understand aggregate traffic. You can control cookies and tracking through your browser settings.",
+      "Inquiry data is kept only as long as needed to respond and manage the relationship. To ask questions about this policy or request deletion of data tied to a request, contact rafeequemavoor@gmail.com.",
+      "This page is a general notice and does not constitute legal advice. Adapt with counsel for your jurisdiction if required."
+    ]
+  },
+  "/terms-of-service": {
+    "paragraphs": [
+      "By using rafeeque.com you agree not to misuse the site, attempt unauthorized access, or interfere with its operation. Content including text, images, and portfolio samples is protected by copyright unless otherwise credited.",
+      "Custom illustration, design, and workshop engagements are governed by separate written agreements or statements of work. Unless agreed in writing, portfolio display of delivered work may be used to promote the studio.",
+      "Self-paced courses and materials are provided for learning purposes. Redistribution or resale of course materials without permission is not allowed.",
+      "Materials on this site are provided as is without warranties to the extent permitted by law. Scientific accuracy in client work depends on source data supplied by clients and publishers.",
+      "Questions about these terms: rafeequemavoor@gmail.com. Review with legal counsel for your jurisdiction before relying on this template as binding terms."
+    ]
+  },
+  "/faq": {
+    "paragraphs": [
+      "Answers to common questions about scientific illustration services, training, international projects, and how to contact the studio."
+    ],
+    "sections": [
+      {
+        "heading": "What scientific illustration services do you offer?",
+        "text": "Journal cover art, publication figures and infographics, graphical abstracts, lab websites, and on-campus or online workshops for research teams—from 3D molecular visualization to journal-ready layouts."
+      },
+      {
+        "heading": "How do I commission a journal cover or figure?",
+        "text": "Use the Services page request form with your timeline, target journal or venue, reference structures or sketches, and brand preferences. You will receive a direct reply to discuss scope, licensing, and delivery formats (print and web)."
+      },
+      {
+        "heading": "Do you work with international labs and publishers?",
+        "text": "Yes. Projects are coordinated remotely with clear milestones; file delivery typically uses high-resolution TIFF, PDF, PNG, or vector formats aligned with your publisher’s author guidelines."
+      },
+      {
+        "heading": "What is SciDart Academy?",
+        "text": "SciDart Academy is the training arm focused on scientific illustration and visual communication for researchers—short online courses, structured chapters, and workshops on tools such as Blender and graphical abstracts."
+      },
+      {
+        "heading": "Where can I read articles about your tools and workflow?",
+        "text": "The blog at rafeeque.com/blog covers scientific illustration process, Blender for researchers, and open tools such as MolDraw for structures and 3D visualization."
+      },
+      {
+        "heading": "How can I contact you for workshops or collaborations?",
+        "text": "Use the Contact page or the workshop and services request links in the footer. Email and phone are listed in the site footer for direct outreach."
+      }
+    ]
+  },
+  "/editorial-guidelines": {
+    "paragraphs": [
+      "Articles and tutorials on this site are written or edited by Rafeeque Mavoor unless a guest author is explicitly named. The About page describes background, education, and experience relevant to scientific illustration and visualization.",
+      "Technical posts such as software workflows are checked against current tool versions when published. Major changes may receive a short last updated note at the top of the article when refreshed.",
+      "If content references tools, books, or services with a commercial relationship, that relationship will be disclosed in the article. General educational references do not imply endorsement by employers or publishers.",
+      "Factual corrections are welcome via the contact email. Substantive fixes may be noted briefly at the bottom of the post when applied."
+    ]
+  },
+  "/html-sitemap": {
+    "paragraphs": [
+      "This page lists main URLs on rafeeque.com for visitors. Search engines should use the XML sitemap at /sitemap.xml for crawling.",
+      "Core sections include illustration services, portfolio galleries for covers and figures, workshops, minicourses, blog, about, and contact. Policy pages cover privacy, terms, FAQ, and editorial guidelines.",
+      "Portfolio subpages list journal cover art, research figures and infographics, graphical abstracts, scientific brand logos, illustration videos, and lab websites with science apps.",
+      "Use the navigation links below to open any section. Admin login is for site management only and is not part of public marketing content."
+    ]
+  },
+  "/portfolio/journal-cover-art": {
+    "paragraphs": [
+      "Published journal cover artwork by Rafeeque Mavoor for peer-reviewed journals in chemistry, biology, materials science, and related fields. Each cover translates the paper’s central finding into a single, readable visual for the issue.",
+      "Covers are developed with the research team’s input on structures, mechanisms, and branding constraints. Files are delivered at resolutions suitable for print and electronic issue pages.",
+      "Select a cover in the gallery to view title, lab, and institute details where provided. For a new commission, use the services page request form with your journal, deadline, and reference material.",
+      "Related work includes research figures, graphical abstracts, and workshop programs listed elsewhere on this site."
+    ]
+  },
+  "/portfolio/research-figures-infographics": {
+    "paragraphs": [
+      "Publication figures, multi-panel layouts, and infographics for journal articles, theses, and conference presentations. Work emphasizes clear hierarchy, legible type at print size, and accurate representation of the underlying science.",
+      "Projects may combine rendered structures, schematics, and annotation. Color and contrast are checked for grayscale printing where journals require it.",
+      "Browse the gallery by project. To discuss a figure package for an upcoming paper, submit a brief through the services page with your target venue and timeline.",
+      "Journal cover commissions and graphical abstracts are handled as separate projects with their own portfolio pages."
+    ]
+  },
+  "/portfolio/graphical-abstracts-research": {
+    "paragraphs": [
+      "Graphical abstracts and visual summaries that communicate the main result of a paper at a glance. Layouts follow common journal aspect ratios and keep labels readable in online table-of-contents views.",
+      "Abstracts are built from your draft sketch, data plot, or structural reference. Revisions focus on story order, color coding, and removing clutter that does not support the takeaway.",
+      "Open the gallery for examples paired with institute or journal names where listed. New graphical abstract commissions start on the services page.",
+      "Full figure sets and journal covers are quoted separately when you need more than a single summary panel."
+    ]
+  },
+  "/portfolio/scientific-brand-logos": {
+    "paragraphs": [
+      "Logo and visual identity projects for research labs, scientific programs, and science-facing initiatives. Deliverables may include primary marks, variations for light and dark backgrounds, and simple usage guidance.",
+      "Design balances distinctiveness with restraint so marks work on slides, posters, and lab websites. Related portfolio sections show lab websites and publication artwork from the same clients where applicable.",
+      "Contact via services for a new identity or refresh, with examples of peer programs you admire and any institutional brand rules.",
+      "Illustration for papers and journal issues remains available as cover and figure commissions."
+    ]
+  },
+  "/portfolio/lab-websites-science-apps": {
+    "paragraphs": [
+      "Lab websites and interactive science web projects: structure, visual design, and content layout for research groups, plus selected app experiments listed under science web apps.",
+      "Sites aim to present people, publications, and projects clearly for prospective students and collaborators. Thumbnails in the gallery link to live sites where public.",
+      "For a new or redesigned lab website, use the lab website request on the services page. For illustration-only needs, see journal covers or figures portfolios.",
+      "Science app experiments and tools are summarized on the science web apps page when listed."
+    ]
+  },
+  "/portfolio/scientific-illustration-videos": {
+    "paragraphs": [
+      "Video work includes process reels, tutorial clips, and presentation segments that support scientific illustration and teaching. Files are produced for web embedding and conference playback.",
+      "Where listed, videos connect to workshop or outreach programs documented elsewhere on the site. Still artwork for papers and covers is in the figures and journal cover galleries.",
+      "For video or animation scope tied to a paper or grant, describe deliverables and length on the services request form.",
+      "Workshop organizers can reference these samples when planning a campus or online session."
+    ]
+  },
+  "/science-web-apps-lab-websites": {
+    "paragraphs": [
+      "Showcase of lab websites and science web tools including teaching aids and open experiments such as MolDraw-related work where featured on the site.",
+      "Web apps listed here are distinct from static illustration commissions; each entry notes purpose and link when live. Lab website design requests use the dedicated form on the services page.",
+      "For journal art or figures rather than software, see the portfolio covers and figures sections.",
+      "Blog posts document select tools and workflows when a written tutorial is available."
+    ]
+  }
+}

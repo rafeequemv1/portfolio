@@ -40,6 +40,7 @@ export const blogPosts: BlogPost[] = [
       </ul>
       <p><strong>Requirements:</strong> a computer that runs Blender (install from <a href="https://www.blender.org" target="_blank" rel="noopener noreferrer">blender.org</a>), a <strong>mouse</strong> (trackpads are painful for this workflow), and a stable internet connection. No prior Blender experience required.</p>
       <p>If you are ready to invest a few evenings in a skill that pays off for years of publishing and teaching, start here: <a href="https://blender.scidart.com" target="_blank" rel="noopener noreferrer"><strong>blender.scidart.com</strong></a></p>
+      <p>When your visuals are ready for a journal, see examples of <a href="/portfolio/journal-cover-art">journal cover art</a> and <a href="/portfolio/research-figures-infographics">research figures</a> on this site, or <a href="/scientific-illustration-services#request-illustration">request a commission</a>.</p>
     `,
     readingTime: '3 min read',
     tags: ['Blender', 'Workshop', 'Scientific Illustration', 'SciDart'],
@@ -110,6 +111,7 @@ export const blogPosts: BlogPost[] = [
 
       <h2>Start drawing</h2>
       <p>Open <strong><a href="https://moldraw.com" target="_blank" rel="noopener noreferrer">moldraw.com</a></strong>, try a few structures, and export what you need. For educators and students especially, it is a practical way to keep chemistry visual, rigorous, and accessible—without a ChemDraw license on every machine.</p>
+      <p>For publication-ready layout and color, browse <a href="/portfolio/graphical-abstracts-research">graphical abstracts</a> and <a href="/scientific-illustration-workshops">scientific illustration workshops</a>, or <a href="/scientific-illustration-services#request-illustration">contact the studio</a> for figure support.</p>
     `,
     readingTime: '5 min read',
     tags: ['MolDraw', 'Chemistry', 'Open Source', 'SciDart', 'Ketcher'],

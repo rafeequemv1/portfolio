@@ -3,6 +3,7 @@
 @layer base {
   body {
     @apply bg-[#fcfaf8] text-[#37352f] antialiased;
+    font-family: 'Inter', system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   }
 }
 

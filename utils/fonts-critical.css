@@ -1,0 +1,3 @@
+/* Critical UI fonts — each @fontsource face includes font-display: swap */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-600.css';

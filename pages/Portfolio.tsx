@@ -167,8 +167,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
   const [logosPageCount, setLogosPageCount] = useState(1);
   const [websitesPageCount, setWebsitesPageCount] = useState(1);
 
-  const portfolioCtaTabs: PortfolioTab[] = ['figures'];
-  const showFloatingCtaForTab = portfolioCtaTabs.includes(activeTab);
+  const showFloatingCtaForTab = true;
 
   const tabHeroSubtitle: Partial<Record<PortfolioTab, string>> = {
     covers: 'A selection of published journal covers.',
@@ -465,6 +464,18 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
           <p className="font-hand text-2xl text-[#37352f]/60">
             {tabHeroSubtitle[activeTab] ?? 'Scientific illustration and visual communication.'}
           </p>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#5c5a57]">
+            {activeTab === 'covers' &&
+              'Published journal cover artwork for chemistry, biology, and materials science—editorial 3D and conceptual visuals.'}
+            {activeTab === 'figures' &&
+              'Peer-reviewed figures, multi-panel layouts, and infographics for papers, grants, and conference talks.'}
+            {activeTab === 'logos' &&
+              'Visual identity for research labs, scientific programs, and science communication initiatives.'}
+            {activeTab === 'videos' &&
+              'Process reels and education-focused video work for research communication.'}
+            {activeTab === 'websites-apps' &&
+              'Lab websites and interactive science tools built for research groups and SciDart experiments.'}
+          </p>
         </div>
 
         <div
@@ -688,7 +699,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                           {thumb ? (
                             <img
                               src={figureImageDisplayUrl(thumb, { width: 960 })}
-                              alt=""
+                              alt={fig.paper_title?.trim() || 'Research figure thumbnail'}
                               width={960}
                               height={720}
                               className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
@@ -1171,7 +1182,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
                       {src ? (
                         <img
                           src={figureImageDisplayUrl(src, { width: 2000, quality: 85 })}
-                          alt=""
+                          alt={selectedFigure?.paper_title?.trim() || 'Research figure'}
                           className="max-h-[min(56vh,620px)] w-auto max-w-full object-contain md:max-h-[min(88vh,820px)]"
                           decoding="async"
                           fetchPriority="high"

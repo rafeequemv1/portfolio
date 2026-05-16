@@ -8,6 +8,7 @@ import { workshopDetailGalleryUrls, workshopCardCoverUrl } from '../utils/worksh
 import {
   applyPageSeo,
   clearDynamicJsonLd,
+  SEO_NOT_FOUND,
   workshopDetailJsonLd,
   workshopDetailKeywords,
 } from '../utils/seo';
@@ -81,7 +82,17 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
   }, [id]);
 
   useEffect(() => {
-    if (!workshop || workshop.id !== id) return;
+    if (loading) return;
+    if (error || !workshop || workshop.id !== id) {
+      const canonicalPath = id ? workshopDetailHref(id) : ROUTES.workshops;
+      applyPageSeo({
+        title: SEO_NOT_FOUND.title,
+        description: SEO_NOT_FOUND.description,
+        canonicalPath,
+        robots: SEO_NOT_FOUND.robots,
+      });
+      return () => clearDynamicJsonLd();
+    }
 
     const canonicalPath = workshopDetailHref(workshop.id);
     const raw = workshop.description?.trim() ? stripHtmlToPlain(workshop.description) : '';
@@ -105,7 +116,7 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
     });
 
     return () => clearDynamicJsonLd();
-  }, [workshop, path, id]);
+  }, [workshop, loading, error, path, id]);
 
   const gallery = workshop ? workshopDetailGalleryUrls(workshop) : [];
   const scrollToIndex = useCallback((i: number) => {

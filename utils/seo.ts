@@ -259,6 +259,48 @@ export function workshopDetailJsonLd(workshop: Workshop, canonicalPath: string):
   return [event, crumbs];
 }
 
+export function blogPostingJsonLd(
+  post: {
+    title: string;
+    slug: string;
+    excerpt?: string;
+    date?: string;
+    imageUrl?: string;
+    author?: { name?: string };
+  },
+  canonicalPath: string
+): Record<string, unknown> {
+  const pageUrl = `${SEO_SITE_ORIGIN}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: truncateMetaDescription(post.excerpt || post.title),
+    datePublished: post.date || undefined,
+    author: {
+      '@type': 'Person',
+      name: post.author?.name || 'Rafeeque Mavoor',
+      url: SEO_SITE_ORIGIN,
+      jobTitle: 'Scientific Illustrator and Educator',
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Rafeeque Mavoor',
+      url: SEO_SITE_ORIGIN,
+    },
+    image: absoluteImageUrl(post.imageUrl),
+    url: pageUrl,
+    mainEntityOfPage: pageUrl,
+  };
+}
+
+export const SEO_NOT_FOUND = {
+  title: 'Page not found | Rafeeque Mavoor',
+  description:
+    'This page could not be found. Browse services, portfolio, workshops, or contact for scientific illustration.',
+  robots: 'noindex, nofollow' as const,
+};
+
 export function workshopDetailKeywords(workshop: Workshop): string {
   const parts = [
     workshop.title,
@@ -401,6 +443,13 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
       );
     case 'faq':
       return pageSeoFromStatic(STATIC_ROUTE_BY_PATH.get(ROUTES.faq)!, ROUTES.faq);
+    case 'not-found':
+      return {
+        title: SEO_NOT_FOUND.title,
+        description: SEO_NOT_FOUND.description,
+        canonicalPath: pathnameOnly(currentPath) || '/404',
+        robots: SEO_NOT_FOUND.robots,
+      };
     case 'login':
       return {
         title: 'Admin Login | Rafeeque Mavoor',

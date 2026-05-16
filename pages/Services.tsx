@@ -1,5 +1,6 @@
 import React from 'react';
 import ServiceRequestsSection from '../components/ServiceRequestsSection';
+import { ROUTES } from '../utils/routes';
 
 interface Service {
   id: string;
@@ -83,6 +84,25 @@ const Services: React.FC = () => {
             <div className="absolute bottom-2 left-0 -z-0 h-3 w-full -rotate-1 rounded-sm bg-[#e0e7e1] opacity-80" />
           </div>
           <p className="font-hand text-2xl text-[#37352f]/60">Collaborate to bring your research to life.</p>
+          <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-[#37352f]/70">
+            See published{' '}
+            <a href={ROUTES.portfolioCovers} className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 hover:decoration-[#37352f]/60">
+              journal cover art
+            </a>
+            ,{' '}
+            <a href={ROUTES.portfolioFigures} className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 hover:decoration-[#37352f]/60">
+              research figures
+            </a>
+            , and{' '}
+            <a href={ROUTES.portfolioAbstracts} className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 hover:decoration-[#37352f]/60">
+              graphical abstracts
+            </a>
+            . For teams, browse{' '}
+            <a href={ROUTES.workshops} className="text-[#37352f] underline decoration-[#37352f]/25 underline-offset-2 hover:decoration-[#37352f]/60">
+              scientific illustration workshops
+            </a>
+            .
+          </p>
         </header>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

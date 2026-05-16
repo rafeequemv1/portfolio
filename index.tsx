@@ -3,8 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 /* Subset weights only — avoids shipping full latin bundles (~20+ woff2 files). */
-import '@fontsource/inter/latin-400.css';
-import '@fontsource/inter/latin-600.css';
+import './utils/fonts-critical.css';
 import './index.css';
 import { initAnalyticsWhenIdle } from './utils/analytics';
 import { loadDisplayFontsWhenIdle } from './utils/loadFonts';

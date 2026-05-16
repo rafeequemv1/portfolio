@@ -23,8 +23,11 @@ const HtmlSitemap = lazy(() => import('./pages/HtmlSitemap'));
 const Faq = lazy(() => import('./pages/Faq'));
 import type { Session } from '@supabase/supabase-js';
 import { View } from './types';
+import { trackPageView } from './utils/analytics';
 import { applyPageSeo, clearDynamicJsonLd, resolvePageSeo } from './utils/seo';
 import { canonicalPathnameIfLegacy, getViewFromPath, pathnameOnly } from './utils/routes';
+
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function browserPathSearchHash(): string {
   return window.location.pathname + window.location.search + window.location.hash;
@@ -127,6 +130,10 @@ const App: React.FC = () => {
     if (seo) applyPageSeo(seo);
   }, [currentView, currentPath]);
 
+  useEffect(() => {
+    trackPageView(pathnameOnly(currentPath));
+  }, [currentPath]);
+
   const navigate = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, _view: View, path: string) => {
     e.preventDefault();
     const pathOnly = path.split('#')[0] || path;
@@ -188,12 +195,14 @@ const App: React.FC = () => {
         return <HtmlSitemap navigate={navigate} />;
       case 'faq':
         return <Faq />;
+      case 'not-found':
+        return <NotFound path={currentPath} navigate={navigate} />;
       case 'login':
         return <Login session={session} navigate={navigate} />;
       case 'dashboard':
         return session ? <Dashboard session={session} navigate={navigate} /> : <Login session={session} navigate={navigate} />;
       default:
-        return <Home navigate={navigate} />;
+        return <NotFound path={currentPath} navigate={navigate} />;
     }
   };
 

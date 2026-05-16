@@ -5,15 +5,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadAllPrerenderRoutes, root, SITE_ORIGIN } from './seo-build-utils.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '..');
 const distDir = path.join(root, 'dist');
-const siteOrigin = 'https://rafeeque.com';
+const siteOrigin = SITE_ORIGIN;
 const ogImage = `${siteOrigin}/og-image.jpg`;
 
-const routes = JSON.parse(
-  fs.readFileSync(path.join(root, 'seo-static-routes.json'), 'utf8')
+const routes = await loadAllPrerenderRoutes();
+
+const crawlCopyByPath = JSON.parse(
+  fs.readFileSync(path.join(root, 'seo-crawl-paragraphs.json'), 'utf8')
 );
 
 function escapeHtml(text) {
@@ -45,6 +47,36 @@ function truncateMetaDescription(text, maxLength = 155) {
   const lastSpace = slice.lastIndexOf(' ');
   if (lastSpace > maxLength * 0.6) return `${slice.slice(0, lastSpace).trimEnd()}…`;
   return `${slice.trimEnd()}…`;
+}
+
+function renderCrawlBody(route) {
+  const copy = crawlCopyByPath[route.path];
+  const parts = [];
+
+  if (copy) {
+    for (const p of copy.paragraphs || []) {
+      parts.push(`<p>${escapeHtml(p)}</p>`);
+    }
+    for (const s of copy.sections || []) {
+      parts.push(`<h3>${escapeHtml(s.heading)}</h3>`);
+      parts.push(`<p>${escapeHtml(s.text)}</p>`);
+    }
+  } else if (route.crawlParagraphs?.length) {
+    for (const p of route.crawlParagraphs) {
+      parts.push(`<p>${escapeHtml(p)}</p>`);
+    }
+  }
+
+  return parts.length > 0 ? parts.join('\n          ') : '<p></p>';
+}
+
+function injectPrerenderJsonLd(html, route) {
+  if (!route.jsonLd) return html;
+  const payload = Array.isArray(route.jsonLd) ? route.jsonLd : [route.jsonLd];
+  const json = JSON.stringify(payload.length === 1 ? payload[0] : payload);
+  const tag = `<script type="application/ld+json" id="seo-prerender-jsonld">${json}</script>`;
+  let out = html.replace(/<script type="application\/ld\+json" id="seo-prerender-jsonld">[\s\S]*?<\/script>\s*/g, '');
+  return out.replace('</head>', `${tag}\n</head>`);
 }
 
 function injectRouteHtml(shell, route) {
@@ -97,6 +129,24 @@ function injectRouteHtml(shell, route) {
     `<meta property="og:description" content="${escapeAttr(description)}">`
   );
 
+  if (route.ogType) {
+    html = html.replace(
+      /<meta property="og:type" content="[^"]*">/,
+      `<meta property="og:type" content="${escapeAttr(route.ogType)}">`
+    );
+  }
+
+  if (route.robots) {
+    if (/<meta name="robots" content="[^"]*">/.test(html)) {
+      html = html.replace(
+        /<meta name="robots" content="[^"]*">/,
+        `<meta name="robots" content="${escapeAttr(route.robots)}">`
+      );
+    } else {
+      html = html.replace('</head>', `<meta name="robots" content="${escapeAttr(route.robots)}">\n</head>`);
+    }
+  }
+
   html = html.replace(
     /<meta name="twitter:title" content="[^"]*">/,
     `<meta name="twitter:title" content="${escapeAttr(title)}">`
@@ -111,6 +161,19 @@ function injectRouteHtml(shell, route) {
     /<h2 id="seo-fallback-subheading">[^<]*<\/h2>/,
     `<h2 id="seo-fallback-subheading">${h2}</h2>`
   );
+
+  const crawlBody = renderCrawlBody(route);
+  html = html.replace(
+    /<!-- SEO_CRAWL_BODY_START -->[\s\S]*?<!-- SEO_CRAWL_BODY_END -->/,
+    `<!-- SEO_CRAWL_BODY_START -->\n          ${crawlBody}\n          <!-- SEO_CRAWL_BODY_END -->`
+  );
+
+  html = html.replace(
+    /(<main id="top">[\s\S]*?<p class="site-description">)[\s\S]*?(<\/p>)/,
+    `$1${escapeHtml(description)}$2`
+  );
+
+  html = injectPrerenderJsonLd(html, route);
 
   return html;
 }

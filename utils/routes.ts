@@ -228,6 +228,34 @@ export const PORTFOLIO_SEO: Record<
   },
 };
 
+/** True for paths that map to a real public page (not unknown slugs). */
+export function isKnownPublicPath(pathname: string): boolean {
+  if (isWorkshopDetailPath(pathname)) return true;
+  if (pathname.startsWith('/blog/') && pathname.length > '/blog/'.length) return true;
+  if (isCourseDetailPath(pathname)) return true;
+  if (isPortfolioPath(pathname)) return true;
+  if (LEGACY_PATH_TO_VIEW[pathname]) return true;
+
+  const known = new Set<string>([
+    ROUTES.home,
+    ROUTES.services,
+    ROUTES.workshops,
+    ROUTES.about,
+    ROUTES.contact,
+    ROUTES.blog,
+    ROUTES.courses,
+    ROUTES.apps,
+    ROUTES.login,
+    ROUTES.dashboard,
+    ROUTES.privacyPolicy,
+    ROUTES.termsOfService,
+    ROUTES.editorialGuidelines,
+    ROUTES.htmlSitemap,
+    ROUTES.faq,
+  ]);
+  return known.has(pathname);
+}
+
 export function getViewFromPath(fullPath: string): View {
   const pathname = pathnameOnly(fullPath);
   if (isWorkshopDetailPath(pathname)) return 'workshop-detail';
@@ -257,7 +285,7 @@ export function getViewFromPath(fullPath: string): View {
   if (isPortfolioPath(pathname)) return 'portfolio';
   const legacy = LEGACY_PATH_TO_VIEW[pathname];
   if (legacy) return legacy;
-  return 'home';
+  return 'not-found';
 }
 
 /** If URL is a legacy slug, return canonical pathname (no hash). For SPA replaceState. */

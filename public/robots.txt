@@ -8,9 +8,23 @@ Allow: /
 User-agent: Googlebot-News
 Allow: /
 
-# Third-party SEO / link / archive tools (honor robots.txt only)
+# AI / answer-engine crawlers (public portfolio + llm.txt summary)
+User-agent: GPTBot
+Allow: /
+Allow: /llm.txt
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Third-party SEO audit tools (allow Ahrefs site audit; block aggressive scrapers)
 User-agent: AhrefsBot
-Disallow: /
+Allow: /
 
 User-agent: SemrushBot
 Disallow: /
@@ -36,7 +50,6 @@ Disallow: /
 User-agent: Xenu Link Sleuth
 Disallow: /
 
-# Aggressive / scraper-class crawlers (subset)
 User-agent: PetalBot
 Disallow: /
 
@@ -49,9 +62,8 @@ Disallow: /
 User-agent: BLEXBot
 Disallow: /
 
-# Default policy: allow site; throttle hint (honored by some crawlers; Google ignores Crawl-delay)
+# Default policy
 User-agent: *
-Crawl-delay: 1
 Allow: /
 
 # App areas — not for public indexing
@@ -59,14 +71,14 @@ Disallow: /login
 Disallow: /dashboard
 Disallow: /api
 
-# WordPress-style paths (not used by this SPA; satisfies security/SEO scans)
+# WordPress-style paths (not used by this SPA)
 Disallow: /wp-admin
 Disallow: /wp-admin/
 Disallow: /wp-json/
 Disallow: /wp-includes/
 Disallow: /xmlrpc.php
 
-# Feeds / REST-style discovery (no feeds on this stack)
+# Feeds (none on this stack)
 Disallow: /feed/
 Disallow: /feed
 Disallow: /feeds/
@@ -74,9 +86,14 @@ Disallow: /rss
 Disallow: /rss/
 Disallow: /comments/feed/
 
-# Internal search / parameterized duplicates (pattern checks)
+# Internal search
 Disallow: /search
 Disallow: /?s=
+
+# Duplicate query variants (canonical URLs are path-only; portfolio ?view= not indexed)
 Disallow: /*?*
+
+# Machine-readable site summary for LLMs: https://rafeeque.com/llm.txt
+# IndexNow key: https://rafeeque.com/rafeeque-indexnow-key.txt
 
 Sitemap: https://rafeeque.com/sitemap.xml

@@ -1,6 +1,19 @@
 declare global {
   interface Window {
     dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+const GA_MEASUREMENT_ID = 'G-XVGPV6TE2V';
+
+let analyticsReady = false;
+
+function gtag(...args: unknown[]) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(args);
+  if (typeof window.gtag === 'function') {
+    window.gtag(...args);
   }
 }
 
@@ -9,17 +22,17 @@ export function initAnalyticsWhenIdle() {
   if (typeof window === 'undefined') return;
 
   const load = () => {
-    window.dataLayer = window.dataLayer || [];
-    const gtag = (...args: unknown[]) => {
-      window.dataLayer!.push(args);
-    };
+    if (analyticsReady) return;
 
     const script = document.createElement('script');
     script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XVGPV6TE2V';
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
     script.onload = () => {
+      window.gtag = gtag;
       gtag('js', new Date());
-      gtag('config', 'G-XVGPV6TE2V', { send_page_view: true });
+      gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
+      analyticsReady = true;
+      trackPageView(window.location.pathname + window.location.search);
     };
     document.head.appendChild(script);
   };
@@ -29,4 +42,16 @@ export function initAnalyticsWhenIdle() {
     return;
   }
   globalThis.addEventListener('load', () => setTimeout(load, 3500), { once: true });
+}
+
+/** SPA route changes — virtual pageview for GA4. */
+export function trackPageView(pagePath: string) {
+  if (typeof window === 'undefined') return;
+  const path = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
+  if (!analyticsReady) return;
+  gtag('event', 'page_view', {
+    page_path: path,
+    page_location: `${window.location.origin}${path}`,
+    page_title: document.title,
+  });
 }
