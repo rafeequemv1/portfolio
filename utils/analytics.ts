@@ -12,9 +12,6 @@ let analyticsReady = false;
 function gtag(...args: unknown[]) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(args);
-  if (typeof window.gtag === 'function') {
-    window.gtag(...args);
-  }
 }
 
 /** Load Google Analytics after idle — keeps gtag out of the critical path. */
