@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Loader2, Send, Sparkles } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import { ROUTES } from '../utils/routes';
+import { notifyServiceRequest } from '../utils/serviceRequestNotifications';
 import type { View } from '../types';
 
 export type HomeLeadModalMode = 'work-with-me' | 'cover-art';
@@ -77,16 +78,19 @@ const HomeLeadModal: React.FC<HomeLeadModalProps> = ({ mode, onClose, navigate }
       '',
       message.trim(),
     ].join('\n');
-    const { error } = await supabase.from('contact_messages').insert({
+    const payload = {
       name: name.trim(),
       email: email.trim(),
       message: composed,
-    });
-    setSending(false);
+    };
+    const { error } = await supabase.from('contact_messages').insert(payload);
     if (error) {
+      setSending(false);
       alert(error.message);
       return;
     }
+    await notifyServiceRequest('illustration', payload);
+    setSending(false);
     setSent(true);
   };
 
