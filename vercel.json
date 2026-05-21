@@ -4,7 +4,15 @@
     { "source": "/index.php", "destination": "/", "permanent": true },
     { "source": "/:path*/index.php", "destination": "/:path*", "permanent": true },
     { "source": "/about-us", "destination": "/about-scientific-illustrator-rafeeque-mavoor", "permanent": true },
-    { "source": "/about-us/", "destination": "/about-scientific-illustrator-rafeeque-mavoor", "permanent": true }
+    { "source": "/about-us/", "destination": "/about-scientific-illustrator-rafeeque-mavoor", "permanent": true },
+    { "source": "/academy", "destination": "/courses", "permanent": true },
+    { "source": "/academy/", "destination": "/courses", "permanent": true },
+    { "source": "/shop", "destination": "/courses", "permanent": true },
+    { "source": "/shop/", "destination": "/courses", "permanent": true },
+    { "source": "/copy-of-cover-arts-1", "destination": "/portfolio/journal-cover-art", "permanent": true },
+    { "source": "/copy-of-cover-arts-1/", "destination": "/portfolio/journal-cover-art", "permanent": true },
+    { "source": "/copy-of-cover-arts-2", "destination": "/portfolio/journal-cover-art", "permanent": true },
+    { "source": "/copy-of-cover-arts-2/", "destination": "/portfolio/journal-cover-art", "permanent": true }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
@@ -48,6 +56,20 @@
       "source": "/sitemap.xml",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
+    {
+      "source": "/llm.txt",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" },
+        { "key": "X-Robots-Tag", "value": "noindex, follow" }
+      ]
+    },
+    {
+      "source": "/rafeeque-indexnow-key.txt",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
     },
     {

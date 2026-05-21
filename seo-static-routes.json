@@ -84,6 +84,13 @@
     "h2": "Browse all site pages"
   },
   {
+    "path": "/portfolio",
+    "title": "Scientific Illustration Portfolio | Rafeeque Mavoor",
+    "description": "Portfolio of scientific illustration, journal cover art, research figures, graphical abstracts, lab logos, videos, and science web apps.",
+    "h1": "Scientific Illustration Portfolio",
+    "h2": "Journal covers, figures, logos, videos, and lab websites"
+  },
+  {
     "path": "/portfolio/journal-cover-art",
     "title": "Journal Cover Art Portfolio | Rafeeque Mavoor",
     "description": "Published journal cover art for leading journals—editorial-quality visuals for molecular biology, chemistry, and biomedicine.",

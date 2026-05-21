@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase/client';
 import { WORKSHOP_BOOKING_TOPIC_OPTIONS } from '../data/workshopBookingTopics';
+import { notifyServiceRequest } from '../utils/serviceRequestNotifications';
 import { CalendarPlus, Loader2, Send } from 'lucide-react';
 
 const ServiceRequestsSection: React.FC = () => {
@@ -73,16 +74,19 @@ const ServiceRequestsSection: React.FC = () => {
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setContactSending(true);
-    const { error } = await supabase.from('contact_messages').insert({
+    const payload = {
       name: contactName.trim(),
       email: contactEmail.trim(),
       message: contactMessage.trim(),
-    });
-    setContactSending(false);
+    };
+    const { error } = await supabase.from('contact_messages').insert(payload);
     if (error) {
+      setContactSending(false);
       alert(error.message);
       return;
     }
+    await notifyServiceRequest('illustration', payload);
+    setContactSending(false);
     setContactSent(true);
     setContactName('');
     setContactEmail('');
@@ -92,19 +96,22 @@ const ServiceRequestsSection: React.FC = () => {
   const handleLabSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLabSending(true);
-    const { error } = await supabase.from('lab_website_inquiries').insert({
+    const payload = {
       name: labForm.name.trim(),
       email: labForm.email.trim(),
       lab_name: labForm.lab_name.trim() || null,
       university: labForm.university.trim() || null,
       current_site_url: labForm.current_site_url.trim() || null,
       message: labForm.message.trim() || null,
-    });
-    setLabSending(false);
+    };
+    const { error } = await supabase.from('lab_website_inquiries').insert(payload);
     if (error) {
+      setLabSending(false);
       alert(error.message);
       return;
     }
+    await notifyServiceRequest('lab_website', payload);
+    setLabSending(false);
     setLabSent(true);
     resetLabForm();
   };
@@ -116,19 +123,25 @@ const ServiceRequestsSection: React.FC = () => {
       return;
     }
     setBookingSubmitting(true);
-    const { error: insertError } = await supabase.from('workshop_booking_inquiries').insert({
+    const selectedTopicLabels = bookingForm.topics.map(
+      (id) => WORKSHOP_BOOKING_TOPIC_OPTIONS.find((topic) => topic.id === id)?.label || id
+    );
+    const dbPayload = {
       name: bookingForm.name.trim(),
       email: bookingForm.email.trim(),
       organization: bookingForm.organization.trim() || null,
       preferred_dates: bookingForm.preferredDates.trim() || null,
       message: bookingForm.message.trim() || null,
       topics: bookingForm.topics,
-    });
-    setBookingSubmitting(false);
+    };
+    const { error: insertError } = await supabase.from('workshop_booking_inquiries').insert(dbPayload);
     if (insertError) {
+      setBookingSubmitting(false);
       alert(insertError.message);
       return;
     }
+    await notifyServiceRequest('workshop', { ...dbPayload, topic_labels: selectedTopicLabels });
+    setBookingSubmitting(false);
     setBookingDone(true);
     resetBookingForm();
   };

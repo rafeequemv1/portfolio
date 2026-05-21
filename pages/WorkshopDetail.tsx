@@ -18,6 +18,12 @@ function stripHtmlToPlain(text: string): string {
   return text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function isUuidLike(value: string | undefined): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value || ''
+  );
+}
+
 interface WorkshopDetailProps {
   path: string;
   navigate: (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>, view: View, path: string) => void;
@@ -112,6 +118,9 @@ const WorkshopDetail: React.FC<WorkshopDetailProps> = ({ path, navigate }) => {
       keywords: workshopDetailKeywords(workshop),
       ogImage: cover || undefined,
       ogType: 'event',
+      robots: isUuidLike(workshop.id)
+        ? 'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+        : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       jsonLd: workshopDetailJsonLd(workshop, canonicalPath),
     });
 

@@ -6,12 +6,14 @@ import App from './App';
 import './utils/fonts-critical.css';
 import './index.css';
 import { initAnalyticsWhenIdle } from './utils/analytics';
+import { loadCharlaWidgetWhenIdle } from './utils/charlaWidget';
 import { loadDisplayFontsWhenIdle } from './utils/loadFonts';
 
 document.getElementById('seo-crawler-fallback')?.remove();
 
 loadDisplayFontsWhenIdle();
 initAnalyticsWhenIdle();
+loadCharlaWidgetWhenIdle();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

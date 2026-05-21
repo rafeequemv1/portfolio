@@ -113,6 +113,12 @@ function truncateTitle(title, max = 60) {
   return `${slice.slice(0, sp > max * 0.5 ? sp : max - 1).trimEnd()}…`;
 }
 
+function isUuidLike(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    String(value || '')
+  );
+}
+
 export function loadStaticRoutes() {
   return JSON.parse(readText('seo-static-routes.json'));
 }
@@ -217,6 +223,9 @@ export async function loadDynamicSources() {
   if (Array.isArray(supabaseWorkshops)) {
     for (const row of supabaseWorkshops) {
       if (!row.id || String(row.id).startsWith('demo-')) continue;
+      // UUID workshop detail URLs are valid in-app records but weak public SEO URLs.
+      // Keep them out of the sitemap/prerender set until they have stable slugs.
+      if (isUuidLike(row.id)) continue;
       const plain = (row.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
       workshopById.set(row.id, {
         id: row.id,

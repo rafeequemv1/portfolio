@@ -292,10 +292,14 @@ export function getViewFromPath(fullPath: string): View {
 export function canonicalPathnameIfLegacy(pathname: string): string | null {
   if (pathname === '/services') return ROUTES.services;
   if (pathname === '/workshops') return ROUTES.workshops;
+  if (pathname === '/academy') return ROUTES.courses;
+  if (pathname === '/shop') return ROUTES.courses;
   if (pathname === '/about' || pathname === '/about-us') return ROUTES.about;
   if (pathname === '/contact') return ROUTES.contact;
   if (pathname === '/apps') return ROUTES.apps;
-  if (pathname === '/portfolio') return ROUTES.portfolioCovers;
+  if (pathname === '/copy-of-cover-arts-1' || pathname === '/copy-of-cover-arts-2') {
+    return ROUTES.portfolioCovers;
+  }
   if (pathname.startsWith('/workshops/')) {
     const id = pathname.slice('/workshops/'.length);
     return id ? `${ROUTES.workshops}/${id}` : ROUTES.workshops;

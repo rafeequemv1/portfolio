@@ -120,6 +120,13 @@
       "Use the navigation links below to open any section. Admin login is for site management only and is not part of public marketing content."
     ]
   },
+  "/portfolio": {
+    "paragraphs": [
+      "The scientific illustration portfolio collects journal cover art, research figures, graphical abstracts, lab logos, videos, and lab website projects by Rafeeque Mavoor.",
+      "Use the category tabs to browse published cover artwork, peer-reviewed figure support, graphical summaries, science branding, and science communication web projects.",
+      "For a new journal cover, figure package, graphical abstract, or lab website, use the services page request form with your deadline, target venue, and reference material."
+    ]
+  },
   "/portfolio/journal-cover-art": {
     "paragraphs": [
       "Published journal cover artwork by Rafeeque Mavoor for peer-reviewed journals in chemistry, biology, materials science, and related fields. Each cover translates the paper’s central finding into a single, readable visual for the issue.",
