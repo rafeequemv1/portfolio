@@ -3,6 +3,7 @@ import { supabase } from '../supabase/client';
 import { GraphicalAbstract, JournalCover, LabWebsite, PortfolioFigure, PortfolioLogoProject, PortfolioVideo, View } from '../types';
 import { Loader2, ExternalLink, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import AppsShowcase from '../components/AppsShowcase';
+import ChromeAddonsSection from '../components/ChromeAddonsSection';
 import {
   pathnameOnly,
   portfolioFiguresGalleryFromPath,
@@ -891,6 +892,10 @@ const Portfolio: React.FC<PortfolioProps> = ({ path, navigate }) => {
             </div>
 
             <AutoLoadSentinel hasMore={hasMoreWebsites} onLoadMore={loadMoreWebsites} />
+
+            <div className="mt-14 border-t border-[#37352f]/10 pt-12">
+              <ChromeAddonsSection navigate={navigate} />
+            </div>
 
             <div className="mt-14 border-t border-[#37352f]/10 pt-12">
               <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.15em] text-[#37352f]/45">Apps</p>

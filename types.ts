@@ -105,6 +105,7 @@ export type View =
   | 'contact'
   | 'privacy'
   | 'terms'
+  | 'clipper-privacy'
   | 'editorial'
   | 'html-sitemap'
   | 'faq'

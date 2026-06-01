@@ -1,7 +1,13 @@
 import React from 'react';
 import AppsShowcase from '../components/AppsShowcase';
+import ChromeAddonsSection from '../components/ChromeAddonsSection';
+import type { AppNavigate } from '../types';
 
-const Apps: React.FC = () => {
+interface AppsProps {
+  navigate?: AppNavigate;
+}
+
+const Apps: React.FC<AppsProps> = ({ navigate }) => {
   return (
     <div className="mx-auto w-full max-w-5xl flex-grow animate-fade-in-up px-4 py-10 sm:px-6 md:px-16 md:py-16 lg:px-24">
       <div className="mb-12 text-center">
@@ -14,6 +20,11 @@ const Apps: React.FC = () => {
         </div>
       </div>
 
+      <ChromeAddonsSection navigate={navigate} />
+
+      <div className="mt-14">
+        <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.15em] text-[#37352f]/45">Science web apps</p>
+      </div>
       <AppsShowcase />
 
       <div className="mt-16 text-center">

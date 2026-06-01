@@ -73,6 +73,14 @@
       "Questions about these terms: rafeequemavoor@gmail.com. Review with legal counsel for your jurisdiction before relying on this template as binding terms."
     ]
   },
+  "/clipper-privacy-policy": {
+    "paragraphs": [
+      "Clipper is a Chrome extension for saving social media posts, organizing content ideas, writing drafts, and planning publishing from inside the browser.",
+      "The extension stores saved clips, post metadata, drafts, boards, buckets, and calendar planning data locally using Chrome storage on the user's device.",
+      "Clipper does not collect, sell, rent, share, or transfer saved clips and planning data to external servers. The extension does not use analytics, advertising trackers, or third-party data brokers.",
+      "Users can delete saved clips inside the extension or remove all stored data by uninstalling the extension or clearing Chrome extension storage."
+    ]
+  },
   "/faq": {
     "paragraphs": [
       "Answers to common questions about scientific illustration services, training, international projects, and how to contact the studio."

@@ -431,6 +431,11 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
         STATIC_ROUTE_BY_PATH.get(ROUTES.termsOfService)!,
         ROUTES.termsOfService
       );
+    case 'clipper-privacy':
+      return pageSeoFromStatic(
+        STATIC_ROUTE_BY_PATH.get(ROUTES.clipperPrivacyPolicy)!,
+        ROUTES.clipperPrivacyPolicy
+      );
     case 'editorial':
       return pageSeoFromStatic(
         STATIC_ROUTE_BY_PATH.get(ROUTES.editorialGuidelines)!,

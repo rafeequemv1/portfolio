@@ -17,6 +17,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Courses = lazy(() => import('./pages/Courses'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const ClipperPrivacyPolicy = lazy(() => import('./pages/ClipperPrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const EditorialGuidelines = lazy(() => import('./pages/EditorialGuidelines'));
 const HtmlSitemap = lazy(() => import('./pages/HtmlSitemap'));
@@ -187,6 +188,8 @@ const App: React.FC = () => {
         return <Contact navigate={navigate} />;
       case 'privacy':
         return <PrivacyPolicy />;
+      case 'clipper-privacy':
+        return <ClipperPrivacyPolicy />;
       case 'terms':
         return <TermsOfService />;
       case 'editorial':
