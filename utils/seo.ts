@@ -448,6 +448,8 @@ export function resolvePageSeo(view: View, currentPath: string): PageSeoOptions 
       );
     case 'faq':
       return pageSeoFromStatic(STATIC_ROUTE_BY_PATH.get(ROUTES.faq)!, ROUTES.faq);
+    case 'resources':
+      return pageSeoFromStatic(STATIC_ROUTE_BY_PATH.get(ROUTES.resources)!, ROUTES.resources);
     case 'not-found':
       return {
         title: SEO_NOT_FOUND.title,

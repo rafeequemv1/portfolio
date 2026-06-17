@@ -26,6 +26,7 @@ export const ROUTES = {
   editorialGuidelines: '/editorial-guidelines',
   htmlSitemap: '/html-sitemap',
   faq: '/faq',
+  resources: '/resources',
 } as const;
 
 /** Public contact — footer, schema, and contact page. */
@@ -255,6 +256,7 @@ export function isKnownPublicPath(pathname: string): boolean {
     ROUTES.editorialGuidelines,
     ROUTES.htmlSitemap,
     ROUTES.faq,
+    ROUTES.resources,
   ]);
   return known.has(pathname);
 }
@@ -282,6 +284,7 @@ export function getViewFromPath(fullPath: string): View {
     [ROUTES.editorialGuidelines]: 'editorial',
     [ROUTES.htmlSitemap]: 'html-sitemap',
     [ROUTES.faq]: 'faq',
+    [ROUTES.resources]: 'resources',
   };
 
   const v = primary[pathname];

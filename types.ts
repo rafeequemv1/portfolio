@@ -109,6 +109,7 @@ export type View =
   | 'editorial'
   | 'html-sitemap'
   | 'faq'
+  | 'resources'
   | 'login'
   | 'dashboard'
   | 'not-found';

@@ -26,6 +26,7 @@ const navItems: { label: string; view: View; path: string; match: (v: View) => b
     path: ROUTES.workshops,
     match: (v) => v === 'workshops' || v === 'workshop-detail',
   },
+  { label: 'Resources', view: 'resources', path: ROUTES.resources, match: (v) => v === 'resources' },
   { label: 'About', view: 'about', path: ROUTES.about, match: (v) => v === 'about' },
   { label: 'Contact', view: 'contact', path: ROUTES.contact, match: (v) => v === 'contact' },
 ];

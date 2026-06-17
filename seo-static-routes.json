@@ -70,6 +70,13 @@
     "h2": "Common questions"
   },
   {
+    "path": "/resources",
+    "title": "Resources | Rafeeque Mavoor",
+    "description": "Workshop materials and shared resources from scientific illustration training sessions.",
+    "h1": "Resources",
+    "h2": "Workshop materials"
+  },
+  {
     "path": "/clipper-privacy-policy",
     "title": "Privacy Policy for Clipper | Chrome Extension",
     "description": "Privacy policy for Clipper, a Chrome extension for saving social posts, organizing content ideas, drafts, boards, and publishing plans locally.",

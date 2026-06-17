@@ -22,6 +22,7 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 const EditorialGuidelines = lazy(() => import('./pages/EditorialGuidelines'));
 const HtmlSitemap = lazy(() => import('./pages/HtmlSitemap'));
 const Faq = lazy(() => import('./pages/Faq'));
+const Resources = lazy(() => import('./pages/Resources'));
 import type { Session } from '@supabase/supabase-js';
 import { View } from './types';
 import { trackPageView } from './utils/analytics';
@@ -198,6 +199,8 @@ const App: React.FC = () => {
         return <HtmlSitemap navigate={navigate} />;
       case 'faq':
         return <Faq />;
+      case 'resources':
+        return <Resources />;
       case 'not-found':
         return <NotFound path={currentPath} navigate={navigate} />;
       case 'login':

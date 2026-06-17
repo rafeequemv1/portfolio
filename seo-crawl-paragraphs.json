@@ -112,6 +112,12 @@
       }
     ]
   },
+  "/resources": {
+    "paragraphs": [
+      "Workshop materials and shared resources from scientific illustration training sessions.",
+      "Lodha Genius Workshop — Google Drive folder with workshop files."
+    ]
+  },
   "/editorial-guidelines": {
     "paragraphs": [
       "Articles and tutorials on this site are written or edited by Rafeeque Mavoor unless a guest author is explicitly named. The About page describes background, education, and experience relevant to scientific illustration and visualization.",
