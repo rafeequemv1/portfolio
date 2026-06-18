@@ -1,8 +1,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 
-const LODHA_GENIUS_WORKSHOP_URL =
-  'https://drive.google.com/drive/folders/1r_Vvokk0Cu1m_Hv2aUh_Ri2NhV0OFRa1?usp=sharing';
+const LODHA_GENIUS_WORKSHOP_URL = 'https://forms.scidart.com/kbm3xz';
 
 const Resources: React.FC = () => {
   return (
