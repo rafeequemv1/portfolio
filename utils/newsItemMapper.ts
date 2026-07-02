@@ -32,7 +32,7 @@ export function newsItemToPayload(form: {
   linkUrl: string;
 }) {
   return {
-    title: form.title.trim(),
+    title: form.title.trim() || 'Update',
     summary: form.summary.trim() || null,
     thumbnail_url: form.thumbnailUrl.trim() || null,
     thumbnail_source_kind: form.thumbnailSourceKind || null,

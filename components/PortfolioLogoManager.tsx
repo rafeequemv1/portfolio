@@ -133,17 +133,9 @@ const PortfolioLogoManager: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.image_urls.length) {
-      alert('Add at least one logo image.');
-      return;
-    }
-    if (!form.title.trim()) {
-      alert('Project title is required.');
-      return;
-    }
     setSubmitting(true);
     const payload = {
-      title: form.title.trim(),
+      title: form.title.trim() || 'Untitled',
       description: form.description.trim() || null,
       related_link: form.related_link.trim() || null,
       image_urls: form.image_urls,
@@ -261,7 +253,7 @@ const PortfolioLogoManager: React.FC = () => {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#37352f]/55">Project title</label>
-                  <input required value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm" placeholder="Logo project name" />
+                  <input value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm" placeholder="Logo project name" />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#37352f]/55">Description (optional)</label>

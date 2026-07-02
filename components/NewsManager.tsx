@@ -246,14 +246,6 @@ const NewsManager: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.linkKind === 'external' && !form.linkUrl.trim()) {
-      alert('Enter a link URL for external links.');
-      return;
-    }
-    if (linkNeedsTarget && !form.linkTarget.trim()) {
-      alert('Select a link target.');
-      return;
-    }
     setSubmitting(true);
     const payload = newsItemToPayload(form);
     if (editing) {
@@ -351,7 +343,6 @@ const NewsManager: React.FC = () => {
                 <div className="space-y-2 sm:col-span-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Title</label>
                   <input
-                    required
                     value={form.title}
                     onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
                     className="w-full rounded-lg border border-[#37352f]/15 px-4 py-2 text-sm outline-none focus:border-[#37352f]/35"
@@ -371,7 +362,6 @@ const NewsManager: React.FC = () => {
                   <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Published date</label>
                   <input
                     type="date"
-                    required
                     value={form.publishedAt}
                     onChange={(e) => setForm((p) => ({ ...p, publishedAt: e.target.value }))}
                     className="w-full rounded-lg border border-[#37352f]/15 px-4 py-2 text-sm outline-none focus:border-[#37352f]/35"
@@ -516,7 +506,6 @@ const NewsManager: React.FC = () => {
                       <Loader2 className="h-5 w-5 animate-spin text-[#37352f]/25" />
                     ) : (
                       <select
-                        required
                         value={form.linkTarget}
                         onChange={(e) => setForm((p) => ({ ...p, linkTarget: e.target.value }))}
                         className="w-full rounded-lg border border-[#37352f]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#37352f]/35"

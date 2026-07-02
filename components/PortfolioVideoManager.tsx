@@ -87,14 +87,10 @@ const PortfolioVideoManager: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!getYoutubeEmbedUrl(formData.youtube_url)) {
-      alert('Please enter a valid YouTube URL.');
-      return;
-    }
     setSubmitting(true);
     const payload = {
-      title: formData.title,
-      youtube_url: formData.youtube_url,
+      title: formData.title.trim() || 'Untitled',
+      youtube_url: formData.youtube_url.trim(),
       description: formData.description || null,
       display_order: Number(formData.display_order || 0),
     };
@@ -182,7 +178,6 @@ const PortfolioVideoManager: React.FC = () => {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                  required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none"
                 />
               </div>
@@ -193,7 +188,6 @@ const PortfolioVideoManager: React.FC = () => {
                   type="url"
                   value={formData.youtube_url}
                   onChange={(e) => setFormData((prev) => ({ ...prev, youtube_url: e.target.value }))}
-                  required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none"
                   placeholder="https://www.youtube.com/watch?v=..."
                 />

@@ -107,10 +107,10 @@ const LabWebsiteManager: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
     const payload = {
-      lab_name: formData.labName,
-      pi_name: formData.piName,
+      lab_name: formData.labName.trim() || 'Untitled',
+      pi_name: formData.piName.trim() || '—',
       university: formData.university || null,
-      website_url: formData.websiteUrl,
+      website_url: formData.websiteUrl.trim() || '#',
       image_url: formData.imageUrl || null,
       description: formData.description || null,
       display_order: Number(formData.displayOrder) || 0,
@@ -167,12 +167,12 @@ const LabWebsiteManager: React.FC = () => {
               <button onClick={() => setIsModalOpen(false)} className="text-[#37352f]/40 hover:text-[#37352f]"><X size={22} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
-              <input required value={formData.labName} onChange={(e) => setFormData((p) => ({ ...p, labName: e.target.value }))} placeholder="Website / Lab name" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
+              <input value={formData.labName} onChange={(e) => setFormData((p) => ({ ...p, labName: e.target.value }))} placeholder="Website / Lab name" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input required value={formData.piName} onChange={(e) => setFormData((p) => ({ ...p, piName: e.target.value }))} placeholder="Founder / PI" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
+                <input value={formData.piName} onChange={(e) => setFormData((p) => ({ ...p, piName: e.target.value }))} placeholder="Founder / PI" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
                 <input value={formData.university} onChange={(e) => setFormData((p) => ({ ...p, university: e.target.value }))} placeholder="University / Organization" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
               </div>
-              <input required type="url" value={formData.websiteUrl} onChange={(e) => setFormData((p) => ({ ...p, websiteUrl: e.target.value }))} placeholder="https://example.com" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
+              <input value={formData.websiteUrl} onChange={(e) => setFormData((p) => ({ ...p, websiteUrl: e.target.value }))} placeholder="https://example.com" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
               <textarea value={formData.description} onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))} rows={3} placeholder="Description" className="w-full px-4 py-2 border border-gray-200 rounded-lg resize-none" />
               <input type="number" value={formData.displayOrder} onChange={(e) => setFormData((p) => ({ ...p, displayOrder: Number(e.target.value) }))} placeholder="Display order" className="w-full px-4 py-2 border border-gray-200 rounded-lg" />
 

@@ -133,18 +133,10 @@ const PortfolioFigureManager: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.image_urls.length) {
-      alert('Add at least one figure image.');
-      return;
-    }
-    if (!form.paper_title.trim()) {
-      alert('Research paper name is required.');
-      return;
-    }
     setSubmitting(true);
     const payload = {
       image_urls: form.image_urls,
-      paper_title: form.paper_title.trim(),
+      paper_title: form.paper_title.trim() || 'Untitled',
       paper_url: form.paper_url.trim() || null,
       lab_name: form.lab_name.trim() || null,
       university_name: form.university_name.trim() || null,
@@ -274,7 +266,6 @@ const PortfolioFigureManager: React.FC = () => {
                 <div>
                   <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#37352f]/55">Research paper name</label>
                   <input
-                    required
                     value={form.paper_title}
                     onChange={(e) => setForm((p) => ({ ...p, paper_title: e.target.value }))}
                     className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm"

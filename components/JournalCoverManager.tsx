@@ -97,6 +97,8 @@ const JournalCoverManager: React.FC = () => {
 
     const payload = {
       ...formData,
+      title: formData.title.trim() || 'Untitled',
+      description: formData.description?.trim() || null,
       display_order: Number(formData.display_order) || 0,
     };
 
@@ -319,7 +321,6 @@ const JournalCoverManager: React.FC = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    required
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all"
                     placeholder="e.g. Nature Nanotechnology Cover"
                   />
@@ -354,7 +355,6 @@ const JournalCoverManager: React.FC = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  required
                   rows={3}
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#37352f]/10 focus:border-[#37352f] outline-none transition-all resize-none"
                   placeholder="Describe the scientific concept illustrated..."

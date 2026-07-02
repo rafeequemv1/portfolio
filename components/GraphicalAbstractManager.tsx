@@ -117,6 +117,7 @@ const GraphicalAbstractManager: React.FC = () => {
     setSubmitting(true);
     const payload = {
       ...formData,
+      title: formData.title.trim() || 'Untitled',
       publication_date: formData.publication_date || null,
       paper_url: formData.paper_url || null,
       lab_url: formData.lab_url || null,
@@ -196,7 +197,7 @@ const GraphicalAbstractManager: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Title</label>
-                  <input required value={formData.title} onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none" />
+                  <input value={formData.title} onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))} className="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#37352f]/60">Publication Date</label>
