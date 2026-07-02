@@ -14,6 +14,7 @@ export const ROUTES = {
   apps: '/science-web-apps-lab-websites',
   portfolioCovers: '/portfolio/journal-cover-art',
   portfolioFigures: '/portfolio/research-figures-infographics',
+  portfolioIllustrations: '/portfolio/scientific-illustrations',
   portfolioAbstracts: '/portfolio/graphical-abstracts-research',
   portfolioLogos: '/portfolio/scientific-brand-logos',
   portfolioWebApps: '/portfolio/lab-websites-science-apps',
@@ -46,6 +47,7 @@ export const FOOTER_NAV_LINKS: readonly { label: string; path: string; view: Vie
   { label: 'Services', path: ROUTES.services, view: 'services' },
   { label: 'Journal covers', path: ROUTES.portfolioCovers, view: 'portfolio' },
   { label: 'Research figures', path: ROUTES.portfolioFigures, view: 'portfolio' },
+  { label: 'Illustrations', path: ROUTES.portfolioIllustrations, view: 'portfolio' },
   { label: 'Graphical abstracts', path: ROUTES.portfolioAbstracts, view: 'portfolio' },
   { label: 'Logos', path: ROUTES.portfolioLogos, view: 'portfolio' },
   { label: 'Videos', path: ROUTES.portfolioVideos, view: 'portfolio' },
@@ -80,7 +82,7 @@ export const ABOUT_FEATURED_TALKS: readonly { href: string; label: string }[] = 
 
 export const ABOUT_TALKS_HASH = '#talks';
 
-export type PortfolioTab = 'covers' | 'figures' | 'logos' | 'websites-apps' | 'videos';
+export type PortfolioTab = 'covers' | 'figures' | 'illustrations' | 'logos' | 'websites-apps' | 'videos';
 
 /** Sub-filter when the active tab is `figures` (paper figures vs graphical abstracts). */
 export type PortfolioFiguresGalleryFilter = 'all' | 'figures' | 'abstracts';
@@ -88,6 +90,7 @@ export type PortfolioFiguresGalleryFilter = 'all' | 'figures' | 'abstracts';
 export const PORTFOLIO_TAB_PATH: Record<PortfolioTab, string> = {
   covers: ROUTES.portfolioCovers,
   figures: ROUTES.portfolioFigures,
+  illustrations: ROUTES.portfolioIllustrations,
   logos: ROUTES.portfolioLogos,
   'websites-apps': ROUTES.portfolioWebApps,
   videos: ROUTES.portfolioVideos,
@@ -213,6 +216,11 @@ export const PORTFOLIO_SEO: Record<
     title: 'Research Figures Portfolio | Rafeeque Mavoor',
     description:
       'Peer-reviewed paper figures, multi-panel layouts, infographics, and graphical abstracts for journals and conferences—clear visuals for publications.',
+  },
+  illustrations: {
+    title: 'Scientific Illustrations Portfolio | Rafeeque Mavoor',
+    description:
+      'Standalone scientific illustrations—editorial artwork, conceptual visuals, and molecular art beyond publication figures.',
   },
   logos: {
     title: 'Scientific Brand Logos | Rafeeque Mavoor',

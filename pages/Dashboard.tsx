@@ -10,6 +10,7 @@ import GraphicalAbstractManager from '../components/GraphicalAbstractManager';
 import BlogManager from '../components/BlogManager';
 import LabWebsiteManager from '../components/LabWebsiteManager';
 import PortfolioFigureManager from '../components/PortfolioFigureManager';
+import PortfolioIllustrationManager from '../components/PortfolioIllustrationManager';
 import TalksManager from '../components/TalksManager';
 import NewsManager from '../components/NewsManager';
 import PortfolioLogoManager from '../components/PortfolioLogoManager';
@@ -38,7 +39,7 @@ type DashboardSection =
 
 const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
   const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
-  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'figures-abstracts' | 'logos' | 'websites'>('covers');
+  const [portfolioTab, setPortfolioTab] = useState<'covers' | 'videos' | 'figures-abstracts' | 'illustrations' | 'logos' | 'websites'>('covers');
   const sectionItems = useMemo(
     () => [
       { key: 'overview' as DashboardSection, label: 'Overview', icon: LayoutDashboard },
@@ -76,6 +77,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
               >
                 Figures & abstracts
               </button>
+              <button onClick={() => setPortfolioTab('illustrations')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'illustrations' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Illustrations</button>
               <button onClick={() => setPortfolioTab('logos')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'logos' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Logos</button>
               <button onClick={() => setPortfolioTab('websites')} className={`px-3 py-2 text-[10px] sm:text-xs uppercase tracking-wider rounded-lg ${portfolioTab === 'websites' ? 'bg-[#37352f] text-white' : 'text-[#37352f]/70 hover:text-[#37352f]'}`}>Websites</button>
             </div>
@@ -87,6 +89,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
                 <GraphicalAbstractManager />
               </div>
             )}
+            {portfolioTab === 'illustrations' && <PortfolioIllustrationManager />}
             {portfolioTab === 'logos' && <PortfolioLogoManager />}
             {portfolioTab === 'websites' && <LabWebsiteManager />}
           </div>

@@ -8,6 +8,7 @@ export const NEWS_LINK_KIND_OPTIONS: { value: NewsLinkKind; label: string; needs
   { value: 'blog', label: 'Blog post', needsTarget: true },
   { value: 'portfolio_covers', label: 'Portfolio — Journal covers' },
   { value: 'portfolio_figures', label: 'Portfolio — Research figures' },
+  { value: 'portfolio_illustrations', label: 'Portfolio — Illustrations' },
   { value: 'portfolio_abstracts', label: 'Portfolio — Graphical abstracts' },
   { value: 'portfolio_logos', label: 'Portfolio — Logos' },
   { value: 'portfolio_videos', label: 'Portfolio — Videos' },
@@ -45,6 +46,8 @@ export function resolveNewsLink(item: Pick<NewsItem, 'linkKind' | 'linkTarget' |
       return { path: ROUTES.portfolioCovers, view: 'portfolio', external: false };
     case 'portfolio_figures':
       return { path: ROUTES.portfolioFigures, view: 'portfolio', external: false };
+    case 'portfolio_illustrations':
+      return { path: ROUTES.portfolioIllustrations, view: 'portfolio', external: false };
     case 'portfolio_abstracts':
       return { path: ROUTES.portfolioAbstracts, view: 'portfolio', external: false };
     case 'portfolio_logos':

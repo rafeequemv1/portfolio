@@ -19,6 +19,7 @@ interface PickerImage {
 const THUMBNAIL_TABS: { key: ThumbnailPickerTab; label: string }[] = [
   { key: 'cover', label: 'Covers' },
   { key: 'figure', label: 'Figures' },
+  { key: 'illustration', label: 'Illustrations' },
   { key: 'abstract', label: 'Abstracts' },
   { key: 'logo', label: 'Logos' },
   { key: 'video', label: 'Videos' },
@@ -97,6 +98,12 @@ const NewsManager: React.FC = () => {
           for (const row of data || []) {
             const url = Array.isArray(row.image_urls) ? row.image_urls[0] : '';
             if (url) images.push({ id: row.id, label: row.paper_title, url, sourceKind: 'figure' });
+          }
+        } else if (pickerTab === 'illustration') {
+          const { data } = await supabase.from('portfolio_illustrations').select('id, title, image_urls').order('display_order');
+          for (const row of data || []) {
+            const url = Array.isArray(row.image_urls) ? row.image_urls[0] : '';
+            if (url) images.push({ id: row.id, label: row.title, url, sourceKind: 'illustration' });
           }
         } else if (pickerTab === 'abstract') {
           const { data } = await supabase.from('portfolio_graphical_abstracts').select('id, title, abstract_image_url').order('display_order');

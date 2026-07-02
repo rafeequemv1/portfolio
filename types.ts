@@ -172,6 +172,18 @@ export interface PortfolioLogoProject {
   created_at?: string;
 }
 
+/** Standalone illustrations — separate from publication figures. */
+export interface PortfolioIllustration {
+  id: string;
+  title: string;
+  description?: string | null;
+  related_link?: string | null;
+  image_urls: string[];
+  display_order?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 /** About page “Talks” — YouTube embed + copy; managed in dashboard. */
 export interface AboutTalk {
   id: string;
@@ -189,6 +201,7 @@ export type NewsLinkKind =
   | 'blog'
   | 'portfolio_covers'
   | 'portfolio_figures'
+  | 'portfolio_illustrations'
   | 'portfolio_abstracts'
   | 'portfolio_logos'
   | 'portfolio_videos'
@@ -201,6 +214,7 @@ export type NewsThumbnailSourceKind =
   | 'upload'
   | 'cover'
   | 'figure'
+  | 'illustration'
   | 'abstract'
   | 'logo'
   | 'video'
