@@ -14,7 +14,8 @@ import PortfolioIllustrationManager from '../components/PortfolioIllustrationMan
 import TalksManager from '../components/TalksManager';
 import NewsManager from '../components/NewsManager';
 import PortfolioLogoManager from '../components/PortfolioLogoManager';
-import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen, Smartphone, ClipboardList, Mic, GraduationCap, Newspaper } from 'lucide-react';
+import TestimonialsManager from '../components/TestimonialsManager';
+import { LayoutDashboard, Image, Calendar, Briefcase, Settings, LogOut, ChevronLeft, BookOpen, Smartphone, ClipboardList, Mic, GraduationCap, Newspaper, Quote } from 'lucide-react';
 import SiteAndAppsManager from '../components/SiteAndAppsManager';
 import ServicesAdminPanel from '../components/ServicesAdminPanel';
 import CourseManager from '../components/CourseManager';
@@ -32,6 +33,7 @@ type DashboardSection =
   | 'blog'
   | 'news'
   | 'talks'
+  | 'testimonials'
   | 'brands'
   | 'apps'
   | 'services'
@@ -49,6 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
       { key: 'blog' as DashboardSection, label: 'Blog', icon: BookOpen },
       { key: 'news' as DashboardSection, label: 'News', icon: Newspaper },
       { key: 'talks' as DashboardSection, label: 'About talks', icon: Mic },
+      { key: 'testimonials' as DashboardSection, label: 'Testimonials', icon: Quote },
       { key: 'apps' as DashboardSection, label: 'Apps & site', icon: Smartphone },
       { key: 'brands' as DashboardSection, label: 'Brands', icon: Briefcase },
       { key: 'services' as DashboardSection, label: 'Service requests', icon: ClipboardList },
@@ -104,6 +107,8 @@ const Dashboard: React.FC<DashboardProps> = ({ session, navigate }) => {
         return <NewsManager />;
       case 'talks':
         return <TalksManager />;
+      case 'testimonials':
+        return <TestimonialsManager />;
       case 'apps':
         return <SiteAndAppsManager />;
       case 'brands':

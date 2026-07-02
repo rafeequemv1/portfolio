@@ -194,6 +194,25 @@ export interface AboutTalk {
   created_at?: string;
 }
 
+export type TestimonialContentType = 'quote' | 'linkedin' | 'twitter' | 'image';
+
+/** About page testimonials — carousel; managed in dashboard. */
+export interface Testimonial {
+  id: string;
+  authorName: string;
+  authorRole?: string | null;
+  authorOrg?: string | null;
+  quote?: string | null;
+  contentType: TestimonialContentType;
+  sourceUrl?: string | null;
+  imageUrl?: string | null;
+  linkUrl?: string | null;
+  linkLabel?: string | null;
+  displayOrder?: number;
+  isPublished: boolean;
+  createdAt?: string;
+}
+
 export type NewsLinkKind =
   | 'external'
   | 'workshop'

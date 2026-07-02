@@ -3,9 +3,9 @@ import { FileText } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import NewsletterSignupCard from '../components/NewsletterSignupCard';
 import AboutTalksSection from '../components/AboutTalksSection';
+import AboutTestimonialsCarousel from '../components/AboutTestimonialsCarousel';
 import SocialProfiles from '../components/SocialProfiles';
 import { ABOUT_PUBLICATIONS } from '../data/aboutPublications';
-import { ABOUT_FEATURED_TALKS } from '../utils/routes';
 
 const ABOUT_PROFILE_KEY = 'about_profile_image_url';
 const ABOUT_CV_PDF_KEY = 'about_cv_pdf_url';
@@ -166,31 +166,7 @@ const About: React.FC = () => {
             </p>
           </section>
 
-          <section className="mb-12">
-            <h2 className="text-2xl font-serif text-[#37352f] mb-3 border-b border-[#37352f]/10 pb-2">Publications</h2>
-            <p className="mb-4 text-xs text-[#37352f]/55 font-sans">Selected co-authored research (chemistry &amp; materials).</p>
-            <ol className="list-decimal space-y-2.5 pl-5 text-sm leading-snug text-[#37352f]/85 font-sans">
-              {ABOUT_PUBLICATIONS.map((pub) => (
-                <li key={pub.href}>
-                  <a
-                    href={pub.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#37352f] underline decoration-[#37352f]/20 underline-offset-2 hover:decoration-[#37352f]/50"
-                  >
-                    {pub.title}
-                  </a>
-                  {pub.journal ? (
-                    <span className="text-[#37352f]/50">
-                      {' '}
-                      — <em>{pub.journal}</em>
-                      {pub.year ? ` (${pub.year})` : ''}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ol>
-          </section>
+          <AboutTestimonialsCarousel />
 
           <section className="mb-12">
             <h2 className="text-2xl font-serif text-[#37352f] mb-6 border-b border-[#37352f]/10 pb-2">Experience</h2>
@@ -293,22 +269,30 @@ const About: React.FC = () => {
 
           <AboutTalksSection />
 
-          <section className="border-t border-[#37352f]/10 pt-8" aria-label="Featured talk recordings">
-            <h2 className="mb-4 font-serif text-xl text-[#37352f]">More recordings</h2>
-            <ul className="flex list-none flex-wrap gap-x-4 gap-y-2 px-0 text-sm text-[#5c5a57]">
-              {ABOUT_FEATURED_TALKS.map(({ href, label }, i) => (
-                <li key={href}>
+          <section className="border-t border-[#37352f]/10 pt-8">
+            <h2 className="text-2xl font-serif text-[#37352f] mb-3 border-b border-[#37352f]/10 pb-2">Publications</h2>
+            <p className="mb-4 text-xs text-[#37352f]/55 font-sans">Selected co-authored research (chemistry &amp; materials).</p>
+            <ol className="list-decimal space-y-2.5 pl-5 text-sm leading-snug text-[#37352f]/85 font-sans">
+              {ABOUT_PUBLICATIONS.map((pub) => (
+                <li key={pub.href}>
                   <a
-                    href={href}
+                    href={pub.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline-offset-2 hover:text-[#37352f] hover:underline"
+                    className="text-[#37352f] underline decoration-[#37352f]/20 underline-offset-2 hover:decoration-[#37352f]/50"
                   >
-                    {label} {i + 1}
+                    {pub.title}
                   </a>
+                  {pub.journal ? (
+                    <span className="text-[#37352f]/50">
+                      {' '}
+                      — <em>{pub.journal}</em>
+                      {pub.year ? ` (${pub.year})` : ''}
+                    </span>
+                  ) : null}
                 </li>
               ))}
-            </ul>
+            </ol>
           </section>
         </section>
 

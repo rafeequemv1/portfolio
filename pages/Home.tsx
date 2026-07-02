@@ -13,10 +13,13 @@ interface HomeProps {
   navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
 }
 
+const HOME_BRANDS_PREVIEW = 8;
+
 const Home: React.FC<HomeProps> = ({ navigate }) => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [brandsExpanded, setBrandsExpanded] = useState(false);
   const [leadModal, setLeadModal] = useState<HomeLeadModalMode | null>(null);
 
   useEffect(() => {
@@ -92,6 +95,15 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
   const firstRowFull = useMemo(() => buildFullRow(firstRow, 12), [firstRow]);
   const secondRowFull = useMemo(() => buildFullRow(secondRow, 12), [secondRow]);
 
+  const visibleBrands = useMemo(() => {
+    if (brandsExpanded || brands.length <= HOME_BRANDS_PREVIEW) return brands;
+    return brands.slice(0, HOME_BRANDS_PREVIEW);
+  }, [brands, brandsExpanded]);
+
+  const scrollToNews = () => {
+    document.getElementById('home-news')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="relative flex flex-grow flex-col items-center px-4 pb-12 pt-12 animate-fade-in-up sm:px-6 md:pb-16 md:pt-20">
       <section className="mb-12 max-w-2xl text-center md:mb-16" aria-labelledby="home-hero-heading">
@@ -112,6 +124,17 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
              Visualizing science, with precision and soul.
            </p>
         </div>
+
+        {newsItems.length > 0 ? (
+          <button
+            type="button"
+            onClick={scrollToNews}
+            className="mt-8 inline-flex items-center gap-2 rounded-full border border-[#37352f]/15 bg-white/70 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#37352f]/75 shadow-sm transition-colors hover:border-[#37352f]/25 hover:bg-white hover:text-[#37352f]"
+          >
+            Latest news
+            <span aria-hidden className="text-[#37352f]/45">↓</span>
+          </button>
+        ) : null}
 
       </section>
 
@@ -228,8 +251,6 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         </p>
       </section>
 
-      <HomeNewsSection items={newsItems} navigate={navigate} />
-
       <section className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10" aria-label="Primary actions">
         <button
           type="button"
@@ -289,6 +310,8 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
         </section>
       )}
 
+      <HomeNewsSection items={newsItems} navigate={navigate} />
+
       <section className="mt-10 mb-8 flex w-full max-w-xl flex-col items-stretch gap-3 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5" aria-label="Portfolio and illustration requests">
         <a
           href={ROUTES.portfolioCovers}
@@ -317,7 +340,7 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
             Trusted by researchers and institutions
           </h2>
           <ul className="mx-auto flex max-w-2xl list-none flex-wrap items-end justify-center gap-x-5 gap-y-6 p-0 sm:gap-x-7 sm:gap-y-7">
-            {brands.map((brand) => (
+            {visibleBrands.map((brand) => (
               <li key={brand.id} className="flex shrink-0">
                 <a
                 href={brand.website_url || '#'}
@@ -347,6 +370,18 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
               </li>
             ))}
           </ul>
+          {brands.length > HOME_BRANDS_PREVIEW ? (
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                onClick={() => setBrandsExpanded((open) => !open)}
+                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#37352f]/60 underline decoration-[#37352f]/25 underline-offset-4 transition-colors hover:text-[#37352f] hover:decoration-[#37352f]/50"
+                aria-expanded={brandsExpanded}
+              >
+                {brandsExpanded ? 'Show less' : `See more (${brands.length - HOME_BRANDS_PREVIEW} more)`}
+              </button>
+            </div>
+          ) : null}
         </section>
       )}
 

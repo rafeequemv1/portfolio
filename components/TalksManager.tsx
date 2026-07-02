@@ -110,8 +110,7 @@ const TalksManager: React.FC = () => {
         <div>
           <h2 className="font-serif text-2xl text-[#37352f]">About — Talks</h2>
           <p className="mt-1 text-sm text-[#37352f]/60">
-            YouTube embeds shown on the public About page. Run <code className="rounded bg-[#37352f]/5 px-1 text-xs">supabase/about_talks.sql</code> if the table
-            is missing.
+            YouTube videos on the About page. Lowest display order shows first; additional talks appear behind &ldquo;More talks&rdquo;.
           </p>
         </div>
         <button

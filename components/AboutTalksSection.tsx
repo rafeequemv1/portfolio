@@ -1,11 +1,38 @@
 import React, { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import type { AboutTalk } from '../types';
 import { getYoutubeEmbedUrl } from '../utils/youtubeEmbed';
 
+const TalkArticle: React.FC<{ talk: AboutTalk }> = ({ talk }) => {
+  const embed = getYoutubeEmbedUrl(talk.youtube_url)!;
+  return (
+    <article className="overflow-hidden rounded-lg border border-[#37352f]/10 bg-white/90 shadow-sm">
+      <div className="aspect-video w-full bg-[#f0eeeb]">
+        <iframe
+          title={talk.title}
+          src={embed}
+          className="h-full w-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+      <div className="p-4 sm:p-5">
+        <h3 className="font-serif text-lg text-[#37352f] sm:text-xl">{talk.title}</h3>
+        {talk.description ? (
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#37352f]/70">{talk.description}</p>
+        ) : null}
+      </div>
+    </article>
+  );
+};
+
 const AboutTalksSection: React.FC = () => {
   const [talks, setTalks] = useState<AboutTalk[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +74,8 @@ const AboutTalksSection: React.FC = () => {
   }
 
   const talksWithEmbed = talks.filter((t) => getYoutubeEmbedUrl(t.youtube_url));
+  const primaryTalk = talksWithEmbed[0];
+  const moreTalks = talksWithEmbed.slice(1);
 
   return (
     <section id="talks" className="mb-12 scroll-mt-28">
@@ -58,31 +87,31 @@ const AboutTalksSection: React.FC = () => {
             : 'These entries need a valid YouTube link (watch or youtu.be URL) to appear as a video.'}
         </p>
       ) : (
-        <div className="space-y-10">
-          {talksWithEmbed.map((talk) => {
-            const embed = getYoutubeEmbedUrl(talk.youtube_url)!;
-            return (
-              <article key={talk.id} className="overflow-hidden rounded-lg border border-[#37352f]/10 bg-white/90 shadow-sm">
-                <div className="aspect-video w-full bg-[#f0eeeb]">
-                  <iframe
-                    title={talk.title}
-                    src={embed}
-                    className="h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                  />
+        <div className="space-y-6">
+          {primaryTalk ? <TalkArticle talk={primaryTalk} /> : null}
+
+          {moreTalks.length > 0 ? (
+            <>
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowMore((open) => !open)}
+                  className="inline-flex items-center gap-2 rounded-full border border-[#37352f]/15 bg-white/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-[#37352f]/75 transition-colors hover:border-[#37352f]/30 hover:text-[#37352f]"
+                  aria-expanded={showMore}
+                >
+                  {showMore ? 'Show fewer talks' : `More talks (${moreTalks.length})`}
+                  {showMore ? <ChevronUp size={14} aria-hidden /> : <ChevronDown size={14} aria-hidden />}
+                </button>
+              </div>
+              {showMore ? (
+                <div className="space-y-10">
+                  {moreTalks.map((talk) => (
+                    <TalkArticle key={talk.id} talk={talk} />
+                  ))}
                 </div>
-                <div className="p-4 sm:p-5">
-                  <h3 className="font-serif text-lg text-[#37352f] sm:text-xl">{talk.title}</h3>
-                  {talk.description ? (
-                    <p className="mt-2 text-sm leading-relaxed text-[#37352f]/70 whitespace-pre-wrap">{talk.description}</p>
-                  ) : null}
-                </div>
-              </article>
-            );
-          })}
+              ) : null}
+            </>
+          ) : null}
         </div>
       )}
     </section>

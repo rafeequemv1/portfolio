@@ -13,7 +13,7 @@ const HomeNewsSection: React.FC<HomeNewsSectionProps> = ({ items, navigate }) =>
   if (!items.length) return null;
 
   return (
-    <section className="mx-auto mb-10 w-full max-w-2xl px-1 md:mb-12" aria-labelledby="home-news-heading">
+    <section id="home-news" className="mx-auto mb-10 w-full max-w-2xl scroll-mt-24 px-1 md:mb-12" aria-labelledby="home-news-heading">
       <div className="mb-5 text-center">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c5a57]">Studio news</p>
         <h2 id="home-news-heading" className="mt-2 font-serif text-2xl tracking-tight text-[#37352f] sm:text-3xl">
