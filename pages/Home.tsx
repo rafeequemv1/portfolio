@@ -2,10 +2,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase/client';
 import HomeLeadModal, { type HomeLeadModalMode } from '../components/HomeLeadModal';
-import { Brand, JournalCover, View } from '../types';
+import HomeNewsSection from '../components/HomeNewsSection';
+import { Brand, JournalCover, NewsItem, View } from '../types';
 import { ROUTES } from '../utils/routes';
 import { SEO_SITE_ORIGIN } from '../utils/seo';
 import { figureImageDisplayUrl } from '../utils/figureImageUrl';
+import { mapNewsItemRow } from '../utils/newsItemMapper';
 
 interface HomeProps {
   navigate?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, view: View, path: string) => void;
@@ -14,6 +16,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ navigate }) => {
   const [covers, setCovers] = useState<JournalCover[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [leadModal, setLeadModal] = useState<HomeLeadModalMode | null>(null);
 
   useEffect(() => {
@@ -49,6 +52,24 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
     };
 
     fetchBrands();
+  }, []);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const { data, error } = await supabase
+        .from('news_items')
+        .select('*')
+        .eq('is_published', true)
+        .order('display_order', { ascending: true })
+        .order('published_at', { ascending: false })
+        .limit(5);
+
+      if (!error) {
+        setNewsItems(((data || []) as Record<string, unknown>[]).map(mapNewsItemRow));
+      }
+    };
+
+    fetchNews();
   }, []);
 
   const [firstRow, secondRow] = useMemo(() => {
@@ -206,6 +227,8 @@ const Home: React.FC<HomeProps> = ({ navigate }) => {
           .
         </p>
       </section>
+
+      <HomeNewsSection items={newsItems} navigate={navigate} />
 
       <section className="mb-8 flex w-full max-w-xl flex-col items-center gap-3 px-2 text-center sm:mb-10" aria-label="Primary actions">
         <button

@@ -182,6 +182,49 @@ export interface AboutTalk {
   created_at?: string;
 }
 
+export type NewsLinkKind =
+  | 'external'
+  | 'workshop'
+  | 'course'
+  | 'blog'
+  | 'portfolio_covers'
+  | 'portfolio_figures'
+  | 'portfolio_abstracts'
+  | 'portfolio_logos'
+  | 'portfolio_videos'
+  | 'portfolio_webapps'
+  | 'services'
+  | 'workshops'
+  | 'courses';
+
+export type NewsThumbnailSourceKind =
+  | 'upload'
+  | 'cover'
+  | 'figure'
+  | 'abstract'
+  | 'logo'
+  | 'video'
+  | 'workshop'
+  | 'course'
+  | 'blog';
+
+/** Home page news / studio updates — managed in dashboard. */
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary?: string | null;
+  thumbnailUrl?: string | null;
+  thumbnailSourceKind?: NewsThumbnailSourceKind | null;
+  thumbnailSourceId?: string | null;
+  publishedAt: string;
+  displayOrder?: number;
+  isPublished: boolean;
+  linkKind: NewsLinkKind;
+  linkTarget?: string | null;
+  linkUrl?: string | null;
+  createdAt?: string;
+}
+
 export interface PortfolioFigure {
   id: string;
   image_urls: string[];
