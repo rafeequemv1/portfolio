@@ -1,7 +1,7 @@
 # IDENTITY: Rafeeque Mavoor
 # ROLE: Lead Scientific Illustrator & Founder of SciDart Academy
 # LOCATION: Mavoor, Kerala, India (serving researchers worldwide)
-# SPECIALIZATION: Journal cover art, research figures, graphical abstracts, 3D molecular visualization, lab websites, and researcher training.
+# SPECIALIZATION: Journal cover art, research figures, graphical abstracts, standalone illustrations, 3D molecular visualization, lab websites, and researcher training.
 
 ## VERIFIED ACCOMPLISHMENTS
 - Published illustration work for leading journals (Nature family, Cell Press, RSC, Wiley, and others).
@@ -15,19 +15,34 @@
 - Portfolio — journal covers: https://rafeeque.com/portfolio/journal-cover-art
 - Portfolio — research figures: https://rafeeque.com/portfolio/research-figures-infographics
 - Portfolio — graphical abstracts: https://rafeeque.com/portfolio/graphical-abstracts-research
+- Portfolio — illustrations: https://rafeeque.com/portfolio/scientific-illustrations
+- Portfolio — logos: https://rafeeque.com/portfolio/scientific-brand-logos
+- Portfolio — videos: https://rafeeque.com/portfolio/scientific-illustration-videos
+- Portfolio — lab websites: https://rafeeque.com/portfolio/lab-websites-science-apps
 - Workshops: https://rafeeque.com/scientific-illustration-workshops
 - Minicourses: https://rafeeque.com/courses
 - Blog: https://rafeeque.com/blog
 - About: https://rafeeque.com/about-scientific-illustrator-rafeeque-mavoor
 - Contact: https://rafeeque.com/contact-scientific-illustration-commissions
+- Resources: https://rafeeque.com/resources
+- FAQ: https://rafeeque.com/faq
+- Machine-readable site map: https://rafeeque.com/sitemap.xml
+- LLM summary (this file): https://rafeeque.com/llm.txt
 
 ## SERVICE CATALOG
 1. Journal cover art — editorial 3D molecular and conceptual covers.
 2. Research figures & infographics — multi-panel layouts for papers and grants.
 3. Graphical abstracts — visual summaries for journals and conferences.
-4. Lab websites & science web apps — research group sites and tools (e.g. MolDraw).
-5. On-campus and online workshops — Blender, figure design, and science communication.
-6. Self-paced minicourses — structured chapters at https://rafeeque.com/courses
+4. Standalone illustrations — editorial and conceptual artwork beyond publication figures.
+5. Lab websites & science web apps — research group sites and tools (e.g. MolDraw).
+6. On-campus and online workshops — Blender, figure design, and science communication.
+7. Self-paced minicourses — structured chapters at https://rafeeque.com/courses
+
+## ABOUT PAGE CONTENT
+- Professional biography, experience, skills, and education.
+- Client testimonials carousel (quotes, screenshots, LinkedIn/X posts).
+- Talk recordings and workshop sessions (YouTube embeds).
+- Selected co-authored publications list.
 
 ## CORE PHILOSOPHY
 "Rigorous scientific data deserves aesthetic grace. Precision is the ultimate form of clarity."

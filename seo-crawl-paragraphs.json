@@ -5,7 +5,7 @@
       "Published cover artwork spans chemistry, molecular biology, materials science, and related fields. Figures and infographics are built for peer-reviewed papers, theses, grants, and conference presentations, with delivery in print- and web-ready formats.",
       "Workshops and outreach sessions cover Blender for scientists, journal figure design, and science communication for students and faculty. Programs can be delivered on campus in India or online for international groups.",
       "SciDart Academy minicourses teach self-paced skills: structured chapters on graphical abstracts, color and layout for figures, and tool workflows researchers use in daily writing.",
-      "Use the services page to request a commission, the workshops page for training inquiries, or contact for direct email and phone. Portfolio galleries show covers, figures, abstracts, logos, videos, and lab websites."
+      "Use the services page to request a commission, the workshops page for training inquiries, or contact for direct email and phone. Portfolio galleries show covers, figures, illustrations, abstracts, logos, videos, and lab websites. Studio news appears on the home page."
     ]
   },
   "/scientific-illustration-services": {
@@ -43,8 +43,8 @@
     "paragraphs": [
       "Rafeeque Mavoor trained in chemistry and moved into scientific illustration and visual education full time. Work focuses on accurate, publication-oriented art for journals, labs, and science outreach.",
       "Experience includes founding SciDart Academy for researcher training, building LabCanvas and related science communication tools, and delivering workshops at Indian and international institutions. A downloadable CV is linked from this page.",
-      "The portfolio shows journal covers, figures, graphical abstracts, brand marks, lab sites, and video work. Talks and invited sessions are listed where recordings or descriptions are available.",
-      "Newsletter signup on this page covers studio updates and course announcements. For project inquiries, use contact or the services request form."
+      "The portfolio shows journal covers, figures, standalone illustrations, graphical abstracts, brand marks, lab sites, and video work. Talks and invited sessions are listed with YouTube recordings; additional featured talks expand from the More talks control.",
+      "Client testimonials appear in a carousel below the biography. Newsletter signup on this page covers studio updates and course announcements. For project inquiries, use contact or the services request form."
     ]
   },
   "/contact-scientific-illustration-commissions": {
@@ -114,8 +114,7 @@
   },
   "/resources": {
     "paragraphs": [
-      "Workshop materials and shared resources from scientific illustration training sessions.",
-      "Lodha Genius Workshop — registration and workshop form."
+      "Workshop materials and shared resources from scientific illustration training sessions."
     ]
   },
   "/editorial-guidelines": {
@@ -130,13 +129,13 @@
     "paragraphs": [
       "This page lists main URLs on rafeeque.com for visitors. Search engines should use the XML sitemap at /sitemap.xml for crawling.",
       "Core sections include illustration services, portfolio galleries for covers and figures, workshops, minicourses, blog, about, and contact. Policy pages cover privacy, terms, FAQ, and editorial guidelines.",
-      "Portfolio subpages list journal cover art, research figures and infographics, graphical abstracts, scientific brand logos, illustration videos, and lab websites with science apps.",
+      "Portfolio subpages list journal cover art, research figures and infographics, standalone illustrations, graphical abstracts, scientific brand logos, illustration videos, and lab websites with science apps.",
       "Use the navigation links below to open any section. Admin login is for site management only and is not part of public marketing content."
     ]
   },
   "/portfolio": {
     "paragraphs": [
-      "The scientific illustration portfolio collects journal cover art, research figures, graphical abstracts, lab logos, videos, and lab website projects by Rafeeque Mavoor.",
+      "The scientific illustration portfolio collects journal cover art, research figures, standalone illustrations, graphical abstracts, lab logos, videos, and lab website projects by Rafeeque Mavoor.",
       "Use the category tabs to browse published cover artwork, peer-reviewed figure support, graphical summaries, science branding, and science communication web projects.",
       "For a new journal cover, figure package, graphical abstract, or lab website, use the services page request form with your deadline, target venue, and reference material."
     ]
@@ -155,6 +154,14 @@
       "Projects may combine rendered structures, schematics, and annotation. Color and contrast are checked for grayscale printing where journals require it.",
       "Browse the gallery by project. To discuss a figure package for an upcoming paper, submit a brief through the services page with your target venue and timeline.",
       "Journal cover commissions and graphical abstracts are handled as separate projects with their own portfolio pages."
+    ]
+  },
+  "/portfolio/scientific-illustrations": {
+    "paragraphs": [
+      "Standalone scientific illustrations—editorial artwork, conceptual visuals, and molecular art beyond publication figures and journal covers.",
+      "Illustrations may support outreach, teaching slides, grant figures, or editorial storytelling where a full multi-panel figure set is not required.",
+      "Browse the gallery for examples with titles and institute details where provided. For a new illustration commission, use the services page request form.",
+      "Related work includes research figures, graphical abstracts, and journal cover art in other portfolio sections."
     ]
   },
   "/portfolio/graphical-abstracts-research": {

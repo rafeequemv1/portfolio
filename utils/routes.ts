@@ -56,6 +56,7 @@ export const FOOTER_NAV_LINKS: readonly { label: string; path: string; view: Vie
   { label: 'Workshops', path: ROUTES.workshops, view: 'workshops' },
   { label: 'Minicourses', path: ROUTES.courses, view: 'courses' },
   { label: 'Blog', path: ROUTES.blog, view: 'blog' },
+  { label: 'Resources', path: ROUTES.resources, view: 'resources' },
   { label: 'About', path: ROUTES.about, view: 'about' },
   { label: 'Contact', path: ROUTES.contact, view: 'contact' },
   { label: 'FAQ', path: ROUTES.faq, view: 'faq' },

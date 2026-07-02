@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../supabase/client';
 import type { AboutTalk } from '../types';
+import { ABOUT_FEATURED_TALKS } from '../utils/routes';
 import { getYoutubeEmbedUrl } from '../utils/youtubeEmbed';
 
 const TalkArticle: React.FC<{ talk: AboutTalk }> = ({ talk }) => {
@@ -28,6 +29,10 @@ const TalkArticle: React.FC<{ talk: AboutTalk }> = ({ talk }) => {
     </article>
   );
 };
+
+function talkEmbedKey(url: string): string {
+  return getYoutubeEmbedUrl(url) || url.trim();
+}
 
 const AboutTalksSection: React.FC = () => {
   const [talks, setTalks] = useState<AboutTalk[]>([]);
@@ -64,6 +69,37 @@ const AboutTalksSection: React.FC = () => {
     };
   }, []);
 
+  const orderedTalks = useMemo(() => {
+    const legacyTalks: AboutTalk[] = ABOUT_FEATURED_TALKS.map((item, index) => ({
+      id: `featured-${index}`,
+      title: `${item.label} ${index + 1}`,
+      description: null,
+      youtube_url: item.href,
+      display_order: 1000 + index,
+    }));
+
+    const seen = new Set<string>();
+    const merged: AboutTalk[] = [];
+
+    for (const talk of talks) {
+      if (!getYoutubeEmbedUrl(talk.youtube_url)) continue;
+      const key = talkEmbedKey(talk.youtube_url);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(talk);
+    }
+
+    for (const talk of legacyTalks) {
+      if (!getYoutubeEmbedUrl(talk.youtube_url)) continue;
+      const key = talkEmbedKey(talk.youtube_url);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(talk);
+    }
+
+    return merged;
+  }, [talks]);
+
   if (loading) {
     return (
       <section id="talks" className="mb-12 scroll-mt-28" aria-busy="true">
@@ -73,18 +109,15 @@ const AboutTalksSection: React.FC = () => {
     );
   }
 
-  const talksWithEmbed = talks.filter((t) => getYoutubeEmbedUrl(t.youtube_url));
-  const primaryTalk = talksWithEmbed[0];
-  const moreTalks = talksWithEmbed.slice(1);
+  const primaryTalk = orderedTalks[0];
+  const moreTalks = orderedTalks.slice(1);
 
   return (
     <section id="talks" className="mb-12 scroll-mt-28">
       <h2 className="mb-6 border-b border-[#37352f]/10 pb-2 font-serif text-2xl text-[#37352f]">Talks</h2>
-      {talksWithEmbed.length === 0 ? (
+      {orderedTalks.length === 0 ? (
         <p className="text-sm leading-relaxed text-[#37352f]/55">
-          {talks.length === 0
-            ? 'Talks and session recordings will appear here when they are published.'
-            : 'These entries need a valid YouTube link (watch or youtu.be URL) to appear as a video.'}
+          Talks and session recordings will appear here when they are published.
         </p>
       ) : (
         <div className="space-y-6">
